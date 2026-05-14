@@ -23,7 +23,7 @@ window.COMP_DATA = {
     },
     school: {
       name: '桃園市石門國民小學',
-      phone: '03-4796439',
+      phone: '03-4711752',
       website: 'https://www.smes.tyc.edu.tw',
     },
     medic: { location: 'C134 健康中心', staff: '李佩佩 老師' },
