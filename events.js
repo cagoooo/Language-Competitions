@@ -15,6 +15,8 @@ window.COMP_DATA = {
     dayOfWeek: '星期六',
     organizer: '桃園市石門國民小學',
     organizerShort: '石門國小',
+    principal: '張定貴',                // 校長(競賽召集人 / 總指揮)
+    principalTitle: '校長',
     openTime: '07:50',                 // 校園開放時間
     contact: {
       name: '魏博彥主任',
