@@ -28,6 +28,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- 賽事資料 single source of truth -->
+<script src="events.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
 
 <style>
@@ -306,6 +308,60 @@
   </div>
 </section>
 
+<!-- Live 狀態橫條(競賽當天自動顯示;平日可手動啟用模擬) -->
+<section x-data="liveBar()" class="border-y border-[var(--gold)]/30 no-print">
+  <div class="max-w-6xl mx-auto px-6 py-4">
+    <div class="flex items-center justify-between flex-wrap gap-3">
+      <!-- 左側:目前狀態 -->
+      <div class="flex items-center gap-3 flex-wrap">
+        <span class="flex items-center gap-2">
+          <span x-show="isRaceDay" class="inline-block w-2.5 h-2.5 bg-[var(--vermilion)] rounded-full animate-pulse"></span>
+          <span x-show="!isRaceDay" class="inline-block w-2.5 h-2.5 bg-gray-400 rounded-full"></span>
+          <strong class="text-sm" x-text="isRaceDay ? '🔴 競賽進行中模式' : '⏳ 尚未到比賽日'"></strong>
+        </span>
+        <span class="text-sm text-gray-600">
+          現在時間：<strong class="font-mono" x-text="nowDisplay"></strong>
+        </span>
+        <template x-if="isRaceDay && liveEvents.length > 0">
+          <span class="text-sm">
+            <span class="bg-[var(--vermilion)] text-white px-2 py-0.5 rounded-sm text-xs font-bold">LIVE</span>
+            <span x-text="liveEvents.length"></span> 場進行中：
+            <template x-for="ev in liveEvents.slice(0, 3)" :key="ev.no + ev.group">
+              <span class="text-xs text-[var(--vermilion-dark)] font-bold">
+                第<span x-text="ev.no"></span>場(<span x-text="ev.group"></span>)
+              </span>
+            </template>
+            <span x-show="liveEvents.length > 3" class="text-xs text-gray-500" x-text="'…+' + (liveEvents.length - 3) + ' 場'"></span>
+          </span>
+        </template>
+        <template x-if="isRaceDay && liveEvents.length === 0 && checkinEvents.length > 0">
+          <span class="text-sm text-[#4a6685] font-bold">
+            🟡 <span x-text="checkinEvents.length"></span> 場報到中
+          </span>
+        </template>
+      </div>
+
+      <!-- 右側:模擬時間切換(平日預覽當天景象) -->
+      <details class="text-xs ml-auto">
+        <summary class="cursor-pointer text-gray-500 hover:text-[var(--vermilion)] select-none">⚙️ 預覽模式</summary>
+        <div class="mt-2 bg-white border border-gray-200 p-3 rounded-sm absolute right-6 z-50 shadow-lg w-64">
+          <p class="text-xs text-gray-600 mb-2">在非比賽日預覽當天的網站樣貌:</p>
+          <div class="grid grid-cols-3 gap-1 mb-2">
+            <button @click="setSimulate('08:25')" class="px-2 py-1 text-xs bg-gray-100 hover:bg-[var(--vermilion)] hover:text-white rounded-sm">08:25 報到</button>
+            <button @click="setSimulate('09:15')" class="px-2 py-1 text-xs bg-gray-100 hover:bg-[var(--vermilion)] hover:text-white rounded-sm">09:15 開賽</button>
+            <button @click="setSimulate('09:45')" class="px-2 py-1 text-xs bg-gray-100 hover:bg-[var(--vermilion)] hover:text-white rounded-sm">09:45 高峰</button>
+            <button @click="setSimulate('10:25')" class="px-2 py-1 text-xs bg-gray-100 hover:bg-[var(--vermilion)] hover:text-white rounded-sm">10:25 收尾</button>
+            <button @click="setSimulate('11:00')" class="px-2 py-1 text-xs bg-gray-100 hover:bg-[var(--vermilion)] hover:text-white rounded-sm">11:00 結束</button>
+            <button @click="clearSimulate()" class="px-2 py-1 text-xs bg-gray-700 text-white hover:bg-black rounded-sm">⏹ 關閉</button>
+          </div>
+          <input type="time" @change="setSimulate($event.target.value)" class="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm" placeholder="自訂時間">
+          <p class="text-[10px] text-gray-400 mt-2">真實比賽日(2026/5/23)會自動啟用 Live 模式,無需此切換。</p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
 <!-- 我的比賽查詢 -->
 <section id="my-race" class="py-16 bg-gradient-to-br from-[var(--paper-2)]/60 to-[var(--paper)] border-y border-[var(--gold)]/20">
   <div class="max-w-5xl mx-auto px-6" x-data="myRace()">
@@ -350,6 +406,34 @@
               </button>
             </div>
           </div>
+
+          <!-- Live 倒數狀態(比賽日才顯示) -->
+          <template x-if="myStatus">
+            <div class="mb-4 p-4 rounded-sm"
+                 :class="{
+                   'bg-blue-50 border-l-4 border-blue-400': myStatus.phase === 'before',
+                   'bg-red-50 border-l-4 border-red-500 animate-pulse': myStatus.phase === 'now' || myStatus.phase === 'during',
+                   'bg-gray-50 border-l-4 border-gray-400': myStatus.phase === 'ended' || myStatus.phase === 'past',
+                 }">
+              <div class="flex items-center justify-between flex-wrap gap-2">
+                <div>
+                  <div class="text-xs font-bold tracking-widest mb-1"
+                       :class="{
+                         'text-blue-600': myStatus.phase === 'before',
+                         'text-red-600': myStatus.phase === 'now' || myStatus.phase === 'during',
+                         'text-gray-500': myStatus.phase === 'ended' || myStatus.phase === 'past',
+                       }">LIVE 狀態</div>
+                  <div class="font-serif-tc text-xl font-bold" x-text="myStatus.text"></div>
+                </div>
+                <template x-if="myStatus.mins !== undefined && myStatus.phase === 'before'">
+                  <div class="text-right">
+                    <div class="font-mono text-3xl font-black text-blue-600" x-text="myStatus.mins + '分'"></div>
+                    <div class="text-xs text-gray-500">距離上台</div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
 
           <!-- 時間卡 -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -582,16 +666,22 @@
     <!-- 賽程卡片 -->
     <div class="space-y-3 schedule-table">
       <template x-for="item in filteredItems" :key="item.no + item.group">
-        <div class="schedule-card bg-[var(--paper)] p-4 sm:p-5 rounded-sm shadow-sm">
+        <div class="schedule-card bg-[var(--paper)] p-4 sm:p-5 rounded-sm shadow-sm" :class="statusOf(item) === 'live' && 'ring-2 ring-[var(--vermilion)] ring-offset-1'">
           <div class="grid grid-cols-12 gap-3 items-center">
-            <!-- 場次號 -->
+            <!-- 場次號 + Live badge -->
             <div class="col-span-2 sm:col-span-1 text-center">
               <div class="text-xs text-gray-500">場次</div>
               <div class="font-serif-tc text-2xl sm:text-3xl font-black text-[var(--ink)]" x-text="item.no"></div>
+              <div x-show="statusOf(item) !== 'before-day'" class="mt-1">
+                <span :style="`background:${statusMeta(item).bg};color:${statusMeta(item).color}`"
+                      :class="statusMeta(item).pulse ? 'animate-pulse' : ''"
+                      class="inline-block text-[10px] px-1.5 py-0.5 rounded-sm font-bold whitespace-nowrap"
+                      x-text="statusMeta(item).text"></span>
+              </div>
             </div>
             <!-- 項目 -->
             <div class="col-span-10 sm:col-span-3">
-              <div class="inline-block text-xs px-2 py-0.5 border rounded-sm mb-1" :class="item.catClass" x-text="item.cat"></div>
+              <div class="inline-block text-xs px-2 py-0.5 border rounded-sm mb-1" :class="item.catClass" x-text="item.catLabel"></div>
               <div class="font-serif-tc font-bold text-lg" x-text="item.title"></div>
               <div class="text-sm text-gray-600">
                 <span class="font-bold" x-text="item.group"></span>
@@ -638,10 +728,151 @@
   </div>
 </section>
 
-<!-- 場地配置 -->
-<section id="venue" class="py-16">
+<!-- 場地配置(互動式校園地圖) -->
+<section id="venue" class="py-16" x-data="campusMap()">
   <div class="max-w-6xl mx-auto px-6">
-    <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold section-title mb-2">場地配置</h2>
+    <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold section-title mb-2">互動式校園地圖</h2>
+    <p class="text-gray-600 mb-6 ml-5">點選教室查看詳細資訊；比賽當天會自動顯示進行中狀態。</p>
+
+    <!-- 樓層切換 + 圖例 -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div class="flex gap-2">
+        <template x-for="floor in floors" :key="floor">
+          <button @click="activeFloor = floor"
+                  :class="activeFloor === floor ? 'bg-[var(--ink)] text-white shadow-md' : 'bg-white text-[var(--ink)] hover:bg-gray-100'"
+                  class="px-5 py-2.5 border border-[var(--ink)] rounded-sm font-bold transition">
+            <span class="floor-badge mr-2" :class="activeFloor === floor ? '!bg-white !text-[var(--ink)]' : ''" x-text="floor"></span>
+            <span x-text="COMP_DATA.campus[floor].label"></span>
+          </button>
+        </template>
+      </div>
+
+      <!-- 圖例 -->
+      <div class="flex flex-wrap gap-3 text-xs">
+        <span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#c1272d]/80 inline-block rounded-sm"></span>演說</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#4a6c52]/80 inline-block rounded-sm"></span>朗讀</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#b8945f]/80 inline-block rounded-sm"></span>作文</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#6b3d7f]/80 inline-block rounded-sm"></span>字音字形/寫字</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-3 bg-gray-400/60 inline-block rounded-sm"></span>預備室/其他</span>
+      </div>
+    </div>
+
+    <!-- 樓層說明 -->
+    <p class="text-sm text-gray-600 mb-5 italic ml-1" x-text="'本樓層用途:' + currentFloor.desc"></p>
+
+    <!-- 教室格子(grid layout) -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+      <template x-for="room in currentFloor.rooms" :key="room.code">
+        <button @click="selectRoom(room)"
+                :style="`border-color:${room.catColor};${roomStatus(room) === 'live' ? 'background:' + room.catColor + '15' : ''}`"
+                :class="{
+                  'ring-2 ring-[var(--vermilion)] ring-offset-2 animate-pulse': roomStatus(room) === 'live',
+                  'opacity-50': roomStatus(room) === 'ended',
+                }"
+                class="relative bg-white border-2 p-4 rounded-sm text-left hover:shadow-xl hover:scale-105 transition-all group">
+          <!-- LIVE 角標 -->
+          <span x-show="roomStatus(room) === 'live'" class="absolute top-1 right-1 bg-[var(--vermilion)] text-white text-[10px] px-1.5 py-0.5 rounded-sm font-bold">LIVE</span>
+          <span x-show="roomStatus(room) === 'checkin'" class="absolute top-1 right-1 bg-[#4a6685] text-white text-[10px] px-1.5 py-0.5 rounded-sm font-bold">報到</span>
+          <span x-show="roomStatus(room) === 'soon'" class="absolute top-1 right-1 bg-[#b8945f] text-white text-[10px] px-1.5 py-0.5 rounded-sm font-bold">即將</span>
+          <span x-show="roomStatus(room) === 'ended'" class="absolute top-1 right-1 bg-gray-400 text-white text-[10px] px-1.5 py-0.5 rounded-sm font-bold">結束</span>
+
+          <div class="text-xs text-gray-500 font-mono" x-text="room.code"></div>
+          <div class="font-serif-tc font-bold text-base mt-1" x-text="room.name"></div>
+          <div class="text-xs mt-1" :style="`color:${room.catColor}`" x-text="room.label"></div>
+        </button>
+      </template>
+    </div>
+
+    <!-- 重要建築快速導覽 -->
+    <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-[var(--paper-2)]/60 p-4 rounded-sm border-l-4 border-[var(--vermilion)]">
+        <div class="text-xs text-[var(--vermilion)] font-bold mb-1">📍 領隊報到處</div>
+        <div class="font-serif-tc font-bold">一樓中廊</div>
+        <div class="text-xs text-gray-600 mt-1">07:50-08:20</div>
+      </div>
+      <div class="bg-[var(--paper-2)]/60 p-4 rounded-sm border-l-4 border-[var(--gold)]">
+        <div class="text-xs text-[var(--gold)] font-bold mb-1">📍 評審休息室</div>
+        <div class="font-serif-tc font-bold">C131 書法教室(1F)</div>
+        <div class="text-xs text-gray-600 mt-1">評審餐點集中發放</div>
+      </div>
+      <div class="bg-[var(--paper-2)]/60 p-4 rounded-sm border-l-4 border-[var(--ink)]">
+        <div class="text-xs text-[var(--ink)] font-bold mb-1">📍 成績組</div>
+        <div class="font-serif-tc font-bold">C208 教務處(2F)</div>
+        <div class="text-xs text-gray-600 mt-1">成績輸入、公告</div>
+      </div>
+      <div class="bg-[var(--paper-2)]/60 p-4 rounded-sm border-l-4 border-blue-500">
+        <div class="text-xs text-blue-600 font-bold mb-1">📍 醫護室</div>
+        <div class="font-serif-tc font-bold">C134 健康中心(1F)</div>
+        <div class="text-xs text-gray-600 mt-1">緊急傷病處置</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 教室詳細 Modal -->
+  <div x-show="selectedRoom"
+       @click.self="closeModal()"
+       @keydown.escape.window="closeModal()"
+       x-transition.opacity
+       class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 no-print"
+       x-cloak>
+    <template x-if="selectedRoom">
+      <div @click.stop class="bg-white rounded-sm shadow-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto" x-transition.scale>
+        <!-- Header -->
+        <div class="p-6 text-white relative" :style="`background:linear-gradient(135deg, ${selectedRoom.catColor} 0%, ${selectedRoom.catColor}cc 100%)`">
+          <button @click="closeModal()" class="absolute top-3 right-3 text-white/80 hover:text-white text-2xl">×</button>
+          <div class="text-xs opacity-80 tracking-widest" x-text="activeFloor"></div>
+          <div class="font-serif-tc text-3xl font-bold mt-1">
+            <span x-text="selectedRoom.code"></span>　<span x-text="selectedRoom.name"></span>
+          </div>
+          <div class="text-sm mt-1 opacity-95" x-text="selectedRoom.label"></div>
+        </div>
+        <!-- Body -->
+        <div class="p-6">
+          <template x-if="eventsInRoom(selectedRoom.code).length > 0">
+            <div>
+              <h4 class="font-bold text-sm text-gray-600 mb-3">本教室排定場次：</h4>
+              <div class="space-y-3">
+                <template x-for="ev in eventsInRoom(selectedRoom.code)" :key="ev.no + ev.group">
+                  <div class="border-l-4 pl-3 py-2" :style="`border-color:${selectedRoom.catColor}`">
+                    <div class="flex items-center justify-between flex-wrap gap-2 mb-1">
+                      <div>
+                        <span class="font-serif-tc text-lg font-bold" x-text="'第 ' + ev.no + ' 場 ・ ' + ev.title"></span>
+                        <span class="ml-2 text-sm text-gray-500" x-text="ev.group + ' ' + ev.count + ' 人'"></span>
+                      </div>
+                      <span x-show="isLive"
+                            :style="`background:${evStatusMeta(ev).bg};color:${evStatusMeta(ev).color}`"
+                            :class="evStatusMeta(ev).pulse ? 'animate-pulse' : ''"
+                            class="text-xs px-2 py-0.5 rounded-sm font-bold"
+                            x-text="evStatusMeta(ev).text"></span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-xs text-gray-700 mt-2">
+                      <div>📍 報到 <strong class="font-mono" x-text="ev.checkin"></strong></div>
+                      <div x-show="ev.drawStart">🎲 抽題 <strong class="font-mono" x-text="ev.drawStart"></strong></div>
+                      <div>⏱ 比賽 <strong class="font-mono text-[var(--vermilion)]" x-text="ev.time"></strong></div>
+                    </div>
+                    <div x-show="ev.prep" class="text-xs text-gray-500 mt-1">預備室：<span x-text="ev.prep"></span></div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+          <template x-if="eventsInRoom(selectedRoom.code).length === 0">
+            <div class="text-center py-6 text-gray-500">
+              <div class="text-3xl mb-2">📌</div>
+              <p class="text-sm">本空間為服務性設施，未排定比賽場次。</p>
+              <p class="text-xs text-gray-400 mt-2" x-text="selectedRoom.label"></p>
+            </div>
+          </template>
+        </div>
+      </div>
+    </template>
+  </div>
+</section>
+
+<!-- (隱藏:原樓層分組文字列表保留作為相容入口,可從互動地圖點選查看) -->
+<section class="hidden">
+  <div class="max-w-6xl mx-auto px-6">
+    <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold section-title mb-2">場地配置(列表)</h2>
     <p class="text-gray-600 mb-10 ml-5">石門國小校園分佈，依樓層分組標示比賽教室。</p>
 
     <!-- 樓層分區 -->
@@ -996,109 +1227,159 @@
 </a>
 
 <script>
-// ────────────────────────────────────────────────
-// 抽題上台時間查詢資料表
-// 規則:演說/朗讀類有「抽題 → 上台」流程;書寫類僅有「開賽」時間
-// 抽題與上台間隔依各組單人時間上限推算,以現場呼號為準
-// ────────────────────────────────────────────────
-const RACE_DATA = {
-  // 演說類
-  '1-學生組':  { title:'國語演說',         group:'學生組', venue:'C313 六年5班 (3F)',     prep:'C314 六年6班',     checkin:'08:20-08:30', drawStart:'08:40', drawStep:5, takeoffStart:'09:10', takeoffStep:5, max:11, timeLimit:'學生組演說上限 5 分鐘' },
-  '2-教師組':  { title:'國語演說',         group:'教師組', venue:'C218 英語情境教室 (2F)', prep:'C217 魚寶屋',       checkin:'08:20-08:30', drawStart:'08:38', drawStep:8, takeoffStart:'09:10', takeoffStep:8, max:6,  timeLimit:'教師組演說上限 8 分鐘' },
-  '2-社會組':  { title:'國語演說',         group:'社會組', venue:'C218 英語情境教室 (2F)', prep:'C217 魚寶屋',       checkin:'09:40-09:50', drawStart:'10:00', drawStep:6, takeoffStart:'10:30', takeoffStep:6, max:4,  timeLimit:'社會組演說上限 6 分鐘' },
-  '3-學生組':  { title:'臺灣台語情境式演說', group:'學生組', venue:'C229 英語一 (2F)',      prep:'C228 英語二',       checkin:'08:20-08:30', drawStart:'08:40', drawStep:6, takeoffStart:'09:10', takeoffStep:6, max:4,  timeLimit:'學生組情境式演說 5 分鐘(演說 2-3 分 + 詢答 2 分)' },
-  '4-教師組':  { title:'臺灣台語演說',     group:'教師組', venue:'C227 英語三 (2F)',      prep:'C228 英語二',       checkin:'08:20-08:30', drawStart:'08:38', drawStep:8, takeoffStart:'09:10', takeoffStep:8, max:4,  timeLimit:'教師組演說上限 8 分鐘' },
-  '4-社會組':  { title:'臺灣台語演說',     group:'社會組', venue:'C227 英語三 (2F)',      prep:'C228 英語二',       checkin:'09:30-09:40', drawStart:'09:50', drawStep:6, takeoffStart:'10:20', takeoffStep:6, max:4,  timeLimit:'社會組演說上限 6 分鐘' },
-  '5-學生組':  { title:'臺灣客語情境式演說', group:'學生組', venue:'C234 課照班 2A (2F)',   prep:'C233 課照班 2B',    checkin:'08:20-08:30', drawStart:'08:40', drawStep:6, takeoffStart:'09:10', takeoffStep:6, max:6,  timeLimit:'學生組情境式演說 5 分鐘(演說 2-3 分 + 詢答 2 分)' },
-  '6-教師組':  { title:'臺灣客語演說',     group:'教師組', venue:'C232 課照班 3A (2F)',   prep:'C233 課照班 2B',    checkin:'08:20-08:30', drawStart:'08:38', drawStep:8, takeoffStart:'09:10', takeoffStep:8, max:3,  timeLimit:'教師組演說上限 8 分鐘' },
-  '6-社會組':  { title:'臺灣客語演說',     group:'社會組', venue:'C232 課照班 3A (2F)',   prep:'C233 課照班 2B',    checkin:'09:30-09:40', drawStart:'09:50', drawStep:6, takeoffStart:'10:20', takeoffStep:6, max:4,  timeLimit:'社會組演說上限 6 分鐘' },
-  // 朗讀類
-  '7-學生組':  { title:'國語朗讀',         group:'學生組', venue:'C220 五年2班 (2F)',     prep:'C221 五年3班',      checkin:'08:40-08:50', drawStart:'09:02', drawStep:4, takeoffStart:'09:10', takeoffStep:4, max:13, timeLimit:'朗讀上限 4 分鐘' },
-  '8-教師組':  { title:'國語朗讀',         group:'教師組', venue:'C224 五年5班 (2F)',     prep:'C225 五年6班',      checkin:'08:40-08:50', drawStart:'09:02', drawStep:4, takeoffStart:'09:10', takeoffStep:4, max:7,  timeLimit:'朗讀上限 4 分鐘' },
-  '8-社會組':  { title:'國語朗讀',         group:'社會組', venue:'C224 五年5班 (2F)',     prep:'C225 五年6班',      checkin:'09:35-09:45', drawStart:'09:52', drawStep:4, takeoffStart:'10:00', takeoffStep:4, max:8,  timeLimit:'朗讀上限 4 分鐘' },
-  '9-學生組':  { title:'臺灣台語朗讀',     group:'學生組', venue:'C226 音樂二 (2F)',      prep:'C225 五年6班',      checkin:'08:40-08:50', drawStart:'09:02', drawStep:4, takeoffStart:'09:10', takeoffStep:4, max:10, timeLimit:'朗讀上限 4 分鐘' },
-  '10-教師組': { title:'臺灣台語朗讀',     group:'教師組', venue:'C125 五年1班 (1F)',     prep:'C124 三年5班',      checkin:'08:20-08:30', drawStart:'08:38', drawStep:4, takeoffStart:'09:10', takeoffStep:4, max:8,  timeLimit:'朗讀上限 4 分鐘' },
-  '10-社會組': { title:'臺灣台語朗讀',     group:'社會組', venue:'C125 五年1班 (1F)',     prep:'C124 三年5班',      checkin:'09:40-09:50', drawStart:'09:58', drawStep:4, takeoffStart:'10:30', takeoffStep:4, max:5,  timeLimit:'朗讀上限 4 分鐘' },
-  '11-學生組': { title:'臺灣客語朗讀',     group:'學生組', venue:'C120 三年1班 (1F)',     prep:'C121 三年2班',      checkin:'08:40-08:50', drawStart:'09:02', drawStep:4, takeoffStart:'09:10', takeoffStep:4, max:11, timeLimit:'朗讀上限 4 分鐘' },
-  '12-教師組': { title:'臺灣客語朗讀',     group:'教師組', venue:'C123 三年4班 (1F)',     prep:'C124 三年5班',      checkin:'08:20-08:30', drawStart:'08:38', drawStep:4, takeoffStart:'09:10', takeoffStep:4, max:6,  timeLimit:'朗讀上限 4 分鐘' },
-  '12-社會組': { title:'臺灣客語朗讀',     group:'社會組', venue:'C123 三年4班 (1F)',     prep:'C124 三年5班',      checkin:'09:30-09:40', drawStart:'09:48', drawStep:4, takeoffStart:'10:20', takeoffStep:4, max:5,  timeLimit:'朗讀上限 4 分鐘' },
-  // 作文(無抽題)
-  '13-學生組': { title:'作文',             group:'學生組', venue:'C308 六年2班 (3F)',     prep:'C309 六年3班',      checkin:'08:20-08:30', writeStart:'08:40', writeEnd:'10:10', max:12, timeLimit:'作文 90 分鐘(08:40-10:10)', special:'⚠️ 開賽 5 分鐘後不得入場，不得提早交卷' },
-  '13-教師組': { title:'作文',             group:'教師組', venue:'C310 六年4班 (3F)',     prep:'C309 六年3班',      checkin:'08:20-08:30', writeStart:'08:40', writeEnd:'10:10', max:10, timeLimit:'作文 90 分鐘(08:40-10:10)', special:'⚠️ 開賽 5 分鐘後不得入場，不得提早交卷' },
-  '13-社會組': { title:'作文',             group:'社會組', venue:'C310 六年4班 (3F)',     prep:'C309 六年3班',      checkin:'08:20-08:30', writeStart:'08:40', writeEnd:'10:10', max:9,  timeLimit:'作文 90 分鐘(08:40-10:10)', special:'⚠️ 開賽 5 分鐘後不得入場，不得提早交卷' },
-  // 國語字音字形
-  '14-學生組': { title:'國語字音字形',     group:'學生組', venue:'C135 禮堂',            prep:'',                checkin:'08:20-08:30', writeStart:'08:40', writeEnd:'08:50', max:13, timeLimit:'10 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
-  '14-教師組': { title:'國語字音字形',     group:'教師組', venue:'C135 禮堂',            prep:'',                checkin:'08:20-08:30', writeStart:'08:40', writeEnd:'08:50', max:10, timeLimit:'10 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
-  '14-社會組': { title:'國語字音字形',     group:'社會組', venue:'C135 禮堂',            prep:'',                checkin:'08:20-08:30', writeStart:'08:40', writeEnd:'08:50', max:8,  timeLimit:'10 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
-  // 台語字音字形
-  '15-學生組': { title:'臺灣台語字音字形', group:'學生組', venue:'C135 禮堂',            prep:'',                checkin:'09:00-09:10', writeStart:'09:15', writeEnd:'09:30', max:4,  timeLimit:'15 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
-  '15-教師組': { title:'臺灣台語字音字形', group:'教師組', venue:'C135 禮堂',            prep:'',                checkin:'09:00-09:10', writeStart:'09:15', writeEnd:'09:30', max:7,  timeLimit:'15 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
-  '15-社會組': { title:'臺灣台語字音字形', group:'社會組', venue:'C135 禮堂',            prep:'',                checkin:'09:00-09:10', writeStart:'09:15', writeEnd:'09:30', max:4,  timeLimit:'15 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
-  // 客語字音字形
-  '16-學生組': { title:'臺灣客語字音字形', group:'學生組', venue:'C135 禮堂',            prep:'',                checkin:'09:00-09:10', writeStart:'09:15', writeEnd:'09:30', max:5,  timeLimit:'15 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
-  '16-教師組': { title:'臺灣客語字音字形', group:'教師組', venue:'C135 禮堂',            prep:'',                checkin:'09:00-09:10', writeStart:'09:15', writeEnd:'09:30', max:5,  timeLimit:'15 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
-  '16-社會組': { title:'臺灣客語字音字形', group:'社會組', venue:'C135 禮堂',            prep:'',                checkin:'09:00-09:10', writeStart:'09:15', writeEnd:'09:30', max:6,  timeLimit:'15 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
-  // 寫字
-  '17-學生組': { title:'寫字',             group:'學生組', venue:'C135 禮堂',            prep:'',                checkin:'09:40-09:50', writeStart:'10:00', writeEnd:'10:50', max:10, timeLimit:'50 分鐘',                 special:'⚠️ 開賽 5 分鐘後不得入場；不得提早交卷' },
-  '17-教師組': { title:'寫字',             group:'教師組', venue:'C135 禮堂',            prep:'',                checkin:'09:40-09:50', writeStart:'10:00', writeEnd:'10:50', max:8,  timeLimit:'50 分鐘',                 special:'⚠️ 開賽 5 分鐘後不得入場；不得提早交卷' },
-  '17-社會組': { title:'寫字',             group:'社會組', venue:'C135 禮堂',            prep:'',                checkin:'09:40-09:50', writeStart:'10:00', writeEnd:'10:50', max:7,  timeLimit:'50 分鐘',                 special:'⚠️ 開賽 5 分鐘後不得入場；不得提早交卷' },
-};
+// ════════════════════════════════════════════════
+// 全域 Live 狀態(跨 component 共享)
+//  - simulateTime: '' = 用真實時間; 'HH:MM' = 用模擬時間預覽 5/23 當天某時刻
+//  - 每 30 秒自動 refresh,以更新狀態
+// ════════════════════════════════════════════════
+window.LIVE_STATE = Alpine_initState();
+function Alpine_initState() {
+  return {
+    simulateTime: '',
+    forceRaceDay: false,  // 強制當作比賽日(用於今天就預覽)
+    tickKey: 0,
+  };
+}
+// 每 30 秒推進 tickKey 觸發 Alpine 重新計算
+setInterval(() => { if (window.Alpine) { window.LIVE_STATE.tickKey++; } }, 30000);
 
-function pad2(n) { return n < 10 ? '0' + n : '' + n; }
-function addMinutes(hhmm, mins) {
-  const [h, m] = hhmm.split(':').map(Number);
-  const total = h * 60 + m + mins;
-  return pad2(Math.floor(total / 60)) + ':' + pad2(total % 60);
+// 取得「現在的有效時間」(分鐘數),供狀態判斷
+function getEffectiveNowMin() {
+  void window.LIVE_STATE.tickKey; // 觸發響應
+  if (window.LIVE_STATE.simulateTime) {
+    return COMP_UTILS.toMin(window.LIVE_STATE.simulateTime);
+  }
+  const n = new Date();
+  return n.getHours() * 60 + n.getMinutes();
 }
 
+// 判斷今天是否為比賽日(或被強制設為比賽日)
+function isActiveRaceDay() {
+  void window.LIVE_STATE.tickKey;
+  if (window.LIVE_STATE.forceRaceDay) return true;
+  if (window.LIVE_STATE.simulateTime) return true;
+  return COMP_UTILS.isRaceDay();
+}
+
+// 為事件生成穩定 key
+function eventKey(ev) { return ev.no + '-' + ev.group; }
+
+// 計算事件狀態
+function calcEventStatus(ev) {
+  if (!isActiveRaceDay()) return 'before-day';
+  return COMP_UTILS.getStatus(ev, getEffectiveNowMin());
+}
+
+// 狀態 → 顯示文字 + 顏色
+const STATUS_META = {
+  'before-day':  { text: '未到比賽日',    color: '#999',     bg: '#f5f5f5',     pulse: false },
+  'upcoming':    { text: '尚未開始',      color: '#888',     bg: '#f0f0f0',     pulse: false },
+  'soon':        { text: '即將報到',      color: '#b8945f',  bg: '#fff7e6',     pulse: false },
+  'checkin':     { text: '報到中',        color: '#4a6685',  bg: '#e8f0fa',     pulse: true  },
+  'live':        { text: '🔴 進行中',     color: '#c1272d',  bg: '#fff1f0',     pulse: true  },
+  'ended':       { text: '已結束',        color: '#999',     bg: '#f5f5f5',     pulse: false },
+};
+
+// ════════════════════════════════════════════════
+// Live 控制元件(Hero 區下方的橫條)
+// ════════════════════════════════════════════════
+function liveBar() {
+  return {
+    get state() { return window.LIVE_STATE; },
+    get tick() { return window.LIVE_STATE.tickKey; },
+    get isRaceDay() { return isActiveRaceDay(); },
+    get nowDisplay() {
+      void this.tick;
+      if (this.state.simulateTime) return this.state.simulateTime + ' (模擬)';
+      const n = new Date();
+      return COMP_UTILS.pad2(n.getHours()) + ':' + COMP_UTILS.pad2(n.getMinutes());
+    },
+    get liveEvents() {
+      void this.tick;
+      if (!this.isRaceDay) return [];
+      return COMP_DATA.events.filter(e => calcEventStatus(e) === 'live');
+    },
+    get checkinEvents() {
+      void this.tick;
+      if (!this.isRaceDay) return [];
+      return COMP_DATA.events.filter(e => calcEventStatus(e) === 'checkin');
+    },
+    get soonEvents() {
+      void this.tick;
+      if (!this.isRaceDay) return [];
+      return COMP_DATA.events.filter(e => calcEventStatus(e) === 'soon');
+    },
+    setSimulate(t) { this.state.simulateTime = t; this.state.tickKey++; },
+    clearSimulate() { this.state.simulateTime = ''; this.state.forceRaceDay = false; this.state.tickKey++; },
+    enableForceMode() { this.state.forceRaceDay = true; this.state.tickKey++; },
+  };
+}
+
+// ════════════════════════════════════════════════
+// 抽題上台查詢(我的比賽)
+// ════════════════════════════════════════════════
 function myRace() {
   return {
     selectedKey: '',
     seatNo: '',
     result: null,
     printMode: false,
+    get tick() { return window.LIVE_STATE.tickKey; },
     get options() {
-      return Object.entries(RACE_DATA).map(([key, v]) => {
-        const [no] = key.split('-');
-        return { key, label: `第 ${no} 場 ・ ${v.title} ・ ${v.group} (共 ${v.max} 人)` };
-      });
+      return COMP_DATA.events.map(ev => ({
+        key: eventKey(ev),
+        label: `第 ${ev.no} 場 ・ ${ev.title} ・ ${ev.group} (共 ${ev.count} 人)`,
+      }));
     },
     get currentMax() {
-      return this.selectedKey ? RACE_DATA[this.selectedKey].max : 0;
+      const ev = this.findEvent();
+      return ev ? ev.count : 0;
+    },
+    findEvent() {
+      return COMP_DATA.events.find(e => eventKey(e) === this.selectedKey);
     },
     calcResult() {
-      if (!this.selectedKey) { this.result = null; return; }
-      const data = RACE_DATA[this.selectedKey];
+      const ev = this.findEvent();
+      if (!ev) { this.result = null; return; }
       const n = parseInt(this.seatNo);
       if (!n || n < 1) { this.result = null; return; }
-      if (n > data.max) {
-        this.result = { ok: false, error: `本場僅有 ${data.max} 位選手，序號需介於 1 ~ ${data.max} 之間。` };
+      if (n > ev.count) {
+        this.result = { ok: false, error: `本場僅有 ${ev.count} 位選手，序號需介於 1 ~ ${ev.count} 之間。` };
         return;
       }
-      const offset = n - 1;
-      const r = {
+      this.result = {
         ok: true,
         seatNo: n,
-        title: data.title,
-        group: data.group,
-        venue: data.venue,
-        prep: data.prep,
-        checkin: data.checkin,
-        timeLimit: data.timeLimit || '',
-        special: data.special || '',
+        title: ev.title,
+        group: ev.group,
+        venue: ev.venue,
+        prep: ev.prep,
+        checkin: ev.checkin,
+        timeLimit: ev.timeLimit || '',
+        special: ev.special || '',
+        drawTime: COMP_UTILS.drawTimeOf(ev, n) || '',
+        takeoffTime: COMP_UTILS.takeoffTimeOf(ev, n),
+        takeoffNote: ev.drawStart ? '請於前一位選手結束後立即就位' : '全體同時開賽',
+        eventRef: ev,
       };
-      if (data.drawStart) {
-        // 演說/朗讀類
-        r.drawTime = addMinutes(data.drawStart, offset * data.drawStep);
-        r.takeoffTime = addMinutes(data.takeoffStart, offset * data.takeoffStep);
-        r.takeoffNote = '請於前一位選手結束後立即就位';
-      } else {
-        // 書寫類:全體同時開始
-        r.drawTime = '';
-        r.takeoffTime = data.writeStart + ' ~ ' + data.writeEnd;
-        r.takeoffNote = '全體同時開賽';
-      }
-      this.result = r;
+    },
+    // Live 狀態:選手目前進度
+    get myStatus() {
+      void this.tick;
+      if (!this.result || !this.result.ok) return null;
+      if (!isActiveRaceDay()) return null;
+      const nowMin = getEffectiveNowMin();
+      const myTakeoff = COMP_UTILS.toMin(
+        this.result.eventRef.drawStart ? this.result.takeoffTime : this.result.eventRef.writeStart
+      );
+      const eventStatus = calcEventStatus(this.result.eventRef);
+      if (eventStatus === 'ended') return { phase: 'ended', text: '本場已結束' };
+      const diff = myTakeoff - nowMin;
+      if (diff > 0) return { phase: 'before', text: `距離你上台還有 ${diff} 分鐘`, mins: diff };
+      if (diff === 0) return { phase: 'now', text: '⭐ 你的時間到了!請就位' };
+      const after = -diff;
+      if (after <= 10) return { phase: 'during', text: `你的預定時間已過 ${after} 分鐘,可能正在台上`, mins: after };
+      return { phase: 'past', text: '你的預定時間已過' };
     },
     printCard() {
       this.printMode = true;
@@ -1114,78 +1395,90 @@ function myRace() {
   };
 }
 
+// ════════════════════════════════════════════════
+// 賽程表
+// ════════════════════════════════════════════════
 function scheduleTable() {
+  const catClassMap = {
+    '演說': 'cat-speech', '朗讀': 'cat-reading', '作文': 'cat-write',
+    '字音字形': 'cat-character', '寫字': 'cat-callig',
+  };
+  const catEmojiMap = {
+    '演說': '🎤', '朗讀': '📖', '作文': '✍️', '字音字形': '🔤', '寫字': '🖌',
+  };
   return {
     filter: 'all',
     search: '',
-    items: [
-      // 場次 1
-      { no: 1, cat: '🎤 演說', catClass: 'cat-speech', title: '國語演說', group: '學生組', count: 11, checkin: '08:20-08:30', draw: '08:40', time: '09:10-10:05', venue: 'C313 六年5班 (3F)', prep: 'C314 六年6班' },
-      // 場次 2 - 國語演說 教師、社會
-      { no: 2, cat: '🎤 演說', catClass: 'cat-speech', title: '國語演說', group: '教師組', count: 6, checkin: '08:20-08:30', draw: '08:38', time: '09:10-09:58', venue: 'C218 英語情境教室 (2F)', prep: 'C217 魚寶屋' },
-      { no: 2, cat: '🎤 演說', catClass: 'cat-speech', title: '國語演說', group: '社會組', count: 4, checkin: '09:40-09:50', draw: '10:00', time: '10:30-10:54', venue: 'C218 英語情境教室 (2F)', prep: 'C217 魚寶屋' },
-      // 場次 3
-      { no: 3, cat: '🎤 演說', catClass: 'cat-speech', title: '臺灣台語情境式演說', group: '學生組', count: 4, checkin: '08:20-08:30', draw: '08:40', time: '09:10-09:46', venue: 'C229 英語一 (2F)', prep: 'C228 英語二' },
-      // 場次 4
-      { no: 4, cat: '🎤 演說', catClass: 'cat-speech', title: '臺灣台語演說', group: '教師組', count: 4, checkin: '08:20-08:30', draw: '08:38', time: '09:10-09:42', venue: 'C227 英語三 (2F)', prep: 'C228 英語二' },
-      { no: 4, cat: '🎤 演說', catClass: 'cat-speech', title: '臺灣台語演說', group: '社會組', count: 4, checkin: '09:30-09:40', draw: '09:50', time: '10:20-10:44', venue: 'C227 英語三 (2F)', prep: 'C228 英語二' },
-      // 場次 5
-      { no: 5, cat: '🎤 演說', catClass: 'cat-speech', title: '臺灣客語情境式演說', group: '學生組', count: 6, checkin: '08:20-08:30', draw: '08:40', time: '09:10-09:46', venue: 'C234 課照班 2A (2F)', prep: 'C233 課照班 2B' },
-      // 場次 6
-      { no: 6, cat: '🎤 演說', catClass: 'cat-speech', title: '臺灣客語演說', group: '教師組', count: 3, checkin: '08:20-08:30', draw: '08:38', time: '09:10-09:42', venue: 'C232 課照班 3A (2F)', prep: 'C233 課照班 2B' },
-      { no: 6, cat: '🎤 演說', catClass: 'cat-speech', title: '臺灣客語演說', group: '社會組', count: 4, checkin: '09:30-09:40', draw: '09:50', time: '10:20-10:44', venue: 'C232 課照班 3A (2F)', prep: 'C233 課照班 2B' },
-      // 場次 7
-      { no: 7, cat: '📖 朗讀', catClass: 'cat-reading', title: '國語朗讀', group: '學生組', count: 13, checkin: '08:40-08:50', draw: '09:02', time: '09:10-10:02', venue: 'C220 五年2班 (2F)', prep: 'C221 五年3班' },
-      // 場次 8
-      { no: 8, cat: '📖 朗讀', catClass: 'cat-reading', title: '國語朗讀', group: '教師組', count: 7, checkin: '08:40-08:50', draw: '09:02', time: '09:10-09:46', venue: 'C224 五年5班 (2F)', prep: 'C225 五年6班' },
-      { no: 8, cat: '📖 朗讀', catClass: 'cat-reading', title: '國語朗讀', group: '社會組', count: 8, checkin: '09:35-09:45', draw: '09:52', time: '10:00-10:32', venue: 'C224 五年5班 (2F)', prep: 'C225 五年6班' },
-      // 場次 9
-      { no: 9, cat: '📖 朗讀', catClass: 'cat-reading', title: '臺灣台語朗讀', group: '學生組', count: 10, checkin: '08:40-08:50', draw: '09:02', time: '09:10-09:50', venue: 'C226 音樂二 (2F)', prep: 'C225 五年6班' },
-      // 場次 10
-      { no: 10, cat: '📖 朗讀', catClass: 'cat-reading', title: '臺灣台語朗讀', group: '教師組', count: 8, checkin: '08:20-08:30', draw: '08:38', time: '09:10-09:46', venue: 'C125 五年1班 (1F)', prep: 'C124 三年5班' },
-      { no: 10, cat: '📖 朗讀', catClass: 'cat-reading', title: '臺灣台語朗讀', group: '社會組', count: 5, checkin: '09:40-09:50', draw: '09:58', time: '10:30-10:50', venue: 'C125 五年1班 (1F)', prep: 'C124 三年5班' },
-      // 場次 11
-      { no: 11, cat: '📖 朗讀', catClass: 'cat-reading', title: '臺灣客語朗讀', group: '學生組', count: 11, checkin: '08:40-08:50', draw: '09:02', time: '09:10-09:54', venue: 'C120 三年1班 (1F)', prep: 'C121 三年2班' },
-      // 場次 12
-      { no: 12, cat: '📖 朗讀', catClass: 'cat-reading', title: '臺灣客語朗讀', group: '教師組', count: 6, checkin: '08:20-08:30', draw: '08:38', time: '09:10-09:34', venue: 'C123 三年4班 (1F)', prep: 'C124 三年5班' },
-      { no: 12, cat: '📖 朗讀', catClass: 'cat-reading', title: '臺灣客語朗讀', group: '社會組', count: 5, checkin: '09:30-09:40', draw: '09:48', time: '10:20-10:40', venue: 'C123 三年4班 (1F)', prep: 'C124 三年5班' },
-      // 場次 13 作文
-      { no: 13, cat: '✍️ 作文', catClass: 'cat-write', title: '作文', group: '學生組', count: 12, checkin: '08:20-08:30', draw: '', time: '08:40-10:10', venue: 'C308 六年2班 (3F)', prep: 'C309 六年3班' },
-      { no: 13, cat: '✍️ 作文', catClass: 'cat-write', title: '作文', group: '教師組', count: 10, checkin: '08:20-08:30', draw: '', time: '08:40-10:10', venue: 'C310 六年4班 (3F)', prep: 'C309 六年3班' },
-      { no: 13, cat: '✍️ 作文', catClass: 'cat-write', title: '作文', group: '社會組', count: 9, checkin: '08:20-08:30', draw: '', time: '08:40-10:10', venue: 'C310 六年4班 (3F)', prep: 'C309 六年3班' },
-      // 場次 14 國語字音字形
-      { no: 14, cat: '🔤 字音字形', catClass: 'cat-character', title: '國語字音字形', group: '學生組', count: 13, checkin: '08:20-08:30', draw: '', time: '08:40-08:50', venue: 'C135 禮堂', prep: '' },
-      { no: 14, cat: '🔤 字音字形', catClass: 'cat-character', title: '國語字音字形', group: '教師組', count: 10, checkin: '08:20-08:30', draw: '', time: '08:40-08:50', venue: 'C135 禮堂', prep: '' },
-      { no: 14, cat: '🔤 字音字形', catClass: 'cat-character', title: '國語字音字形', group: '社會組', count: 8, checkin: '08:20-08:30', draw: '', time: '08:40-08:50', venue: 'C135 禮堂', prep: '' },
-      // 場次 15 台語字音字形
-      { no: 15, cat: '🔤 字音字形', catClass: 'cat-character', title: '臺灣台語字音字形', group: '學生組', count: 4, checkin: '09:00-09:10', draw: '', time: '09:15-09:30', venue: 'C135 禮堂', prep: '' },
-      { no: 15, cat: '🔤 字音字形', catClass: 'cat-character', title: '臺灣台語字音字形', group: '教師組', count: 7, checkin: '09:00-09:10', draw: '', time: '09:15-09:30', venue: 'C135 禮堂', prep: '' },
-      { no: 15, cat: '🔤 字音字形', catClass: 'cat-character', title: '臺灣台語字音字形', group: '社會組', count: 4, checkin: '09:00-09:10', draw: '', time: '09:15-09:30', venue: 'C135 禮堂', prep: '' },
-      // 場次 16 客語字音字形
-      { no: 16, cat: '🔤 字音字形', catClass: 'cat-character', title: '臺灣客語字音字形', group: '學生組', count: 5, checkin: '09:00-09:10', draw: '', time: '09:15-09:30', venue: 'C135 禮堂', prep: '' },
-      { no: 16, cat: '🔤 字音字形', catClass: 'cat-character', title: '臺灣客語字音字形', group: '教師組', count: 5, checkin: '09:00-09:10', draw: '', time: '09:15-09:30', venue: 'C135 禮堂', prep: '' },
-      { no: 16, cat: '🔤 字音字形', catClass: 'cat-character', title: '臺灣客語字音字形', group: '社會組', count: 6, checkin: '09:00-09:10', draw: '', time: '09:15-09:30', venue: 'C135 禮堂', prep: '' },
-      // 場次 17 寫字
-      { no: 17, cat: '🖌 寫字', catClass: 'cat-callig', title: '寫字', group: '學生組', count: 10, checkin: '09:40-09:50', draw: '', time: '10:00-10:50', venue: 'C135 禮堂', prep: '' },
-      { no: 17, cat: '🖌 寫字', catClass: 'cat-callig', title: '寫字', group: '教師組', count: 8, checkin: '09:40-09:50', draw: '', time: '10:00-10:50', venue: 'C135 禮堂', prep: '' },
-      { no: 17, cat: '🖌 寫字', catClass: 'cat-callig', title: '寫字', group: '社會組', count: 7, checkin: '09:40-09:50', draw: '', time: '10:00-10:50', venue: 'C135 禮堂', prep: '' },
-    ],
+    get tick() { return window.LIVE_STATE.tickKey; },
+    get items() {
+      return COMP_DATA.events.map(ev => ({
+        ...ev,
+        catLabel: catEmojiMap[ev.cat] + ' ' + ev.cat,
+        catClass: catClassMap[ev.cat],
+        draw: ev.drawStart || '',
+      }));
+    },
+    statusOf(item) {
+      void this.tick;
+      return calcEventStatus(item);
+    },
+    statusMeta(item) {
+      return STATUS_META[this.statusOf(item)];
+    },
     get filteredItems() {
+      const s = this.search.trim().toLowerCase();
       return this.items.filter(it => {
-        const matchFilter = this.filter === 'all' || it.title.includes(this.filter) || (this.filter === '演說' && it.title.includes('演說'));
-        const s = this.search.trim().toLowerCase();
+        const matchFilter = this.filter === 'all' || it.cat === this.filter;
         if (!s) return matchFilter;
         const matchSearch =
           String(it.no).includes(s) ||
           it.title.toLowerCase().includes(s) ||
           it.group.toLowerCase().includes(s) ||
           it.venue.toLowerCase().includes(s) ||
-          it.prep.toLowerCase().includes(s);
+          (it.prep || '').toLowerCase().includes(s);
         return matchFilter && matchSearch;
       });
     }
   }
 }
+
+// ════════════════════════════════════════════════
+// 互動式校園地圖
+// ════════════════════════════════════════════════
+function campusMap() {
+  return {
+    activeFloor: '1F',
+    selectedRoom: null,
+    COMP_DATA: window.COMP_DATA,                // 暴露給 template 使用
+    STATUS_META: STATUS_META,                   // 暴露給 modal 內 inline 使用
+    get tick() { return window.LIVE_STATE.tickKey; },
+    get isLive() { void this.tick; return isActiveRaceDay(); },
+    get floors() { return Object.keys(COMP_DATA.campus); },
+    get currentFloor() { return COMP_DATA.campus[this.activeFloor]; },
+    eventsInRoom(roomCode) {
+      // 比對教室代號 — 教室代號可能在 venue 字串裡(如 "C313 六年5班 (3F)")
+      return COMP_DATA.events.filter(e => e.venue.includes(roomCode + ' '));
+    },
+    evStatus(ev) { return calcEventStatus(ev); },
+    evStatusMeta(ev) { return STATUS_META[calcEventStatus(ev)]; },
+    roomStatus(room) {
+      void this.tick;
+      const evs = this.eventsInRoom(room.code);
+      if (!evs.length) return null;
+      const statuses = evs.map(calcEventStatus);
+      if (statuses.includes('live')) return 'live';
+      if (statuses.includes('checkin')) return 'checkin';
+      if (statuses.includes('soon')) return 'soon';
+      if (statuses.every(s => s === 'ended')) return 'ended';
+      return 'upcoming';
+    },
+    selectRoom(room) {
+      this.selectedRoom = room;
+    },
+    closeModal() { this.selectedRoom = null; },
+  };
+}
+
 
 // Smooth scroll spy and fade-in
 document.addEventListener('DOMContentLoaded', () => {
