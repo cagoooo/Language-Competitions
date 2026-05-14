@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>主持人提詞 ｜ 2026 桃園市語文競賽龍潭區複賽</title>
+<meta name="description" content="競賽組長手機提詞器：開啟你的場次,黑底白字大字呈現,可全螢幕、自動捲動,告別紙本。">
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="noindex">
+
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="alternate icon" href="favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="host-scripts.js"></script>
+<script src="events.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
+
+<style>
+  html, body {
+    background: #0a0a0a;
+    color: #f5f5f5;
+    font-family: 'Noto Serif TC', 'Noto Sans TC', system-ui, sans-serif;
+    height: 100%;
+    overscroll-behavior: contain;
+  }
+  body {
+    /* 安全區域(iPhone 瀏海/底部 home bar) */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  /* 主稿閱讀區的捲動條柔化 */
+  .reader::-webkit-scrollbar { width: 8px; }
+  .reader::-webkit-scrollbar-track { background: transparent; }
+  .reader::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+  /* 段落 hover 高亮 */
+  .part-block { transition: all 0.2s; border-left: 3px solid transparent; }
+  .part-block.current { border-left-color: #c1272d; background: rgba(193, 39, 45, 0.08); }
+  .part-block:hover { background: rgba(255, 255, 255, 0.03); }
+
+  /* 顯示模式樣式 */
+  body.theme-light { background: #fefefe; color: #1a1a1a; }
+  body.theme-light .reader::-webkit-scrollbar-thumb { background: #ccc; }
+  body.theme-light .part-block.current { background: rgba(193,39,45,0.06); }
+
+  body.theme-amber { background: #1c1408; color: #f4d68a; }
+  body.theme-amber .part-block.current { background: rgba(244, 214, 138, 0.08); border-left-color: #f4d68a; }
+
+  /* 列印優化 */
+  @media print {
+    body { background: white !important; color: black !important; }
+    .no-print { display: none !important; }
+    .reader { overflow: visible !important; height: auto !important; }
+  }
+
+  /* 字級 CSS 變數 */
+  .reader { font-size: var(--reader-size, 22px); line-height: 1.85; letter-spacing: 0.02em; }
+
+  /* 全螢幕時隱藏滾動條(視覺乾淨) */
+  :fullscreen .no-print-fullscreen { opacity: 0.3; transition: opacity 0.3s; }
+  :fullscreen .no-print-fullscreen:hover { opacity: 1; }
+
+  [x-cloak] { display: none !important; }
+</style>
+</head>
+<body x-data="prompter()" x-init="init()" :class="theme === 'light' ? 'theme-light' : theme === 'amber' ? 'theme-amber' : ''" x-cloak>
+
+<!-- 頂部工具列 -->
+<header class="no-print sticky top-0 z-30 bg-black/80 backdrop-blur border-b border-white/10" :class="theme==='light' && 'bg-white/90 border-black/10'">
+  <div class="max-w-5xl mx-auto px-3 sm:px-5 py-2 flex items-center justify-between gap-2 flex-wrap">
+    <!-- 左:返回 + 場次選 -->
+    <div class="flex items-center gap-2 flex-1 min-w-0">
+      <a href="index.html" class="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-sm text-xs font-bold border border-current opacity-80 hover:opacity-100" title="回主頁">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span class="hidden sm:inline">主頁</span>
+      </a>
+      <select x-model="currentSceneNo" @change="resetView()" class="flex-1 min-w-0 max-w-md px-2 py-2 rounded-sm bg-white/10 border border-white/20 text-white text-sm font-bold focus:outline-none focus:border-amber-300" :class="theme==='light' ? '!bg-black/5 !text-black !border-black/20' : theme==='amber' ? '!bg-amber-100/10 !text-amber-200 !border-amber-300/30' : ''">
+        <template x-for="s in scripts" :key="s.no">
+          <option :value="s.no" :class="theme==='light' ? 'text-black' : 'text-black'" x-text="'第 ' + s.no + ' 場 ・ ' + s.title"></option>
+        </template>
+      </select>
+    </div>
+
+    <!-- 右:控制 -->
+    <div class="flex items-center gap-1">
+      <!-- 字級小 -->
+      <button @click="adjustSize(-2)" class="w-9 h-9 flex items-center justify-center rounded-sm border border-current opacity-70 hover:opacity-100 text-base font-bold" title="字體縮小">A−</button>
+      <!-- 字級大 -->
+      <button @click="adjustSize(+2)" class="w-9 h-9 flex items-center justify-center rounded-sm border border-current opacity-70 hover:opacity-100 text-base font-bold" title="字體放大">A+</button>
+      <!-- 主題切換 -->
+      <button @click="cycleTheme()" class="w-9 h-9 flex items-center justify-center rounded-sm border border-current opacity-70 hover:opacity-100" :title="'主題:' + theme">
+        <svg x-show="theme==='dark'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg x-show="theme==='light'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg x-show="theme==='amber'" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
+      </button>
+      <!-- 自動捲動 -->
+      <button @click="toggleAutoScroll()" :class="autoScroll ? 'bg-[#c1272d] text-white border-[#c1272d]' : 'border-current opacity-70 hover:opacity-100'" class="px-3 h-9 rounded-sm border text-xs font-bold flex items-center gap-1.5" title="自動捲動">
+        <svg x-show="!autoScroll" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <svg x-show="autoScroll" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        <span x-text="autoScroll ? '播放中' : '自動捲動'"></span>
+      </button>
+      <!-- 全螢幕 -->
+      <button @click="toggleFullscreen()" class="w-9 h-9 flex items-center justify-center rounded-sm border border-current opacity-70 hover:opacity-100" title="全螢幕">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- 主稿閱讀區 -->
+<main class="reader px-4 sm:px-8 md:px-12 py-6 pb-32" id="reader-main">
+  <template x-if="currentScene">
+    <article class="max-w-3xl mx-auto">
+      <!-- 場次標題 -->
+      <div class="mb-8 pb-5 border-b border-white/10" :class="theme==='light' && 'border-black/10'">
+        <div class="text-xs sm:text-sm tracking-[0.3em] opacity-60 mb-2">第 <span x-text="currentScene.no"></span> 場</div>
+        <h1 class="font-serif-tc text-2xl sm:text-3xl md:text-4xl font-black leading-tight" x-text="currentScene.title"></h1>
+        <p class="text-xs sm:text-sm opacity-60 mt-2">
+          2026 / 5 / 23(六) ・ 桃園市石門國民小學
+          <span class="mx-2">|</span>
+          來源：競賽主持文稿
+        </p>
+      </div>
+
+      <!-- 段落清單 -->
+      <div class="space-y-6">
+        <template x-for="(part, idx) in currentScene.parts" :key="idx">
+          <section class="part-block pl-4 sm:pl-6 py-3" :class="idx === currentPartIdx && 'current'" :data-idx="idx">
+            <h2 class="font-serif-tc text-base sm:text-lg font-bold mb-3 inline-flex items-center gap-2">
+              <span class="inline-block px-2 py-0.5 bg-[#c1272d] text-white text-[10px] font-bold rounded-sm tracking-wider">SEG <span x-text="idx + 1"></span></span>
+              <span x-text="part.header"></span>
+            </h2>
+            <div class="whitespace-pre-wrap leading-relaxed" x-html="formatText(part.text)"></div>
+          </section>
+        </template>
+      </div>
+
+      <!-- 結尾 -->
+      <div class="mt-12 pt-6 border-t border-white/10 text-center text-xs opacity-50" :class="theme==='light' && 'border-black/10'">
+        — 第 <span x-text="currentScene.no"></span> 場主持稿結束 —
+        <div class="mt-2">
+          桃園市 115 年語文競賽龍潭區複賽 ・
+          <a href="index.html" class="underline hover:text-amber-300">回主頁</a>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <template x-if="!currentScene">
+    <div class="text-center py-20 opacity-60">
+      <div class="text-5xl mb-4">📜</div>
+      <p>請從上方選擇場次</p>
+    </div>
+  </template>
+</main>
+
+<!-- 底部分段快速跳轉(只在全螢幕或手機常駐) -->
+<nav class="no-print fixed bottom-0 inset-x-0 z-20 bg-black/85 backdrop-blur border-t border-white/10 no-print-fullscreen" :class="theme==='light' && '!bg-white/90 !border-black/10'">
+  <div class="max-w-5xl mx-auto px-3 py-2 flex items-center gap-2 justify-between">
+    <button @click="prevPart()" :disabled="currentPartIdx <= 0" class="flex-1 max-w-[120px] h-10 rounded-sm border border-current opacity-70 hover:opacity-100 disabled:opacity-30 text-sm font-bold flex items-center justify-center gap-1">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      上一段
+    </button>
+    <div class="text-xs opacity-60 text-center tabular-nums">
+      <span x-text="currentPartIdx + 1"></span> / <span x-text="currentScene ? currentScene.parts.length : 0"></span>
+    </div>
+    <button @click="nextPart()" :disabled="!currentScene || currentPartIdx >= currentScene.parts.length - 1" class="flex-1 max-w-[120px] h-10 rounded-sm border border-current opacity-70 hover:opacity-100 disabled:opacity-30 text-sm font-bold flex items-center justify-center gap-1">
+      下一段
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+</nav>
+
+<script>
+function prompter() {
+  return {
+    scripts: window.HOST_SCRIPTS || [],
+    currentSceneNo: '1',
+    currentPartIdx: 0,
+    fontSize: 22,
+    autoScroll: false,
+    theme: 'dark',
+    scrollSpeed: 30, // px/sec
+    _scrollTimer: null,
+
+    init() {
+      // 從 URL hash 讀取場次:host.html#2-1
+      const hash = location.hash.slice(1);
+      if (hash && this.scripts.find(s => s.no === hash)) {
+        this.currentSceneNo = hash;
+      }
+      // 從 localStorage 讀取偏好
+      const prefs = JSON.parse(localStorage.getItem('prompter-prefs') || '{}');
+      if (prefs.fontSize) this.fontSize = prefs.fontSize;
+      if (prefs.theme) this.theme = prefs.theme;
+      this.applyFontSize();
+    },
+    get currentScene() {
+      return this.scripts.find(s => s.no === this.currentSceneNo);
+    },
+    resetView() {
+      this.currentPartIdx = 0;
+      this.autoScroll = false;
+      this.stopAutoScroll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      location.hash = this.currentSceneNo;
+    },
+    applyFontSize() {
+      document.documentElement.style.setProperty('--reader-size', this.fontSize + 'px');
+    },
+    savePrefs() {
+      localStorage.setItem('prompter-prefs', JSON.stringify({ fontSize: this.fontSize, theme: this.theme }));
+    },
+    adjustSize(delta) {
+      this.fontSize = Math.max(14, Math.min(56, this.fontSize + delta));
+      this.applyFontSize();
+      this.savePrefs();
+    },
+    cycleTheme() {
+      const order = ['dark', 'amber', 'light'];
+      this.theme = order[(order.indexOf(this.theme) + 1) % order.length];
+      this.savePrefs();
+    },
+    toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen();
+      }
+    },
+    nextPart() {
+      if (!this.currentScene) return;
+      if (this.currentPartIdx < this.currentScene.parts.length - 1) {
+        this.currentPartIdx++;
+        this.scrollToCurrent();
+      }
+    },
+    prevPart() {
+      if (this.currentPartIdx > 0) {
+        this.currentPartIdx--;
+        this.scrollToCurrent();
+      }
+    },
+    scrollToCurrent() {
+      this.$nextTick(() => {
+        const el = document.querySelector(`[data-idx="${this.currentPartIdx}"]`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    },
+    toggleAutoScroll() {
+      this.autoScroll = !this.autoScroll;
+      if (this.autoScroll) this.startAutoScroll();
+      else this.stopAutoScroll();
+    },
+    startAutoScroll() {
+      const step = () => {
+        window.scrollBy({ top: this.scrollSpeed / 30, behavior: 'auto' });
+        const max = document.body.scrollHeight - window.innerHeight;
+        if (window.scrollY >= max - 5) {
+          this.autoScroll = false;
+          this.stopAutoScroll();
+          return;
+        }
+        this._scrollTimer = requestAnimationFrame(step);
+      };
+      this._scrollTimer = requestAnimationFrame(step);
+    },
+    stopAutoScroll() {
+      if (this._scrollTimer) {
+        cancelAnimationFrame(this._scrollTimer);
+        this._scrollTimer = null;
+      }
+    },
+    // 把文字內可能的時間、數字、強調點轉成顯眼樣式
+    formatText(text) {
+      const esc = String(text)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return esc
+        // 時間 08:30 / 08:38 強調
+        .replace(/(\d{1,2}[：:]\d{2})/g, '<strong style="color:#fbbf24">$1</strong>')
+        // 「1 號」「7 號」等強調
+        .replace(/(\d+號)/g, '<strong style="color:#fbbf24">$1</strong>')
+        // 列舉項目「一、」「二、」轉粗體
+        .replace(/^([一二三四五六七八九十百]+、)/gm, '<strong style="color:#f87171">$1</strong>')
+        // 星號開頭警示加紅色
+        .replace(/^\*([^\n]+)/gm, '<span style="color:#f87171">★ $1</span>');
+    }
+  };
+}
+
+// 鍵盤快捷鍵
+window.addEventListener('keydown', (e) => {
+  if (['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+  if (e.key === 'f' || e.key === 'F') {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+    else document.exitFullscreen();
+  }
+});
+</script>
+
+</body>
+</html>

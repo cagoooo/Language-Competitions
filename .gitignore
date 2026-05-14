@@ -15,6 +15,9 @@ desktop.ini
 node_modules/
 *.log
 *.tmp
+lh-*.json
+host-script-raw.txt
+host-scripts.json
 
 # 但保留 og.png(社群分享預覽圖)
 !og.png
