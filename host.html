@@ -68,46 +68,131 @@
   :fullscreen .no-print-fullscreen:hover { opacity: 1; }
 
   [x-cloak] { display: none !important; }
+
+  /* sr-only:螢幕閱讀器專用,視覺隱藏(自訂以防 Tailwind purge) */
+  .sr-only {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ─────────────── RWD:手機優化 ─────────────── */
+  @media (max-width: 640px) {
+    /* 工具列改兩行排版:第一行 返回 + 場次選 / 第二行 控制按鈕橫排 */
+    .topbar-inner {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 6px !important;
+      padding: 8px 10px !important;
+    }
+    .topbar-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      width: 100%;
+    }
+    .topbar-row-controls {
+      justify-content: space-between;
+    }
+    /* 控制按鈕在手機統一 min-h-44px 觸控友善 */
+    .topbar-row-controls > button {
+      min-height: 44px !important;
+      flex: 1 1 0 !important;
+      max-width: none !important;
+    }
+    .topbar-row-controls > button[data-toggle="auto-scroll"] {
+      flex: 2 1 0 !important; /* 自動捲動按鈕多一點寬度容納文字 */
+    }
+    /* 場次下拉框加高 */
+    select#scene-select { min-height: 44px !important; font-size: 14px !important; }
+    /* 返回主頁按鈕加大 */
+    a[data-link="home"] { min-height: 44px; }
+
+    /* 主稿閱讀區手機更舒適 */
+    .reader { padding: 16px 14px 100px !important; }
+    .reader article > div:first-child h1 { font-size: 22px !important; line-height: 1.3; }
+    /* SEG 標題在手機加大 */
+    .part-block h2 {
+      font-size: 16px !important;
+      flex-wrap: wrap;
+    }
+    .part-block .seg-tag {
+      font-size: 11px !important;
+      padding: 3px 8px !important;
+    }
+    /* 段落內容預設較大字 */
+    .part-block .part-body { font-size: 17px; }
+
+    /* 底部分段跳轉:按鈕加大,加 safe-area */
+    .bottom-nav {
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom)) 10px !important;
+    }
+    .bottom-nav button {
+      min-height: 48px !important;
+      font-size: 14px !important;
+      max-width: none !important;
+      flex: 1 1 0 !important;
+    }
+    .bottom-nav .progress-indicator {
+      font-size: 13px !important;
+      min-width: 50px;
+      text-align: center;
+    }
+  }
+
+  /* 極小螢幕(< 380px):再進一步縮 */
+  @media (max-width: 380px) {
+    .topbar-row-controls > button { font-size: 11px !important; }
+    .reader { padding: 12px 10px 100px !important; }
+    .part-block .part-body { font-size: 16px; }
+  }
 </style>
 </head>
 <body x-data="prompter()" x-init="init()" :class="theme === 'light' ? 'theme-light' : theme === 'amber' ? 'theme-amber' : ''" x-cloak>
 
-<!-- 頂部工具列 -->
-<header class="no-print sticky top-0 z-30 bg-black/80 backdrop-blur border-b border-white/10" :class="theme==='light' && 'bg-white/90 border-black/10'">
-  <div class="max-w-5xl mx-auto px-3 sm:px-5 py-2 flex items-center justify-between gap-2 flex-wrap">
-    <!-- 左:返回 + 場次選 -->
-    <div class="flex items-center gap-2 flex-1 min-w-0">
-      <a href="index.html" class="shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-sm text-xs font-bold border border-current opacity-80 hover:opacity-100" title="回主頁">
+<!-- 頂部工具列(RWD:桌機單行,手機兩行排版) -->
+<header class="no-print sticky top-0 z-30 bg-black/85 backdrop-blur border-b border-white/10" :class="theme==='light' && 'bg-white/95 border-black/10'">
+  <div class="topbar-inner max-w-5xl mx-auto px-3 sm:px-5 py-2 flex items-center justify-between gap-2 flex-wrap">
+    <!-- 左區:返回 + 場次選擇 -->
+    <div class="topbar-row flex items-center gap-2 flex-1 min-w-0">
+      <a href="index.html" data-link="home" class="shrink-0 flex items-center gap-1 px-3 py-2 rounded-sm text-xs sm:text-sm font-bold border border-current opacity-80 hover:opacity-100" title="回主頁">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        <span class="hidden sm:inline">主頁</span>
+        <span>主頁</span>
       </a>
-      <select x-model="currentSceneNo" @change="resetView()" class="flex-1 min-w-0 max-w-md px-2 py-2 rounded-sm bg-white/10 border border-white/20 text-white text-sm font-bold focus:outline-none focus:border-amber-300" :class="theme==='light' ? '!bg-black/5 !text-black !border-black/20' : theme==='amber' ? '!bg-amber-100/10 !text-amber-200 !border-amber-300/30' : ''">
+      <label for="scene-select" class="sr-only">選擇場次</label>
+      <select id="scene-select" x-model="currentSceneNo" @change="resetView()" class="flex-1 min-w-0 max-w-md px-2 py-2 rounded-sm bg-white/10 border border-white/20 text-white text-sm font-bold focus:outline-none focus:border-amber-300" :class="theme==='light' ? '!bg-black/5 !text-black !border-black/20' : theme==='amber' ? '!bg-amber-100/10 !text-amber-200 !border-amber-300/30' : ''">
         <template x-for="s in scripts" :key="s.no">
-          <option :value="s.no" :class="theme==='light' ? 'text-black' : 'text-black'" x-text="'第 ' + s.no + ' 場 ・ ' + s.title"></option>
+          <option :value="s.no" class="text-black" x-text="'第 ' + s.no + ' 場 ・ ' + s.title"></option>
         </template>
       </select>
     </div>
 
-    <!-- 右:控制 -->
-    <div class="flex items-center gap-1">
+    <!-- 右區:控制按鈕(手機自動換行成第二行) -->
+    <div class="topbar-row topbar-row-controls flex items-center gap-1.5">
       <!-- 字級小 -->
-      <button @click="adjustSize(-2)" class="w-9 h-9 flex items-center justify-center rounded-sm border border-current opacity-70 hover:opacity-100 text-base font-bold" title="字體縮小">A−</button>
+      <button @click="adjustSize(-2)" class="w-10 h-10 flex items-center justify-center rounded-sm border border-current opacity-70 hover:opacity-100 active:scale-95 text-base font-bold" title="字體縮小" aria-label="字體縮小">A−</button>
       <!-- 字級大 -->
-      <button @click="adjustSize(+2)" class="w-9 h-9 flex items-center justify-center rounded-sm border border-current opacity-70 hover:opacity-100 text-base font-bold" title="字體放大">A+</button>
+      <button @click="adjustSize(+2)" class="w-10 h-10 flex items-center justify-center rounded-sm border border-current opacity-70 hover:opacity-100 active:scale-95 text-base font-bold" title="字體放大" aria-label="字體放大">A+</button>
       <!-- 主題切換 -->
-      <button @click="cycleTheme()" class="w-9 h-9 flex items-center justify-center rounded-sm border border-current opacity-70 hover:opacity-100" :title="'主題:' + theme">
+      <button @click="cycleTheme()" class="w-10 h-10 flex items-center justify-center rounded-sm border border-current opacity-70 hover:opacity-100 active:scale-95" :title="'主題:' + theme" aria-label="切換主題">
         <svg x-show="theme==='dark'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg x-show="theme==='light'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         <svg x-show="theme==='amber'" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
       </button>
-      <!-- 自動捲動 -->
-      <button @click="toggleAutoScroll()" :class="autoScroll ? 'bg-[#c1272d] text-white border-[#c1272d]' : 'border-current opacity-70 hover:opacity-100'" class="px-3 h-9 rounded-sm border text-xs font-bold flex items-center gap-1.5" title="自動捲動">
+      <!-- 自動捲動(較寬,容納文字) -->
+      <button @click="toggleAutoScroll()" data-toggle="auto-scroll"
+              :class="autoScroll ? 'bg-[#c1272d] text-white border-[#c1272d]' : 'border-current opacity-70 hover:opacity-100'"
+              class="px-3 h-10 rounded-sm border text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 active:scale-95" title="自動捲動">
         <svg x-show="!autoScroll" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         <svg x-show="autoScroll" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-        <span x-text="autoScroll ? '播放中' : '自動捲動'"></span>
+        <span x-text="autoScroll ? '播放中' : '播放'"></span>
       </button>
       <!-- 全螢幕 -->
-      <button @click="toggleFullscreen()" class="w-9 h-9 flex items-center justify-center rounded-sm border border-current opacity-70 hover:opacity-100" title="全螢幕">
+      <button @click="toggleFullscreen()" class="w-10 h-10 flex items-center justify-center rounded-sm border border-current opacity-70 hover:opacity-100 active:scale-95" title="全螢幕" aria-label="切換全螢幕">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
       </button>
     </div>
@@ -133,11 +218,11 @@
       <div class="space-y-6">
         <template x-for="(part, idx) in currentScene.parts" :key="idx">
           <section class="part-block pl-4 sm:pl-6 py-3" :class="idx === currentPartIdx && 'current'" :data-idx="idx">
-            <h2 class="font-serif-tc text-base sm:text-lg font-bold mb-3 inline-flex items-center gap-2">
-              <span class="inline-block px-2 py-0.5 bg-[#c1272d] text-white text-[10px] font-bold rounded-sm tracking-wider">SEG <span x-text="idx + 1"></span></span>
+            <h2 class="font-serif-tc text-base sm:text-lg font-bold mb-3 flex items-center gap-2 flex-wrap">
+              <span class="seg-tag inline-block px-2 py-0.5 bg-[#c1272d] text-white text-[10px] font-bold rounded-sm tracking-wider whitespace-nowrap">SEG <span x-text="idx + 1"></span></span>
               <span x-text="part.header"></span>
             </h2>
-            <div class="whitespace-pre-wrap leading-relaxed" x-html="formatText(part.text)"></div>
+            <div class="part-body whitespace-pre-wrap leading-relaxed" x-html="formatText(part.text)"></div>
           </section>
         </template>
       </div>
@@ -161,17 +246,19 @@
   </template>
 </main>
 
-<!-- 底部分段快速跳轉(只在全螢幕或手機常駐) -->
-<nav class="no-print fixed bottom-0 inset-x-0 z-20 bg-black/85 backdrop-blur border-t border-white/10 no-print-fullscreen" :class="theme==='light' && '!bg-white/90 !border-black/10'">
-  <div class="max-w-5xl mx-auto px-3 py-2 flex items-center gap-2 justify-between">
-    <button @click="prevPart()" :disabled="currentPartIdx <= 0" class="flex-1 max-w-[120px] h-10 rounded-sm border border-current opacity-70 hover:opacity-100 disabled:opacity-30 text-sm font-bold flex items-center justify-center gap-1">
+<!-- 底部分段快速跳轉(手機加大按鈕 + safe-area) -->
+<nav class="no-print fixed bottom-0 inset-x-0 z-20 bg-black/90 backdrop-blur border-t border-white/10 no-print-fullscreen" :class="theme==='light' && '!bg-white/95 !border-black/10'">
+  <div class="bottom-nav max-w-5xl mx-auto px-3 py-2 flex items-center gap-2 justify-between">
+    <button @click="prevPart()" :disabled="currentPartIdx <= 0"
+            class="flex-1 max-w-[140px] h-10 min-h-[44px] rounded-sm border border-current opacity-80 hover:opacity-100 active:scale-95 disabled:opacity-30 text-sm font-bold flex items-center justify-center gap-1.5 transition">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       上一段
     </button>
-    <div class="text-xs opacity-60 text-center tabular-nums">
+    <div class="progress-indicator text-xs sm:text-sm opacity-70 text-center tabular-nums font-mono px-2">
       <span x-text="currentPartIdx + 1"></span> / <span x-text="currentScene ? currentScene.parts.length : 0"></span>
     </div>
-    <button @click="nextPart()" :disabled="!currentScene || currentPartIdx >= currentScene.parts.length - 1" class="flex-1 max-w-[120px] h-10 rounded-sm border border-current opacity-70 hover:opacity-100 disabled:opacity-30 text-sm font-bold flex items-center justify-center gap-1">
+    <button @click="nextPart()" :disabled="!currentScene || currentPartIdx >= currentScene.parts.length - 1"
+            class="flex-1 max-w-[140px] h-10 min-h-[44px] rounded-sm border border-current opacity-80 hover:opacity-100 active:scale-95 disabled:opacity-30 text-sm font-bold flex items-center justify-center gap-1.5 transition">
       下一段
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
@@ -196,7 +283,10 @@ function prompter() {
       if (hash && this.scripts.find(s => s.no === hash)) {
         this.currentSceneNo = hash;
       }
-      // 從 localStorage 讀取偏好
+      // 手機自動使用較大預設字級(主持人在現場拿手機讀稿)
+      const isMobile = window.innerWidth < 640;
+      this.fontSize = isMobile ? 26 : 22;
+      // 從 localStorage 讀取偏好(若使用者已調過,以使用者偏好為主)
       const prefs = JSON.parse(localStorage.getItem('prompter-prefs') || '{}');
       if (prefs.fontSize) this.fontSize = prefs.fontSize;
       if (prefs.theme) this.theme = prefs.theme;
