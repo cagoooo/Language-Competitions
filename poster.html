@@ -215,11 +215,16 @@
     margin-top: 2px;
   }
 
-  .features {
-    margin-top: auto;
+  /* 底部 banner:features + footer 合併,絕不重疊 */
+  .spacer { flex: 1 1 auto; min-height: 8px; }
+
+  .bottom-banner {
     background: var(--ink);
     color: var(--paper);
-    padding: 14px 20px;
+    overflow: hidden;
+  }
+  .features {
+    padding: 14px 20px 12px;
     text-align: center;
   }
   .features-title {
@@ -233,19 +238,18 @@
     line-height: 1.75;
     color: rgba(250,246,239,0.9);
   }
-
-  .poster-footer {
-    margin-top: 12px;
-    padding-top: 10px;
-    border-top: 2px solid var(--ink);
+  .poster-credits {
+    padding: 10px 20px 12px;
+    border-top: 1px solid rgba(255,255,255,0.15);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 6px 12px;
+    gap: 4px 12px;
     font-size: 10.5px;
-    color: #555;
+    color: rgba(250,246,239,0.65);
   }
+  .poster-credits strong { color: rgba(250,246,239,0.85); }
 
   @media print {
     @page { size: A4; margin: 0; }
@@ -301,17 +305,22 @@
       <div class="qr-url" id="qrUrl">https://cagoooo.github.io/Language-Competitions/</div>
     </div>
 
-    <div class="features">
-      <div class="features-title">SCAN TO VIEW · 掃 QR Code 立即查看</div>
-      <div class="features-list">
-        完整賽程表 33 場 ・ 我的比賽時間查詢 ・ 場地配置（1F／2F／3F）<br>
-        家長接送與門禁須知 ・ 注意事項 ・ 緊急聯絡資訊
-      </div>
-    </div>
+    <!-- 彈性空白,把 bottom-banner 推到 A4 紙底部 -->
+    <div class="spacer"></div>
 
-    <div class="poster-footer">
-      <div><strong>承辦：</strong>桃園市石門國民小學 ・ ☎ 03-4711752 ・ 承辦人：魏博彥主任</div>
-      <div>SMES · 2026</div>
+    <!-- 底部 banner(features + 承辦資訊合併,絕不重疊) -->
+    <div class="bottom-banner">
+      <div class="features">
+        <div class="features-title">SCAN TO VIEW · 掃 QR Code 立即查看</div>
+        <div class="features-list">
+          完整賽程表 33 場 ・ 我的比賽時間查詢 ・ 場地配置（1F／2F／3F）<br>
+          家長接送與門禁須知 ・ 注意事項 ・ 緊急聯絡資訊
+        </div>
+      </div>
+      <div class="poster-credits">
+        <span><strong>承辦：</strong>桃園市石門國民小學 ・ ☎ 03-4711752</span>
+        <span>SMES · 2026</span>
+      </div>
     </div>
   </div>
 </div>
