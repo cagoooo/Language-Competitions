@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code 海報 ｜ 2026 龍潭區語文競賽</title>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23c1272d'/%3E%3Ctext x='32' y='48' font-family='serif' font-size='42' font-weight='900' fill='%23faf6ef' text-anchor='middle'%3E語%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --paper: #faf6ef;
+    --vermilion: #c1272d;
+    --vermilion-dark: #8b1a1f;
+    --gold: #b8945f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Noto Sans TC', 'Noto Serif TC', system-ui, sans-serif;
+    background: #ddd;
+    color: var(--ink);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .font-serif { font-family: 'Noto Serif TC', serif; }
+
+  /* 控制列 */
+  .controls {
+    background: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 1000px;
+    width: 100%;
+  }
+  .controls label { font-size: 14px; color: #555; }
+  .controls input[type=url] {
+    flex: 1;
+    min-width: 240px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: ui-monospace, monospace;
+    font-size: 13px;
+  }
+  .controls button {
+    padding: 8px 16px;
+    background: var(--vermilion);
+    color: white;
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+  .controls button:hover { background: var(--vermilion-dark); }
+
+  /* A4 紙張 */
+  .poster {
+    width: 210mm;
+    height: 297mm;
+    background: var(--paper);
+    background-image:
+      radial-gradient(circle at 25% 30%, rgba(184,148,95,0.08) 0%, transparent 50%),
+      radial-gradient(circle at 75% 70%, rgba(193,39,45,0.05) 0%, transparent 50%);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    padding: 18mm;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 印章 */
+  .seal {
+    display: inline-block;
+    background: var(--vermilion);
+    color: var(--paper);
+    padding: 8px 16px;
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: 0.2em;
+    border: 2px solid var(--paper);
+    box-shadow: inset 0 0 0 1px var(--vermilion-dark);
+  }
+
+  .poster::before {
+    content: "語";
+    position: absolute;
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 380px;
+    color: rgba(193,39,45,0.05);
+    right: -40px;
+    bottom: -80px;
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  /* 左側裝飾 */
+  .poster::after {
+    content: "";
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: 14px;
+    background: var(--vermilion);
+    box-shadow: 10px 0 0 0 var(--gold);
+  }
+
+  .poster-inner { position: relative; z-index: 1; }
+
+  .header { margin-bottom: 24px; }
+  .english-sub {
+    font-size: 11px;
+    color: #666;
+    letter-spacing: 0.2em;
+    margin-top: 6px;
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 52px;
+    font-weight: 900;
+    margin: 12px 0 4px;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  h1 .num { color: var(--vermilion); }
+  h2 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 38px;
+    font-weight: 900;
+    margin: 0 0 24px;
+    line-height: 1.2;
+  }
+  h2 .red { color: var(--vermilion); }
+
+  .qr-area {
+    background: white;
+    border: 6px double var(--ink);
+    padding: 24px;
+    margin: 18px auto 24px;
+    width: 380px;
+    text-align: center;
+  }
+  #qrcode { display: flex; justify-content: center; }
+  #qrcode canvas, #qrcode img { display: block; }
+  .qr-label {
+    margin-top: 14px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+  }
+  .qr-url {
+    margin-top: 6px;
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    color: #888;
+    word-break: break-all;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 12px;
+  }
+  .info-box {
+    background: white;
+    border-left: 4px solid var(--vermilion);
+    padding: 14px 18px;
+  }
+  .info-box .label {
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    margin-bottom: 4px;
+  }
+  .info-box .value {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--ink);
+  }
+  .info-box .sub {
+    font-size: 11px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  .features {
+    margin-top: 18px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 16px 20px;
+    text-align: center;
+  }
+  .features-title {
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .features-list {
+    font-size: 13px;
+    line-height: 1.8;
+    color: rgba(250,246,239,0.9);
+  }
+
+  .poster-footer {
+    position: absolute;
+    bottom: 18mm;
+    left: 18mm;
+    right: 18mm;
+    border-top: 2px solid var(--ink);
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #555;
+  }
+
+  @media print {
+    @page { size: A4; margin: 0; }
+    body { background: white; padding: 0; gap: 0; }
+    .controls { display: none !important; }
+    .poster { box-shadow: none; margin: 0; width: 210mm; height: 297mm; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 控制列(列印時隱藏) -->
+<div class="controls">
+  <label>網站連結：</label>
+  <input type="url" id="urlInput" value="https://cagoooo.github.io/Language-Competitions/" placeholder="https://...">
+  <button onclick="regenQR()">🔄 重新產生</button>
+  <button onclick="window.print()">🖨️ 列印 / 存 PDF</button>
+</div>
+
+<!-- A4 海報 -->
+<div class="poster">
+  <div class="poster-inner">
+    <div class="header">
+      <span class="seal">語文競賽</span>
+      <div class="english-sub">LONGTAN DISTRICT · LINGUISTIC COMPETITION · 2026</div>
+    </div>
+
+    <h1>桃園市 <span class="num">115</span> 年</h1>
+    <h2>語文競賽 <span class="red">龍潭區</span> 複賽</h2>
+
+    <div class="info-grid">
+      <div class="info-box">
+        <div class="label">DATE 比賽日期</div>
+        <div class="value">2026 / 5 / 23</div>
+        <div class="sub">星期六 ・ 07:50 開放入校</div>
+      </div>
+      <div class="info-box">
+        <div class="label">VENUE 比賽地點</div>
+        <div class="value">石門國民小學</div>
+        <div class="sub">桃園市龍潭區</div>
+      </div>
+    </div>
+
+    <div class="qr-area">
+      <div id="qrcode"></div>
+      <div class="qr-label">📱 掃描查看 完整賽程</div>
+      <div class="qr-url" id="qrUrl">https://cagoooo.github.io/Language-Competitions/</div>
+    </div>
+
+    <div class="features">
+      <div class="features-title">SCAN TO VIEW · 掃 QR Code 立即查看</div>
+      <div class="features-list">
+        完整賽程表 33 場 ・ 我的比賽時間查詢 ・ 場地配置（1F／2F／3F）<br>
+        家長接送與門禁須知 ・ 注意事項 ・ 緊急聯絡資訊
+      </div>
+    </div>
+
+    <div class="poster-footer">
+      <div><strong>承辦：</strong>桃園市石門國民小學 ・ ☎ 0937-803-215（魏博彥主任）</div>
+      <div>SMES · 2026</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function genQR(url) {
+  const el = document.getElementById('qrcode');
+  el.innerHTML = '';
+  QRCode.toCanvas(url, {
+    width: 320,
+    margin: 1,
+    errorCorrectionLevel: 'H',
+    color: { dark: '#1a1a1a', light: '#ffffff' }
+  }, (err, canvas) => {
+    if (err) { console.error(err); return; }
+    el.appendChild(canvas);
+  });
+  document.getElementById('qrUrl').textContent = url;
+}
+
+function regenQR() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) return alert('請輸入網址');
+  genQR(url);
+}
+
+// 初始載入
+genQR(document.getElementById('urlInput').value);
+</script>
+
+</body>
+</html>

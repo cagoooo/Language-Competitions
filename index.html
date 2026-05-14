@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 桃園市語文競賽 龍潭區複賽｜石門國小</title>
+<meta name="description" content="桃園市 115 年語文競賽龍潭區複賽，2026 年 5 月 23 日（六）於石門國小盛大舉行。提供完整賽程、場地配置、注意事項與家長接送資訊。">
+<meta property="og:title" content="2026 桃園市語文競賽 龍潭區複賽 ｜ 石門國小">
+<meta property="og:description" content="2026/5/23（六）於石門國小舉行 ・ 17 大項 33 場細分賽事 ・ 含完整賽程、場地配置、抽題上台查詢、注意事項。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="桃園市石門國民小學">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="2026 桃園市語文競賽 龍潭區複賽">
+<meta name="twitter:description" content="2026/5/23（六）於石門國小舉行 ・ 完整賽程、抽題上台查詢、家長須知。">
+<meta name="twitter:image" content="og.png">
+<meta name="theme-color" content="#c1272d">
+
+<!-- Inline SVG favicon: 硃紅圓底「語」字 -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23c1272d'/%3E%3Ctext x='32' y='48' font-family='Noto Serif TC,serif' font-size='42' font-weight='900' fill='%23faf6ef' text-anchor='middle'%3E語%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23c1272d'/%3E%3Ctext x='32' y='48' font-family='serif' font-size='42' font-weight='900' fill='%23faf6ef' text-anchor='middle'%3E語%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
+
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --ink-soft: #2c2826;
+    --paper: #faf6ef;
+    --paper-2: #f3ecdf;
+    --vermilion: #c1272d;
+    --vermilion-dark: #8b1a1f;
+    --gold: #b8945f;
+    --jade: #4a6c52;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Noto Sans TC', 'Noto Serif TC', system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .font-serif-tc { font-family: 'Noto Serif TC', serif; }
+
+  /* 紙紋背景 */
+  .paper-texture {
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(circle at 25% 30%, rgba(184,148,95,0.06) 0%, transparent 50%),
+      radial-gradient(circle at 75% 70%, rgba(193,39,45,0.04) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent 0px, transparent 2px, rgba(0,0,0,0.012) 2px, rgba(0,0,0,0.012) 3px);
+  }
+
+  /* 印章樣式 */
+  .seal {
+    display: inline-block;
+    background: var(--vermilion);
+    color: var(--paper);
+    padding: 0.5rem 0.85rem;
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    border: 3px double rgba(255,255,255,0.7);
+    box-shadow:
+      inset 0 0 0 1px var(--vermilion-dark),
+      2px 2px 0 rgba(193,39,45,0.3);
+    transform: rotate(-3deg);
+  }
+
+  /* 標題裝飾 */
+  .section-title::before {
+    content: "";
+    display: inline-block;
+    width: 6px; height: 1.5em;
+    background: var(--vermilion);
+    margin-right: 0.6rem;
+    vertical-align: middle;
+    transform: translateY(-2px);
+  }
+
+  /* 賽程卡 hover */
+  .schedule-card {
+    transition: all 0.25s ease;
+    border-left: 4px solid transparent;
+  }
+  .schedule-card:hover {
+    border-left-color: var(--vermilion);
+    transform: translateX(2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+
+  /* 篩選按鈕 */
+  .filter-btn {
+    transition: all 0.2s;
+  }
+  .filter-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* 浮水印標題 */
+  .watermark-bg {
+    position: relative;
+    overflow: hidden;
+  }
+  .watermark-bg::before {
+    content: "語";
+    position: absolute;
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 28rem;
+    color: rgba(193,39,45,0.04);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  /* 樓層標籤 */
+  .floor-badge {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.1rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  /* 響應式表格 */
+  @media (max-width: 768px) {
+    .schedule-table { font-size: 0.85rem; }
+  }
+
+  /* 倒數計時亮點 */
+  .countdown-num {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--vermilion) 0%, var(--vermilion-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 滾動動畫 */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* 分類色塊 */
+  .cat-speech { background-color: #fff2f0; border-color: #c1272d; color: #8b1a1f; }
+  .cat-reading { background-color: #f0f6f4; border-color: #4a6c52; color: #2d4a32; }
+  .cat-write { background-color: #fdf6e8; border-color: #b8945f; color: #6b5535; }
+  .cat-character { background-color: #eef2f7; border-color: #4a6685; color: #2a3a52; }
+  .cat-callig { background-color: #f5edf7; border-color: #6b3d7f; color: #3f1f4d; }
+
+  /* 列印優化 */
+  @media print {
+    @page { size: A4; margin: 1.2cm; }
+    .no-print { display: none !important; }
+    body {
+      background: white !important;
+      color: black !important;
+      font-size: 11pt;
+    }
+    .paper-texture { background-image: none !important; }
+    .watermark-bg::before { display: none; }
+    section { page-break-inside: avoid; padding: 1rem 0 !important; }
+    header { padding: 1rem 0 !important; }
+    h1 { font-size: 24pt !important; page-break-after: avoid; }
+    h2 { font-size: 16pt !important; page-break-after: avoid; }
+    h3, h4 { page-break-after: avoid; }
+    .schedule-card { page-break-inside: avoid; break-inside: avoid; }
+    .seal { transform: none; }
+    a { color: black !important; text-decoration: none !important; }
+    .bg-\[var\(--ink\)\] { background: white !important; color: black !important; }
+    /* 列印個人指引卡時隱藏其餘 */
+    body.print-card-only > *:not(#my-race) { display: none !important; }
+    body.print-card-only #my-race > .max-w-5xl > *:not(#print-card) { display: none !important; }
+    body.print-card-only #print-card { display: block !important; }
+  }
+  [x-cloak] { display: none !important; }
+</style>
+</head>
+<body class="paper-texture">
+
+<!-- 頂部公告條 -->
+<div class="bg-[var(--ink)] text-[var(--paper)] py-2 text-center text-xs sm:text-sm tracking-wider no-print">
+  <span class="inline-block animate-pulse text-[var(--vermilion)] mr-1">●</span>
+  競賽日期：<strong class="text-amber-200">2026 年 5 月 23 日（星期六）</strong>
+  ｜ 校園開放時間：07:50
+  ｜ 承辦：石門國小
+</div>
+
+<!-- Hero 區 -->
+<header class="watermark-bg relative">
+  <div class="max-w-6xl mx-auto px-6 py-12 sm:py-20 relative z-10">
+    <div class="flex flex-col items-start">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="seal text-sm sm:text-base">語文競賽</span>
+        <span class="text-xs sm:text-sm text-[var(--ink-soft)] tracking-widest uppercase">Longtan District · Linguistic Competition</span>
+      </div>
+
+      <h1 class="font-serif-tc text-4xl sm:text-6xl md:text-7xl font-black text-[var(--ink)] leading-tight tracking-wide">
+        桃園市 <span class="text-[var(--vermilion)]">115</span> 年<br>
+        語文競賽<span class="text-[var(--vermilion)]">龍潭區</span>複賽
+      </h1>
+
+      <p class="mt-6 text-lg sm:text-xl text-[var(--ink-soft)] font-light leading-relaxed max-w-3xl">
+        承文化薪火，傳語文之美。<br class="hidden sm:block">
+        三十三場細分賽事、三組對象、一日匯聚於石門國小，<br class="hidden sm:block">
+        歡迎參賽選手、指導老師與家長共同見證。
+      </p>
+
+      <!-- 關鍵資訊卡 -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5 mt-10 w-full">
+        <div class="bg-white/70 backdrop-blur border border-[var(--gold)]/30 p-4 sm:p-5 rounded-sm">
+          <div class="text-xs text-[var(--gold)] font-bold tracking-widest mb-1">DATE 日期</div>
+          <div class="font-serif-tc text-xl sm:text-2xl font-bold">5月23日</div>
+          <div class="text-xs text-gray-500 mt-1">星期六</div>
+        </div>
+        <div class="bg-white/70 backdrop-blur border border-[var(--gold)]/30 p-4 sm:p-5 rounded-sm">
+          <div class="text-xs text-[var(--gold)] font-bold tracking-widest mb-1">TIME 時間</div>
+          <div class="font-serif-tc text-xl sm:text-2xl font-bold">07:50</div>
+          <div class="text-xs text-gray-500 mt-1">開放進入校園</div>
+        </div>
+        <div class="bg-white/70 backdrop-blur border border-[var(--gold)]/30 p-4 sm:p-5 rounded-sm">
+          <div class="text-xs text-[var(--gold)] font-bold tracking-widest mb-1">VENUE 場地</div>
+          <div class="font-serif-tc text-xl sm:text-2xl font-bold">石門國小</div>
+          <div class="text-xs text-gray-500 mt-1">桃園市龍潭區</div>
+        </div>
+        <div class="bg-white/70 backdrop-blur border border-[var(--gold)]/30 p-4 sm:p-5 rounded-sm">
+          <div class="text-xs text-[var(--gold)] font-bold tracking-widest mb-1">SCALE 規模</div>
+          <div class="font-serif-tc text-xl sm:text-2xl font-bold">33 場</div>
+          <div class="text-xs text-gray-500 mt-1">17 項 × 學／教／社</div>
+        </div>
+      </div>
+
+      <!-- 快速導覽 -->
+      <nav class="mt-10 flex flex-wrap gap-2 sm:gap-3 no-print">
+        <a href="#my-race" class="px-4 py-2 bg-[var(--vermilion)] text-white text-sm font-medium hover:bg-[var(--vermilion-dark)] transition shadow-md">🔍 查詢我的比賽時間</a>
+        <a href="#audience" class="px-4 py-2 bg-[var(--ink)] text-[var(--paper)] text-sm font-medium hover:bg-[var(--vermilion)] transition">我是…</a>
+        <a href="#schedule" class="px-4 py-2 bg-white border border-[var(--ink)] text-[var(--ink)] text-sm font-medium hover:bg-[var(--ink)] hover:text-[var(--paper)] transition">完整賽程</a>
+        <a href="#venue" class="px-4 py-2 bg-white border border-[var(--ink)] text-[var(--ink)] text-sm font-medium hover:bg-[var(--ink)] hover:text-[var(--paper)] transition">場地配置</a>
+        <a href="#rules" class="px-4 py-2 bg-white border border-[var(--ink)] text-[var(--ink)] text-sm font-medium hover:bg-[var(--ink)] hover:text-[var(--paper)] transition">注意事項</a>
+        <a href="#contact" class="px-4 py-2 bg-white border border-[var(--ink)] text-[var(--ink)] text-sm font-medium hover:bg-[var(--ink)] hover:text-[var(--paper)] transition">聯絡資訊</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- 我是…(三類對象快速入口) -->
+<section id="audience" class="py-16 bg-[var(--paper-2)]/40 border-y border-[var(--gold)]/20">
+  <div class="max-w-6xl mx-auto px-6">
+    <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold section-title mb-2">我是…</h2>
+    <p class="text-gray-600 mb-10 ml-5">請選擇您的身份，快速取得需要的資訊。</p>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- 參賽者 -->
+      <a href="#participant-info" class="group bg-white p-7 rounded-sm border border-gray-200 hover:border-[var(--vermilion)] hover:shadow-xl transition">
+        <div class="text-5xl mb-4">🎤</div>
+        <h3 class="font-serif-tc text-2xl font-bold mb-2 group-hover:text-[var(--vermilion)] transition">參賽選手 / 指導老師</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">
+          看我的比賽幾點報到？要去哪間教室？<br>
+          各組時間限制、抽題上台流程一次掌握。
+        </p>
+        <div class="mt-4 text-sm font-bold text-[var(--vermilion)] group-hover:underline">查看參賽須知 →</div>
+      </a>
+
+      <!-- 家長 -->
+      <a href="#parent-info" class="group bg-white p-7 rounded-sm border border-gray-200 hover:border-[var(--jade)] hover:shadow-xl transition">
+        <div class="text-5xl mb-4">👨‍👩‍👧</div>
+        <h3 class="font-serif-tc text-2xl font-bold mb-2 group-hover:text-[var(--jade)] transition">學生家長</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">
+          可以陪孩子進去嗎？接送時間？停車怎麼辦？<br>
+          給陪伴選手的家長必看資訊。
+        </p>
+        <div class="mt-4 text-sm font-bold text-[var(--jade)] group-hover:underline">查看家長須知 →</div>
+      </a>
+
+      <!-- 工作人員 -->
+      <a href="#staff-info" class="group bg-white p-7 rounded-sm border border-gray-200 hover:border-[var(--gold)] hover:shadow-xl transition">
+        <div class="text-5xl mb-4">📋</div>
+        <h3 class="font-serif-tc text-2xl font-bold mb-2 group-hover:text-[var(--gold)] transition">工作人員 / 志工</h3>
+        <p class="text-sm text-gray-600 leading-relaxed">
+          報到時間、分組、流程、餐點領取地點。<br>
+          場地組、競賽組、接待組分工一目瞭然。
+        </p>
+        <div class="mt-4 text-sm font-bold text-[var(--gold)] group-hover:underline">查看工作分配 →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 我的比賽查詢 -->
+<section id="my-race" class="py-16 bg-gradient-to-br from-[var(--paper-2)]/60 to-[var(--paper)] border-y border-[var(--gold)]/20">
+  <div class="max-w-5xl mx-auto px-6" x-data="myRace()">
+    <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold section-title mb-2">🔍 查詢我的比賽時間</h2>
+    <p class="text-gray-600 mb-8 ml-5">選擇你的場次與序號，自動計算抽題、上台、報到時間 ─ 不必再翻紙本表。</p>
+
+    <div class="bg-white shadow-lg rounded-sm p-6 sm:p-8 border-t-4 border-[var(--vermilion)]">
+      <div class="grid sm:grid-cols-3 gap-4 mb-6">
+        <!-- 場次選擇 -->
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-bold text-gray-700 mb-2">① 選擇你的場次</label>
+          <select x-model="selectedKey" @change="seatNo=''; calcResult()" class="w-full px-4 py-3 border-2 border-gray-300 rounded-sm focus:border-[var(--vermilion)] focus:outline-none text-base">
+            <option value="">─ 請選擇 ─</option>
+            <template x-for="opt in options" :key="opt.key">
+              <option :value="opt.key" x-text="opt.label"></option>
+            </template>
+          </select>
+        </div>
+        <!-- 序號 -->
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-2">② 你的序號</label>
+          <input type="number" min="1" :max="currentMax" x-model.number="seatNo" @input="calcResult()"
+                 :placeholder="currentMax ? '1 ~ ' + currentMax : '請先選場次'"
+                 :disabled="!selectedKey"
+                 class="w-full px-4 py-3 border-2 border-gray-300 rounded-sm focus:border-[var(--vermilion)] focus:outline-none text-base disabled:bg-gray-50">
+        </div>
+      </div>
+
+      <!-- 結果區 -->
+      <template x-if="result && result.ok">
+        <div>
+          <!-- 標題列 -->
+          <div class="bg-gradient-to-r from-[var(--vermilion)] to-[var(--vermilion-dark)] text-white p-5 rounded-sm mb-4">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <div class="text-xs opacity-80">查詢結果</div>
+                <div class="font-serif-tc text-xl sm:text-2xl font-bold" x-text="result.title"></div>
+                <div class="text-sm opacity-90" x-text="'第 ' + result.seatNo + ' 號選手 ・ ' + result.group"></div>
+              </div>
+              <button @click="printCard()" class="no-print bg-white/20 hover:bg-white/30 px-4 py-2 rounded-sm text-sm font-bold border border-white/30">
+                🖨 列印我的指引卡
+              </button>
+            </div>
+          </div>
+
+          <!-- 時間卡 -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="bg-white border border-gray-200 p-4 rounded-sm">
+              <div class="text-xs text-gray-500 font-bold tracking-widest mb-1">📍 報到時間</div>
+              <div class="font-mono font-bold text-2xl text-[var(--ink)]" x-text="result.checkin"></div>
+              <div class="text-xs text-gray-500 mt-1">逾時唱名 3 次未到棄權</div>
+            </div>
+            <div class="bg-white border border-gray-200 p-4 rounded-sm" x-show="result.drawTime">
+              <div class="text-xs text-gray-500 font-bold tracking-widest mb-1">🎲 你的抽題時間</div>
+              <div class="font-mono font-bold text-2xl text-[var(--jade)]" x-text="result.drawTime"></div>
+              <div class="text-xs text-gray-500 mt-1">準時就位抽題</div>
+            </div>
+            <div class="bg-[var(--vermilion)]/10 border-2 border-[var(--vermilion)] p-4 rounded-sm" :class="!result.drawTime && 'col-span-2 md:col-span-2'">
+              <div class="text-xs text-[var(--vermilion-dark)] font-bold tracking-widest mb-1">⭐ 你的上台時間</div>
+              <div class="font-mono font-bold text-2xl text-[var(--vermilion)]" x-text="result.takeoffTime"></div>
+              <div class="text-xs text-[var(--vermilion-dark)] mt-1" x-text="result.takeoffNote"></div>
+            </div>
+            <div class="bg-white border border-gray-200 p-4 rounded-sm">
+              <div class="text-xs text-gray-500 font-bold tracking-widest mb-1">📌 比賽地點</div>
+              <div class="font-bold text-lg" x-text="result.venue"></div>
+              <div class="text-xs text-gray-500 mt-1" x-text="result.prep ? '預備室：' + result.prep : '同場進行'"></div>
+            </div>
+          </div>
+
+          <!-- 提醒 -->
+          <div class="mt-5 p-4 bg-amber-50 border-l-4 border-amber-500 text-sm leading-relaxed">
+            <strong>📌 重要提醒</strong>
+            <ul class="mt-2 list-disc list-inside space-y-1 text-gray-700">
+              <li>請<strong>提早 15-30 分鐘</strong>到達校園(校園 07:50 開放)，並於該項報到時間前到場。</li>
+              <li>實際呼號時間以<strong>現場主持人喊號</strong>為準，本表為依規則推算之預定時間。</li>
+              <li x-show="result.timeLimit"><strong>時間限制：</strong><span x-text="result.timeLimit"></span></li>
+              <li x-show="result.special" x-text="result.special" class="text-[var(--vermilion-dark)] font-bold"></li>
+            </ul>
+          </div>
+        </div>
+      </template>
+
+      <template x-if="result && !result.ok">
+        <div class="p-5 bg-red-50 border-l-4 border-red-500 text-sm">
+          ⚠️ <span x-text="result.error"></span>
+        </div>
+      </template>
+
+      <template x-if="!result">
+        <div class="text-center py-12 text-gray-400">
+          <div class="text-5xl mb-3">📝</div>
+          <p class="text-sm">請從上方選擇你的場次與序號</p>
+        </div>
+      </template>
+    </div>
+
+    <!-- 個人指引卡(列印用，平時隱藏) -->
+    <div id="print-card" class="hidden print:!block print:!fixed print:!inset-0 print:!bg-white print:!p-10 print:!z-50" x-show="result && result.ok && printMode" x-cloak>
+      <template x-if="result && result.ok">
+        <div class="border-4 border-[var(--ink)] p-8 max-w-3xl mx-auto">
+          <div class="text-center mb-6 pb-4 border-b-2 border-[var(--ink)]">
+            <div class="text-sm tracking-widest text-[var(--vermilion)] font-bold">PERSONAL GUIDE CARD</div>
+            <div class="font-serif-tc text-2xl font-black">桃園市 115 年語文競賽龍潭區複賽</div>
+            <div class="text-sm mt-1">2026 年 5 月 23 日（六）・ 石門國小</div>
+          </div>
+          <div class="font-serif-tc text-3xl font-bold mb-2" x-text="result.title"></div>
+          <div class="text-lg mb-6"><span class="text-gray-600">組別：</span><strong x-text="result.group"></strong>　<span class="text-gray-600">序號：</span><strong class="text-[var(--vermilion)] text-2xl" x-text="result.seatNo"></strong></div>
+          <table class="w-full text-base mb-6">
+            <tr class="border-b border-gray-300"><td class="py-3 text-gray-600 w-32">📍 比賽地點</td><td class="py-3"><strong x-text="result.venue"></strong></td></tr>
+            <tr class="border-b border-gray-300"><td class="py-3 text-gray-600">📍 預備室</td><td class="py-3" x-text="result.prep || '同場進行(無預備室)'"></td></tr>
+            <tr class="border-b border-gray-300"><td class="py-3 text-gray-600">⏰ 報到時間</td><td class="py-3 font-mono font-bold text-lg" x-text="result.checkin"></td></tr>
+            <tr class="border-b border-gray-300" x-show="result.drawTime"><td class="py-3 text-gray-600">🎲 抽題時間</td><td class="py-3 font-mono font-bold text-lg" x-text="result.drawTime"></td></tr>
+            <tr class="border-b border-gray-300"><td class="py-3 text-gray-600">⭐ 上台/開賽</td><td class="py-3 font-mono font-bold text-2xl text-[var(--vermilion)]" x-text="result.takeoffTime"></td></tr>
+            <tr><td class="py-3 text-gray-600">⏱ 時間限制</td><td class="py-3" x-text="result.timeLimit"></td></tr>
+          </table>
+          <div class="text-xs leading-relaxed border-t pt-4 text-gray-600">
+            <strong>注意事項：</strong>
+            ① 校園 07:50 開放，請提早到場。<br>
+            ② 演說、朗讀逾時經唱名 3 次未到以棄權論。<br>
+            ③ 作文、字音字形、寫字開賽 5 分鐘後不得入場，書寫類不得提早交卷。<br>
+            ④ 作文、字音字形不得攜帶參考資料、書籍或字典。<br>
+            ⑤ 緊急聯絡：魏博彥主任 0937-803-215
+          </div>
+          <div class="mt-4 text-center text-xs text-gray-400">桃園市石門國小 ・ 印於 <span x-text="new Date().toLocaleString('zh-TW')"></span></div>
+        </div>
+      </template>
+    </div>
+
+  </div>
+</section>
+
+<!-- 重要時程軸 -->
+<section class="py-16">
+  <div class="max-w-6xl mx-auto px-6">
+    <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold section-title mb-2">當日時程概覽</h2>
+    <p class="text-gray-600 mb-10 ml-5">5/23（六）競賽當天重要節點。</p>
+
+    <div class="relative">
+      <div class="absolute left-4 sm:left-1/2 top-0 bottom-0 w-0.5 bg-[var(--gold)]/40"></div>
+
+      <div class="space-y-8">
+        <!-- 時間軸 item -->
+        <div class="relative flex sm:items-center sm:justify-end">
+          <div class="hidden sm:block sm:w-1/2 sm:pr-12 sm:text-right">
+            <div class="font-serif-tc text-3xl font-black text-[var(--vermilion)]">07:50</div>
+            <div class="text-sm text-gray-500">校園開放</div>
+          </div>
+          <div class="absolute left-4 sm:left-1/2 w-3 h-3 bg-[var(--vermilion)] rounded-full -translate-x-1/2 ring-4 ring-[var(--paper)]"></div>
+          <div class="pl-12 sm:pl-12 sm:w-1/2">
+            <div class="bg-white p-5 border-l-4 border-[var(--vermilion)] shadow-sm">
+              <div class="sm:hidden font-serif-tc text-2xl font-black text-[var(--vermilion)] mb-1">07:50</div>
+              <h4 class="font-bold mb-1">校園開放進入</h4>
+              <p class="text-sm text-gray-600">本競賽 07:50 開始開放進入校園，於該項競賽開始報到前 10 分鐘，開放上樓報到。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative flex sm:items-center">
+          <div class="hidden sm:block sm:w-1/2 sm:pr-12 sm:text-right">
+            <div class="bg-white p-5 border-r-4 border-[var(--ink)] shadow-sm inline-block text-left">
+              <h4 class="font-bold mb-1">第一波報到開始</h4>
+              <p class="text-sm text-gray-600">演說（學生／教師組）、作文、國語字音字形：08:20～08:30 報到。<br>領隊：一樓中廊報到。</p>
+            </div>
+          </div>
+          <div class="absolute left-4 sm:left-1/2 w-3 h-3 bg-[var(--ink)] rounded-full -translate-x-1/2 ring-4 ring-[var(--paper)]"></div>
+          <div class="pl-12 sm:pl-12 sm:w-1/2">
+            <div class="sm:hidden bg-white p-5 border-l-4 border-[var(--ink)] shadow-sm">
+              <div class="font-serif-tc text-2xl font-black mb-1">08:20</div>
+              <h4 class="font-bold mb-1">第一波報到開始</h4>
+              <p class="text-sm text-gray-600">演說（學生／教師組）、作文、國語字音字形：08:20～08:30 報到。</p>
+            </div>
+            <div class="hidden sm:block">
+              <div class="font-serif-tc text-3xl font-black">08:20</div>
+              <div class="text-sm text-gray-500">第一波報到</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative flex sm:items-center sm:justify-end">
+          <div class="hidden sm:block sm:w-1/2 sm:pr-12 sm:text-right">
+            <div class="font-serif-tc text-3xl font-black text-[var(--vermilion)]">08:40</div>
+            <div class="text-sm text-gray-500">作文 / 字音字形開賽</div>
+          </div>
+          <div class="absolute left-4 sm:left-1/2 w-3 h-3 bg-[var(--vermilion)] rounded-full -translate-x-1/2 ring-4 ring-[var(--paper)]"></div>
+          <div class="pl-12 sm:pl-12 sm:w-1/2">
+            <div class="bg-white p-5 border-l-4 border-[var(--vermilion)] shadow-sm">
+              <div class="sm:hidden font-serif-tc text-2xl font-black text-[var(--vermilion)] mb-1">08:40</div>
+              <h4 class="font-bold mb-1">書寫類競賽開始</h4>
+              <p class="text-sm text-gray-600">作文（08:40-10:10）、國語字音字形（08:40-08:50）正式開始。<strong class="text-[var(--vermilion)]">開賽 5 分鐘後不得入場。</strong></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative flex sm:items-center">
+          <div class="hidden sm:block sm:w-1/2 sm:pr-12 sm:text-right">
+            <div class="bg-white p-5 border-r-4 border-[var(--jade)] shadow-sm inline-block text-left">
+              <h4 class="font-bold mb-1">演說與朗讀全面開賽</h4>
+              <p class="text-sm text-gray-600">各場演說（學生組）09:10 正式競賽。<br>朗讀組於 09:10 同步啟動。</p>
+            </div>
+          </div>
+          <div class="absolute left-4 sm:left-1/2 w-3 h-3 bg-[var(--jade)] rounded-full -translate-x-1/2 ring-4 ring-[var(--paper)]"></div>
+          <div class="pl-12 sm:pl-12 sm:w-1/2">
+            <div class="sm:hidden bg-white p-5 border-l-4 border-[var(--jade)] shadow-sm">
+              <div class="font-serif-tc text-2xl font-black text-[var(--jade)] mb-1">09:10</div>
+              <h4 class="font-bold mb-1">演說與朗讀全面開賽</h4>
+              <p class="text-sm text-gray-600">各場演說（學生組）09:10 正式競賽。朗讀組於 09:10 同步啟動。</p>
+            </div>
+            <div class="hidden sm:block">
+              <div class="font-serif-tc text-3xl font-black text-[var(--jade)]">09:10</div>
+              <div class="text-sm text-gray-500">演說・朗讀開賽</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative flex sm:items-center sm:justify-end">
+          <div class="hidden sm:block sm:w-1/2 sm:pr-12 sm:text-right">
+            <div class="font-serif-tc text-3xl font-black text-[var(--gold)]">10:00</div>
+            <div class="text-sm text-gray-500">寫字組開賽</div>
+          </div>
+          <div class="absolute left-4 sm:left-1/2 w-3 h-3 bg-[var(--gold)] rounded-full -translate-x-1/2 ring-4 ring-[var(--paper)]"></div>
+          <div class="pl-12 sm:pl-12 sm:w-1/2">
+            <div class="bg-white p-5 border-l-4 border-[var(--gold)] shadow-sm">
+              <div class="sm:hidden font-serif-tc text-2xl font-black text-[var(--gold)] mb-1">10:00</div>
+              <h4 class="font-bold mb-1">寫字組於禮堂開賽</h4>
+              <p class="text-sm text-gray-600">寫字組（學生／教師／社會）於 C135 禮堂進行，10:00-10:50。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative flex sm:items-center">
+          <div class="hidden sm:block sm:w-1/2 sm:pr-12 sm:text-right">
+            <div class="bg-white p-5 border-r-4 border-[var(--ink)] shadow-sm inline-block text-left">
+              <h4 class="font-bold mb-1">所有競賽預計結束</h4>
+              <p class="text-sm text-gray-600">最晚一場社會組演說／朗讀於 10:54 前結束。<br>評審閱卷與成績核算進行中。</p>
+            </div>
+          </div>
+          <div class="absolute left-4 sm:left-1/2 w-3 h-3 bg-[var(--ink)] rounded-full -translate-x-1/2 ring-4 ring-[var(--paper)]"></div>
+          <div class="pl-12 sm:pl-12 sm:w-1/2">
+            <div class="sm:hidden bg-white p-5 border-l-4 border-[var(--ink)] shadow-sm">
+              <div class="font-serif-tc text-2xl font-black mb-1">11:00</div>
+              <h4 class="font-bold mb-1">所有競賽預計結束</h4>
+              <p class="text-sm text-gray-600">最晚一場社會組演說／朗讀於 10:54 前結束。</p>
+            </div>
+            <div class="hidden sm:block">
+              <div class="font-serif-tc text-3xl font-black">~11:00</div>
+              <div class="text-sm text-gray-500">競賽全部結束</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 完整賽程表 -->
+<section id="schedule" class="py-16 bg-white border-y border-[var(--gold)]/20">
+  <div class="max-w-7xl mx-auto px-6" x-data="scheduleTable()">
+    <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold section-title mb-2">完整賽程表</h2>
+    <p class="text-gray-600 mb-8 ml-5">共 <strong>17 大項 ・ 33 場細分賽事</strong>（學生／教師／社會三組分計）。點選分類可篩選；可關鍵字搜尋。</p>
+
+    <!-- 篩選列 -->
+    <div class="flex flex-wrap gap-2 mb-6 no-print">
+      <button @click="filter='all'" :class="filter==='all' ? 'active' : ''" class="filter-btn px-4 py-2 text-sm border border-[var(--ink)] rounded-sm">全部 (33)</button>
+      <button @click="filter='演說'" :class="filter==='演說' ? 'active' : ''" class="filter-btn px-4 py-2 text-sm border border-[var(--vermilion)] text-[var(--vermilion-dark)] rounded-sm">🎤 演說 (9)</button>
+      <button @click="filter='朗讀'" :class="filter==='朗讀' ? 'active' : ''" class="filter-btn px-4 py-2 text-sm border border-[var(--jade)] text-[var(--jade)] rounded-sm">📖 朗讀 (9)</button>
+      <button @click="filter='作文'" :class="filter==='作文' ? 'active' : ''" class="filter-btn px-4 py-2 text-sm border border-[var(--gold)] text-[var(--gold)] rounded-sm">✍️ 作文 (3)</button>
+      <button @click="filter='字音字形'" :class="filter==='字音字形' ? 'active' : ''" class="filter-btn px-4 py-2 text-sm border border-[#4a6685] text-[#4a6685] rounded-sm">🔤 字音字形 (9)</button>
+      <button @click="filter='寫字'" :class="filter==='寫字' ? 'active' : ''" class="filter-btn px-4 py-2 text-sm border border-[#6b3d7f] text-[#6b3d7f] rounded-sm">🖌 寫字 (3)</button>
+
+      <input x-model="search" type="search" placeholder="🔍 搜尋場次、地點、組別…" class="ml-auto px-3 py-2 border border-gray-300 rounded-sm text-sm w-full sm:w-64">
+    </div>
+
+    <!-- 賽程卡片 -->
+    <div class="space-y-3 schedule-table">
+      <template x-for="item in filteredItems" :key="item.no + item.group">
+        <div class="schedule-card bg-[var(--paper)] p-4 sm:p-5 rounded-sm shadow-sm">
+          <div class="grid grid-cols-12 gap-3 items-center">
+            <!-- 場次號 -->
+            <div class="col-span-2 sm:col-span-1 text-center">
+              <div class="text-xs text-gray-500">場次</div>
+              <div class="font-serif-tc text-2xl sm:text-3xl font-black text-[var(--ink)]" x-text="item.no"></div>
+            </div>
+            <!-- 項目 -->
+            <div class="col-span-10 sm:col-span-3">
+              <div class="inline-block text-xs px-2 py-0.5 border rounded-sm mb-1" :class="item.catClass" x-text="item.cat"></div>
+              <div class="font-serif-tc font-bold text-lg" x-text="item.title"></div>
+              <div class="text-sm text-gray-600">
+                <span class="font-bold" x-text="item.group"></span>
+                ・<span x-text="item.count + ' 人'"></span>
+              </div>
+            </div>
+            <!-- 報到 -->
+            <div class="col-span-6 sm:col-span-2 text-sm">
+              <div class="text-xs text-gray-500 mb-0.5">📍 報到</div>
+              <div class="font-mono font-bold" x-text="item.checkin"></div>
+            </div>
+            <!-- 抽題 -->
+            <div class="col-span-6 sm:col-span-2 text-sm">
+              <div class="text-xs text-gray-500 mb-0.5">🎲 抽題</div>
+              <div class="font-mono font-bold" x-text="item.draw || '—'"></div>
+            </div>
+            <!-- 比賽時間 -->
+            <div class="col-span-6 sm:col-span-2 text-sm">
+              <div class="text-xs text-gray-500 mb-0.5">⏱ 比賽時間</div>
+              <div class="font-mono font-bold text-[var(--vermilion)]" x-text="item.time"></div>
+            </div>
+            <!-- 地點 -->
+            <div class="col-span-6 sm:col-span-2 text-sm">
+              <div class="text-xs text-gray-500 mb-0.5">📌 比賽地點</div>
+              <div class="font-bold" x-text="item.venue"></div>
+              <div class="text-xs text-gray-500" x-text="'預備室：' + item.prep" x-show="item.prep"></div>
+            </div>
+          </div>
+        </div>
+      </template>
+      <div x-show="filteredItems.length === 0" class="text-center py-12 text-gray-500">
+        找不到符合條件的場次，請調整篩選或搜尋字。
+      </div>
+    </div>
+
+    <!-- 賽程備註 -->
+    <div class="mt-8 p-5 bg-amber-50 border-l-4 border-amber-500 text-sm leading-relaxed">
+      <strong class="block mb-2">📌 賽程備註</strong>
+      1. 本競賽 <strong>07:50</strong> 開始開放進入校園，<strong>該項競賽開始報到前 10 分鐘</strong>開放上樓報到。<br>
+      2. 演說、朗讀參賽員須依上列時間「報到」與「抽題」，若<strong class="text-[var(--vermilion)]">逾時經唱名三次未到者以棄權論</strong>。<br>
+      3. 作文、字音字形、寫字參賽員<strong class="text-[var(--vermilion)]">比賽開始後 5 分鐘即不得入場</strong>；因應全國語文競賽相關規定，<strong>書寫類各競賽項目不得提早交卷</strong>。<br>
+      4. 作文、字音字形競賽不得攜帶任何<strong>參考資料、書籍或字典</strong>入場。
+    </div>
+  </div>
+</section>
+
+<!-- 場地配置 -->
+<section id="venue" class="py-16">
+  <div class="max-w-6xl mx-auto px-6">
+    <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold section-title mb-2">場地配置</h2>
+    <p class="text-gray-600 mb-10 ml-5">石門國小校園分佈，依樓層分組標示比賽教室。</p>
+
+    <!-- 樓層分區 -->
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- 1F -->
+      <div class="bg-white p-6 rounded-sm border border-gray-200 shadow-sm">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="floor-badge">1F</span>
+          <h3 class="font-serif-tc text-xl font-bold">一樓</h3>
+        </div>
+        <ul class="space-y-3 text-sm">
+          <li class="border-l-2 border-[var(--vermilion)] pl-3">
+            <strong>C125 五年 1 班</strong>
+            <div class="text-xs text-gray-600">📖 臺灣台語朗讀（教師／社會組）</div>
+          </li>
+          <li class="border-l-2 border-[var(--jade)] pl-3">
+            <strong>C120 三年 1 班</strong>
+            <div class="text-xs text-gray-600">📖 臺灣客語朗讀（學生組）</div>
+          </li>
+          <li class="border-l-2 border-[var(--jade)] pl-3">
+            <strong>C123 三年 4 班</strong>
+            <div class="text-xs text-gray-600">📖 臺灣客語朗讀（教師／社會組）</div>
+          </li>
+          <li class="border-l-2 border-[#6b3d7f] pl-3">
+            <strong>C135 禮堂</strong>
+            <div class="text-xs text-gray-600">🔤 字音字形（國／台／客）<br>🖌 寫字（全組）</div>
+          </li>
+        </ul>
+        <div class="mt-4 pt-4 border-t text-xs text-gray-500">
+          📍 一樓中廊：各校領隊報到處（07:50-08:20）<br>
+          📍 一樓全區開放家長活動範圍
+        </div>
+      </div>
+
+      <!-- 2F -->
+      <div class="bg-white p-6 rounded-sm border border-gray-200 shadow-sm">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="floor-badge">2F</span>
+          <h3 class="font-serif-tc text-xl font-bold">二樓</h3>
+        </div>
+        <ul class="space-y-3 text-sm">
+          <li class="border-l-2 border-[var(--vermilion)] pl-3">
+            <strong>C218 英語情境教室</strong>
+            <div class="text-xs text-gray-600">🎤 國語演說（教師／社會組）</div>
+          </li>
+          <li class="border-l-2 border-[var(--vermilion)] pl-3">
+            <strong>C229 英語一</strong>
+            <div class="text-xs text-gray-600">🎤 台語情境式演說（學生組）</div>
+          </li>
+          <li class="border-l-2 border-[var(--vermilion)] pl-3">
+            <strong>C227 英語三</strong>
+            <div class="text-xs text-gray-600">🎤 臺灣台語演說（教師／社會組）</div>
+          </li>
+          <li class="border-l-2 border-[var(--vermilion)] pl-3">
+            <strong>C234 課照班 2A</strong>
+            <div class="text-xs text-gray-600">🎤 客語情境式演說（學生組）</div>
+          </li>
+          <li class="border-l-2 border-[var(--vermilion)] pl-3">
+            <strong>C232 課照班 3A</strong>
+            <div class="text-xs text-gray-600">🎤 臺灣客語演說（教師／社會組）</div>
+          </li>
+          <li class="border-l-2 border-[var(--jade)] pl-3">
+            <strong>C220 五年 2 班</strong>
+            <div class="text-xs text-gray-600">📖 國語朗讀（學生組）</div>
+          </li>
+          <li class="border-l-2 border-[var(--jade)] pl-3">
+            <strong>C224 五年 5 班</strong>
+            <div class="text-xs text-gray-600">📖 國語朗讀（教師／社會組）</div>
+          </li>
+          <li class="border-l-2 border-[var(--jade)] pl-3">
+            <strong>C226 音樂二</strong>
+            <div class="text-xs text-gray-600">📖 臺灣台語朗讀（學生組）</div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 3F -->
+      <div class="bg-white p-6 rounded-sm border border-gray-200 shadow-sm">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="floor-badge">3F</span>
+          <h3 class="font-serif-tc text-xl font-bold">三樓</h3>
+        </div>
+        <ul class="space-y-3 text-sm">
+          <li class="border-l-2 border-[var(--vermilion)] pl-3">
+            <strong>C313 六年 5 班</strong>
+            <div class="text-xs text-gray-600">🎤 國語演說（學生組）</div>
+          </li>
+          <li class="border-l-2 border-[var(--gold)] pl-3">
+            <strong>C308 六年 2 班</strong>
+            <div class="text-xs text-gray-600">✍️ 作文（學生組）</div>
+          </li>
+          <li class="border-l-2 border-[var(--gold)] pl-3">
+            <strong>C310 六年 4 班</strong>
+            <div class="text-xs text-gray-600">✍️ 作文（教師／社會組）</div>
+          </li>
+        </ul>
+        <div class="mt-4 pt-4 border-t text-xs text-gray-500">
+          📍 3F C314 為作文預備室<br>
+          📍 部分樓層僅限選手、領隊、評審上樓
+        </div>
+      </div>
+    </div>
+
+    <!-- 重要建築 -->
+    <div class="mt-8 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-[var(--paper-2)]/60 p-4 rounded-sm">
+        <div class="text-xs text-[var(--vermilion)] font-bold mb-1">📍 領隊報到處</div>
+        <div class="font-serif-tc font-bold">一樓中廊</div>
+        <div class="text-xs text-gray-600 mt-1">07:50-08:20</div>
+      </div>
+      <div class="bg-[var(--paper-2)]/60 p-4 rounded-sm">
+        <div class="text-xs text-[var(--vermilion)] font-bold mb-1">📍 評審休息室</div>
+        <div class="font-serif-tc font-bold">C131 書法教室</div>
+        <div class="text-xs text-gray-600 mt-1">評審餐點集中發放</div>
+      </div>
+      <div class="bg-[var(--paper-2)]/60 p-4 rounded-sm">
+        <div class="text-xs text-[var(--vermilion)] font-bold mb-1">📍 成績組</div>
+        <div class="font-serif-tc font-bold">C208 教務處</div>
+        <div class="text-xs text-gray-600 mt-1">成績輸入、公告</div>
+      </div>
+      <div class="bg-[var(--paper-2)]/60 p-4 rounded-sm">
+        <div class="text-xs text-[var(--vermilion)] font-bold mb-1">📍 醫護室</div>
+        <div class="font-serif-tc font-bold">C134 健康中心</div>
+        <div class="text-xs text-gray-600 mt-1">緊急傷病處置</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 注意事項 + 三類對象 -->
+<section id="rules" class="py-16 bg-[var(--paper-2)]/40">
+  <div class="max-w-6xl mx-auto px-6">
+    <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold section-title mb-2">注意事項</h2>
+    <p class="text-gray-600 mb-10 ml-5">依身份分類整理，請對應您的角色仔細閱讀。</p>
+
+    <!-- 參賽者 -->
+    <div id="participant-info" class="bg-white p-6 sm:p-8 rounded-sm border-t-4 border-[var(--vermilion)] shadow-sm mb-6">
+      <h3 class="font-serif-tc text-2xl font-bold mb-5 flex items-center gap-3">
+        <span class="text-3xl">🎤</span>
+        參賽選手 / 指導老師注意事項
+      </h3>
+
+      <div class="grid md:grid-cols-2 gap-6 text-sm leading-relaxed">
+        <div>
+          <h4 class="font-bold mb-3 text-[var(--vermilion-dark)] border-b border-[var(--vermilion)]/30 pb-1">⏰ 報到與抽題</h4>
+          <ul class="space-y-2 list-disc list-inside marker:text-[var(--vermilion)]">
+            <li>校園 <strong>07:50</strong> 開始開放，該項競賽報到前 <strong>10 分鐘</strong>開放上樓。</li>
+            <li>演說、朗讀組須依時間「報到」與「抽題」，<strong class="text-[var(--vermilion)]">逾時經唱名三次未到以棄權論</strong>。</li>
+            <li>請依參賽證號於指定地點報到、就座。</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 text-[var(--vermilion-dark)] border-b border-[var(--vermilion)]/30 pb-1">📝 書寫類項目</h4>
+          <ul class="space-y-2 list-disc list-inside marker:text-[var(--vermilion)]">
+            <li>作文、字音字形、寫字：<strong>比賽開始後 5 分鐘即不得入場</strong>。</li>
+            <li>因應全國語文競賽規定，<strong>書寫類不得提早交卷</strong>。</li>
+            <li>作文、字音字形<strong class="text-[var(--vermilion)]">不得攜帶</strong>任何參考資料、書籍或字典入場。</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 text-[var(--vermilion-dark)] border-b border-[var(--vermilion)]/30 pb-1">⏱ 時間限制（各組）</h4>
+          <ul class="space-y-2 text-sm">
+            <li><strong>學生組演說</strong>：上限 <strong>5 分鐘</strong>（台／客語情境式：演說 2-3 分 + 詢答 2 分）</li>
+            <li><strong>教師組演說</strong>：上限 <strong>8 分鐘</strong></li>
+            <li><strong>社會組演說</strong>：上限 <strong>6 分鐘</strong></li>
+            <li><strong>朗讀（全組）</strong>：上限 <strong>4 分鐘</strong></li>
+            <li><strong>作文</strong>：90 分鐘（08:40-10:10）</li>
+            <li><strong>國語字音字形</strong>：10 分鐘；<strong>台／客語字音字形</strong>：15 分鐘</li>
+            <li><strong>寫字</strong>：50 分鐘（10:00-10:50）</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 text-[var(--vermilion-dark)] border-b border-[var(--vermilion)]/30 pb-1">🔔 其他提醒</h4>
+          <ul class="space-y-2 list-disc list-inside marker:text-[var(--vermilion)]">
+            <li>請選手攜帶<strong>參賽證</strong>，憑證上樓進入競賽場地。</li>
+            <li>競賽期間請將<strong>手機調為靜音</strong>，勿干擾其他選手。</li>
+            <li>本校代表選手請集中於「本校休息區」，由林佳靜老師統一帶領。</li>
+            <li>各校選手由各校領隊帶領至指定休息區。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 家長 -->
+    <div id="parent-info" class="bg-white p-6 sm:p-8 rounded-sm border-t-4 border-[var(--jade)] shadow-sm mb-6">
+      <h3 class="font-serif-tc text-2xl font-bold mb-5 flex items-center gap-3">
+        <span class="text-3xl">👨‍👩‍👧</span>
+        學生家長注意事項
+      </h3>
+
+      <div class="grid md:grid-cols-2 gap-6 text-sm leading-relaxed">
+        <div>
+          <h4 class="font-bold mb-3 text-[#2d4a32] border-b border-[var(--jade)]/30 pb-1">🚪 入校與門禁</h4>
+          <ul class="space-y-2 list-disc list-inside marker:text-[var(--jade)]">
+            <li>競賽當日校門<strong>彈性開放家長步行入校</strong>。</li>
+            <li>家長<strong class="text-[var(--vermilion)]">活動範圍限於一樓</strong>，避免上樓影響競賽進行。</li>
+            <li>僅持<strong>參賽證、領隊證、評審委員證</strong>者可上樓進入比賽場地。</li>
+            <li>請耐心於一樓休息區等候孩子比賽結束。</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 text-[#2d4a32] border-b border-[var(--jade)]/30 pb-1">🚗 接送與停車</h4>
+          <ul class="space-y-2 list-disc list-inside marker:text-[var(--jade)]">
+            <li>校內停車位有限，<strong>原則僅供各校領隊與行政人員</strong>使用。</li>
+            <li>建議家長停放於<strong>石中（石門國中）停車場</strong>，由志工引導指揮。</li>
+            <li>校外接送請於<strong>十一份路、文化路</strong>沿線，依交通指揮停車。</li>
+            <li>校門與校內路口皆有志工協助引導。</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 text-[#2d4a32] border-b border-[var(--jade)]/30 pb-1">📣 競賽當天</h4>
+          <ul class="space-y-2 list-disc list-inside marker:text-[var(--jade)]">
+            <li>請鼓勵孩子<strong>提前 15-30 分鐘到場</strong>，預留報到、就位緩衝時間。</li>
+            <li>準備<strong>水壺</strong>，預備室通常較長時間停留。</li>
+            <li>書寫類項目（作文／字音字形／寫字）一旦開賽 5 分鐘後即不得入場，請務必準時。</li>
+            <li>競賽結束後成績將於成績組（教務處）公告，並於本校網站公佈。</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 text-[#2d4a32] border-b border-[var(--jade)]/30 pb-1">📞 緊急聯絡</h4>
+          <ul class="space-y-2 list-disc list-inside marker:text-[var(--jade)]">
+            <li>孩子如有<strong>身體不適</strong>，請至 C134 健康中心，由李佩佩老師協助。</li>
+            <li>遺失證件、走失等問題，請至一樓中廊報到處詢問接待組老師。</li>
+            <li>競賽相關爭議事項，由石門國小校長與評審會議處理。</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-6 p-4 bg-[var(--jade)]/10 border-l-4 border-[var(--jade)] text-sm">
+        💚 <strong>給家長的話：</strong>感謝您的支持與配合。為了讓所有選手都能在公平、安靜的環境中發揮，請您與我們一同維護競賽秩序，讓孩子們專心展現語文之美。
+      </div>
+    </div>
+
+    <!-- 工作人員 -->
+    <div id="staff-info" class="bg-white p-6 sm:p-8 rounded-sm border-t-4 border-[var(--gold)] shadow-sm">
+      <h3 class="font-serif-tc text-2xl font-bold mb-5 flex items-center gap-3">
+        <span class="text-3xl">📋</span>
+        工作人員 / 志工注意事項
+      </h3>
+
+      <div class="grid md:grid-cols-2 gap-6 text-sm leading-relaxed">
+        <div>
+          <h4 class="font-bold mb-3 text-[#6b5535] border-b border-[var(--gold)]/30 pb-1">👕 服裝與報到</h4>
+          <ul class="space-y-2 list-disc list-inside marker:text-[var(--gold)]">
+            <li>請盡量穿著<strong>本校教職員工運動會工作服</strong>。</li>
+            <li>競賽場地人員：<strong>07:35 前簽到，07:50 工作地點就位</strong>。</li>
+            <li>交通引導人員：<strong>07:45 就交通引導位置</strong>。</li>
+            <li>當日備有工作人員早餐，可於<strong>總務處</strong>領取。</li>
+            <li>各組完成工作後，至總務處領取西點餐盒。</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 text-[#6b5535] border-b border-[var(--gold)]/30 pb-1">🎯 工作要點</h4>
+          <ul class="space-y-2 list-disc list-inside marker:text-[var(--gold)]">
+            <li>務必熟悉負責工作之內容與流程，若有疑問即提出。</li>
+            <li>各組須依時間流程，掌控報到、抽題、競賽時間。</li>
+            <li>手機請調為<strong>靜音（非震動）</strong>，臨時狀況請至走廊聯絡。</li>
+            <li>對所有競賽員<strong>一視同仁</strong>，勿對本校選手有關心舉動。</li>
+          </ul>
+        </div>
+
+        <div class="md:col-span-2">
+          <h4 class="font-bold mb-3 text-[#6b5535] border-b border-[var(--gold)]/30 pb-1">🗂 主要分組</h4>
+          <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+            <div class="bg-[var(--paper-2)]/60 p-3 rounded-sm"><strong>召集人</strong><br><span class="text-gray-600">校長</span></div>
+            <div class="bg-[var(--paper-2)]/60 p-3 rounded-sm"><strong>行政組</strong><br><span class="text-gray-600">魏博彥、林芸靚、馮佳盈、林佳靜、黃凱揚</span></div>
+            <div class="bg-[var(--paper-2)]/60 p-3 rounded-sm"><strong>接待組</strong><br><span class="text-gray-600">林亞嫺、曾主任、莊珮玲、張華玲</span></div>
+            <div class="bg-[var(--paper-2)]/60 p-3 rounded-sm"><strong>場地組</strong><br><span class="text-gray-600">林憲霸、陳炳南、陳馨皇、志工隊</span></div>
+            <div class="bg-[var(--paper-2)]/60 p-3 rounded-sm"><strong>交安組</strong><br><span class="text-gray-600">林憲霸、陳炳南、徐振維、胡聖義</span></div>
+            <div class="bg-[var(--paper-2)]/60 p-3 rounded-sm"><strong>競賽組</strong><br><span class="text-gray-600">49 人（依場次分組）</span></div>
+            <div class="bg-[var(--paper-2)]/60 p-3 rounded-sm"><strong>衛生醫護組</strong><br><span class="text-gray-600">李佩佩</span></div>
+            <div class="bg-[var(--paper-2)]/60 p-3 rounded-sm"><strong>申訴組</strong><br><span class="text-gray-600">魏博彥</span></div>
+            <div class="bg-[var(--paper-2)]/60 p-3 rounded-sm"><strong>攝影組</strong><br><span class="text-gray-600">黃凱揚</span></div>
+          </div>
+          <div class="mt-3 text-xs text-gray-500">
+            合計 116 人（場外 16、競賽 41、評審 48、志工 11）
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 聯絡 -->
+<section id="contact" class="py-16 bg-[var(--ink)] text-[var(--paper)]">
+  <div class="max-w-6xl mx-auto px-6">
+    <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold mb-2">
+      <span class="inline-block w-1.5 h-8 bg-[var(--vermilion)] mr-3 align-middle"></span>
+      聯絡資訊
+    </h2>
+    <p class="text-[var(--paper)]/70 mb-10 ml-5">如有任何疑問，請聯絡承辦單位。</p>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="border border-[var(--paper)]/20 p-6 rounded-sm">
+        <div class="text-xs text-[var(--gold)] font-bold tracking-widest mb-2">承辦學校</div>
+        <h3 class="font-serif-tc text-2xl font-bold mb-2">石門國民小學</h3>
+        <p class="text-sm text-[var(--paper)]/80 leading-relaxed">
+          桃園市龍潭區<br>
+          ☎ <a href="tel:034796439" class="hover:text-amber-200 underline-offset-2 hover:underline">03-4796439</a><br>
+          🌐 <a href="https://www.smes.tyc.edu.tw" target="_blank" rel="noopener" class="hover:text-amber-200 underline-offset-2 hover:underline">www.smes.tyc.edu.tw</a>
+        </p>
+      </div>
+      <div class="border border-[var(--paper)]/20 p-6 rounded-sm">
+        <div class="text-xs text-[var(--gold)] font-bold tracking-widest mb-2">競賽承辦人</div>
+        <h3 class="font-serif-tc text-2xl font-bold mb-2">魏博彥 主任</h3>
+        <p class="text-sm text-[var(--paper)]/80 leading-relaxed">
+          競賽當日緊急聯絡<br>
+          ☎ <a href="tel:0937803215" class="hover:text-amber-200 underline-offset-2 hover:underline">0937-803-215</a><br>
+          <span class="text-xs text-[var(--paper)]/60">（競賽進行中，請至走廊撥打）</span>
+        </p>
+      </div>
+      <div class="border border-[var(--paper)]/20 p-6 rounded-sm">
+        <div class="text-xs text-[var(--gold)] font-bold tracking-widest mb-2">緊急情況</div>
+        <h3 class="font-serif-tc text-2xl font-bold mb-2">健康中心</h3>
+        <p class="text-sm text-[var(--paper)]/80 leading-relaxed">
+          位置：C134（一樓）<br>
+          護理師：李佩佩 老師<br>
+          <span class="text-xs text-[var(--paper)]/60">緊急傷病處置</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-[var(--paper)]/20 text-center text-xs text-[var(--paper)]/50 tracking-widest">
+      桃園市 115 年語文競賽龍潭區複賽 ・ 2026 年 5 月 23 日（六）
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-[var(--ink)] text-[var(--paper)]/60 py-6 border-t border-[var(--paper)]/10">
+  <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+    <div>© 2026 桃園市石門國民小學 · All rights reserved.</div>
+    <div>
+      Made with ❤️ by
+      <a href="https://www.smes.tyc.edu.tw/page/teacher" target="_blank" rel="noopener" class="text-amber-200 hover:underline font-bold">阿凱老師</a>
+      ・石門國小資訊組
+    </div>
+  </div>
+</footer>
+
+<!-- 浮動回頂部 -->
+<a href="#top" class="no-print fixed bottom-6 right-6 w-12 h-12 bg-[var(--vermilion)] text-white rounded-full shadow-lg hover:bg-[var(--vermilion-dark)] transition flex items-center justify-center" title="回頂部">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+</a>
+
+<script>
+// ────────────────────────────────────────────────
+// 抽題上台時間查詢資料表
+// 規則:演說/朗讀類有「抽題 → 上台」流程;書寫類僅有「開賽」時間
+// 抽題與上台間隔依各組單人時間上限推算,以現場呼號為準
+// ────────────────────────────────────────────────
+const RACE_DATA = {
+  // 演說類
+  '1-學生組':  { title:'國語演說',         group:'學生組', venue:'C313 六年5班 (3F)',     prep:'C314 六年6班',     checkin:'08:20-08:30', drawStart:'08:40', drawStep:5, takeoffStart:'09:10', takeoffStep:5, max:11, timeLimit:'學生組演說上限 5 分鐘' },
+  '2-教師組':  { title:'國語演說',         group:'教師組', venue:'C218 英語情境教室 (2F)', prep:'C217 魚寶屋',       checkin:'08:20-08:30', drawStart:'08:38', drawStep:8, takeoffStart:'09:10', takeoffStep:8, max:6,  timeLimit:'教師組演說上限 8 分鐘' },
+  '2-社會組':  { title:'國語演說',         group:'社會組', venue:'C218 英語情境教室 (2F)', prep:'C217 魚寶屋',       checkin:'09:40-09:50', drawStart:'10:00', drawStep:6, takeoffStart:'10:30', takeoffStep:6, max:4,  timeLimit:'社會組演說上限 6 分鐘' },
+  '3-學生組':  { title:'臺灣台語情境式演說', group:'學生組', venue:'C229 英語一 (2F)',      prep:'C228 英語二',       checkin:'08:20-08:30', drawStart:'08:40', drawStep:6, takeoffStart:'09:10', takeoffStep:6, max:4,  timeLimit:'學生組情境式演說 5 分鐘(演說 2-3 分 + 詢答 2 分)' },
+  '4-教師組':  { title:'臺灣台語演說',     group:'教師組', venue:'C227 英語三 (2F)',      prep:'C228 英語二',       checkin:'08:20-08:30', drawStart:'08:38', drawStep:8, takeoffStart:'09:10', takeoffStep:8, max:4,  timeLimit:'教師組演說上限 8 分鐘' },
+  '4-社會組':  { title:'臺灣台語演說',     group:'社會組', venue:'C227 英語三 (2F)',      prep:'C228 英語二',       checkin:'09:30-09:40', drawStart:'09:50', drawStep:6, takeoffStart:'10:20', takeoffStep:6, max:4,  timeLimit:'社會組演說上限 6 分鐘' },
+  '5-學生組':  { title:'臺灣客語情境式演說', group:'學生組', venue:'C234 課照班 2A (2F)',   prep:'C233 課照班 2B',    checkin:'08:20-08:30', drawStart:'08:40', drawStep:6, takeoffStart:'09:10', takeoffStep:6, max:6,  timeLimit:'學生組情境式演說 5 分鐘(演說 2-3 分 + 詢答 2 分)' },
+  '6-教師組':  { title:'臺灣客語演說',     group:'教師組', venue:'C232 課照班 3A (2F)',   prep:'C233 課照班 2B',    checkin:'08:20-08:30', drawStart:'08:38', drawStep:8, takeoffStart:'09:10', takeoffStep:8, max:3,  timeLimit:'教師組演說上限 8 分鐘' },
+  '6-社會組':  { title:'臺灣客語演說',     group:'社會組', venue:'C232 課照班 3A (2F)',   prep:'C233 課照班 2B',    checkin:'09:30-09:40', drawStart:'09:50', drawStep:6, takeoffStart:'10:20', takeoffStep:6, max:4,  timeLimit:'社會組演說上限 6 分鐘' },
+  // 朗讀類
+  '7-學生組':  { title:'國語朗讀',         group:'學生組', venue:'C220 五年2班 (2F)',     prep:'C221 五年3班',      checkin:'08:40-08:50', drawStart:'09:02', drawStep:4, takeoffStart:'09:10', takeoffStep:4, max:13, timeLimit:'朗讀上限 4 分鐘' },
+  '8-教師組':  { title:'國語朗讀',         group:'教師組', venue:'C224 五年5班 (2F)',     prep:'C225 五年6班',      checkin:'08:40-08:50', drawStart:'09:02', drawStep:4, takeoffStart:'09:10', takeoffStep:4, max:7,  timeLimit:'朗讀上限 4 分鐘' },
+  '8-社會組':  { title:'國語朗讀',         group:'社會組', venue:'C224 五年5班 (2F)',     prep:'C225 五年6班',      checkin:'09:35-09:45', drawStart:'09:52', drawStep:4, takeoffStart:'10:00', takeoffStep:4, max:8,  timeLimit:'朗讀上限 4 分鐘' },
+  '9-學生組':  { title:'臺灣台語朗讀',     group:'學生組', venue:'C226 音樂二 (2F)',      prep:'C225 五年6班',      checkin:'08:40-08:50', drawStart:'09:02', drawStep:4, takeoffStart:'09:10', takeoffStep:4, max:10, timeLimit:'朗讀上限 4 分鐘' },
+  '10-教師組': { title:'臺灣台語朗讀',     group:'教師組', venue:'C125 五年1班 (1F)',     prep:'C124 三年5班',      checkin:'08:20-08:30', drawStart:'08:38', drawStep:4, takeoffStart:'09:10', takeoffStep:4, max:8,  timeLimit:'朗讀上限 4 分鐘' },
+  '10-社會組': { title:'臺灣台語朗讀',     group:'社會組', venue:'C125 五年1班 (1F)',     prep:'C124 三年5班',      checkin:'09:40-09:50', drawStart:'09:58', drawStep:4, takeoffStart:'10:30', takeoffStep:4, max:5,  timeLimit:'朗讀上限 4 分鐘' },
+  '11-學生組': { title:'臺灣客語朗讀',     group:'學生組', venue:'C120 三年1班 (1F)',     prep:'C121 三年2班',      checkin:'08:40-08:50', drawStart:'09:02', drawStep:4, takeoffStart:'09:10', takeoffStep:4, max:11, timeLimit:'朗讀上限 4 分鐘' },
+  '12-教師組': { title:'臺灣客語朗讀',     group:'教師組', venue:'C123 三年4班 (1F)',     prep:'C124 三年5班',      checkin:'08:20-08:30', drawStart:'08:38', drawStep:4, takeoffStart:'09:10', takeoffStep:4, max:6,  timeLimit:'朗讀上限 4 分鐘' },
+  '12-社會組': { title:'臺灣客語朗讀',     group:'社會組', venue:'C123 三年4班 (1F)',     prep:'C124 三年5班',      checkin:'09:30-09:40', drawStart:'09:48', drawStep:4, takeoffStart:'10:20', takeoffStep:4, max:5,  timeLimit:'朗讀上限 4 分鐘' },
+  // 作文(無抽題)
+  '13-學生組': { title:'作文',             group:'學生組', venue:'C308 六年2班 (3F)',     prep:'C309 六年3班',      checkin:'08:20-08:30', writeStart:'08:40', writeEnd:'10:10', max:12, timeLimit:'作文 90 分鐘(08:40-10:10)', special:'⚠️ 開賽 5 分鐘後不得入場，不得提早交卷' },
+  '13-教師組': { title:'作文',             group:'教師組', venue:'C310 六年4班 (3F)',     prep:'C309 六年3班',      checkin:'08:20-08:30', writeStart:'08:40', writeEnd:'10:10', max:10, timeLimit:'作文 90 分鐘(08:40-10:10)', special:'⚠️ 開賽 5 分鐘後不得入場，不得提早交卷' },
+  '13-社會組': { title:'作文',             group:'社會組', venue:'C310 六年4班 (3F)',     prep:'C309 六年3班',      checkin:'08:20-08:30', writeStart:'08:40', writeEnd:'10:10', max:9,  timeLimit:'作文 90 分鐘(08:40-10:10)', special:'⚠️ 開賽 5 分鐘後不得入場，不得提早交卷' },
+  // 國語字音字形
+  '14-學生組': { title:'國語字音字形',     group:'學生組', venue:'C135 禮堂',            prep:'',                checkin:'08:20-08:30', writeStart:'08:40', writeEnd:'08:50', max:13, timeLimit:'10 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
+  '14-教師組': { title:'國語字音字形',     group:'教師組', venue:'C135 禮堂',            prep:'',                checkin:'08:20-08:30', writeStart:'08:40', writeEnd:'08:50', max:10, timeLimit:'10 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
+  '14-社會組': { title:'國語字音字形',     group:'社會組', venue:'C135 禮堂',            prep:'',                checkin:'08:20-08:30', writeStart:'08:40', writeEnd:'08:50', max:8,  timeLimit:'10 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
+  // 台語字音字形
+  '15-學生組': { title:'臺灣台語字音字形', group:'學生組', venue:'C135 禮堂',            prep:'',                checkin:'09:00-09:10', writeStart:'09:15', writeEnd:'09:30', max:4,  timeLimit:'15 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
+  '15-教師組': { title:'臺灣台語字音字形', group:'教師組', venue:'C135 禮堂',            prep:'',                checkin:'09:00-09:10', writeStart:'09:15', writeEnd:'09:30', max:7,  timeLimit:'15 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
+  '15-社會組': { title:'臺灣台語字音字形', group:'社會組', venue:'C135 禮堂',            prep:'',                checkin:'09:00-09:10', writeStart:'09:15', writeEnd:'09:30', max:4,  timeLimit:'15 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
+  // 客語字音字形
+  '16-學生組': { title:'臺灣客語字音字形', group:'學生組', venue:'C135 禮堂',            prep:'',                checkin:'09:00-09:10', writeStart:'09:15', writeEnd:'09:30', max:5,  timeLimit:'15 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
+  '16-教師組': { title:'臺灣客語字音字形', group:'教師組', venue:'C135 禮堂',            prep:'',                checkin:'09:00-09:10', writeStart:'09:15', writeEnd:'09:30', max:5,  timeLimit:'15 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
+  '16-社會組': { title:'臺灣客語字音字形', group:'社會組', venue:'C135 禮堂',            prep:'',                checkin:'09:00-09:10', writeStart:'09:15', writeEnd:'09:30', max:6,  timeLimit:'15 分鐘',                 special:'⚠️ 不得攜帶參考資料、字典；開賽 5 分鐘後不得入場' },
+  // 寫字
+  '17-學生組': { title:'寫字',             group:'學生組', venue:'C135 禮堂',            prep:'',                checkin:'09:40-09:50', writeStart:'10:00', writeEnd:'10:50', max:10, timeLimit:'50 分鐘',                 special:'⚠️ 開賽 5 分鐘後不得入場；不得提早交卷' },
+  '17-教師組': { title:'寫字',             group:'教師組', venue:'C135 禮堂',            prep:'',                checkin:'09:40-09:50', writeStart:'10:00', writeEnd:'10:50', max:8,  timeLimit:'50 分鐘',                 special:'⚠️ 開賽 5 分鐘後不得入場；不得提早交卷' },
+  '17-社會組': { title:'寫字',             group:'社會組', venue:'C135 禮堂',            prep:'',                checkin:'09:40-09:50', writeStart:'10:00', writeEnd:'10:50', max:7,  timeLimit:'50 分鐘',                 special:'⚠️ 開賽 5 分鐘後不得入場；不得提早交卷' },
+};
+
+function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+function addMinutes(hhmm, mins) {
+  const [h, m] = hhmm.split(':').map(Number);
+  const total = h * 60 + m + mins;
+  return pad2(Math.floor(total / 60)) + ':' + pad2(total % 60);
+}
+
+function myRace() {
+  return {
+    selectedKey: '',
+    seatNo: '',
+    result: null,
+    printMode: false,
+    get options() {
+      return Object.entries(RACE_DATA).map(([key, v]) => {
+        const [no] = key.split('-');
+        return { key, label: `第 ${no} 場 ・ ${v.title} ・ ${v.group} (共 ${v.max} 人)` };
+      });
+    },
+    get currentMax() {
+      return this.selectedKey ? RACE_DATA[this.selectedKey].max : 0;
+    },
+    calcResult() {
+      if (!this.selectedKey) { this.result = null; return; }
+      const data = RACE_DATA[this.selectedKey];
+      const n = parseInt(this.seatNo);
+      if (!n || n < 1) { this.result = null; return; }
+      if (n > data.max) {
+        this.result = { ok: false, error: `本場僅有 ${data.max} 位選手，序號需介於 1 ~ ${data.max} 之間。` };
+        return;
+      }
+      const offset = n - 1;
+      const r = {
+        ok: true,
+        seatNo: n,
+        title: data.title,
+        group: data.group,
+        venue: data.venue,
+        prep: data.prep,
+        checkin: data.checkin,
+        timeLimit: data.timeLimit || '',
+        special: data.special || '',
+      };
+      if (data.drawStart) {
+        // 演說/朗讀類
+        r.drawTime = addMinutes(data.drawStart, offset * data.drawStep);
+        r.takeoffTime = addMinutes(data.takeoffStart, offset * data.takeoffStep);
+        r.takeoffNote = '請於前一位選手結束後立即就位';
+      } else {
+        // 書寫類:全體同時開始
+        r.drawTime = '';
+        r.takeoffTime = data.writeStart + ' ~ ' + data.writeEnd;
+        r.takeoffNote = '全體同時開賽';
+      }
+      this.result = r;
+    },
+    printCard() {
+      this.printMode = true;
+      document.body.classList.add('print-card-only');
+      this.$nextTick(() => {
+        window.print();
+        setTimeout(() => {
+          this.printMode = false;
+          document.body.classList.remove('print-card-only');
+        }, 500);
+      });
+    }
+  };
+}
+
+function scheduleTable() {
+  return {
+    filter: 'all',
+    search: '',
+    items: [
+      // 場次 1
+      { no: 1, cat: '🎤 演說', catClass: 'cat-speech', title: '國語演說', group: '學生組', count: 11, checkin: '08:20-08:30', draw: '08:40', time: '09:10-10:05', venue: 'C313 六年5班 (3F)', prep: 'C314 六年6班' },
+      // 場次 2 - 國語演說 教師、社會
+      { no: 2, cat: '🎤 演說', catClass: 'cat-speech', title: '國語演說', group: '教師組', count: 6, checkin: '08:20-08:30', draw: '08:38', time: '09:10-09:58', venue: 'C218 英語情境教室 (2F)', prep: 'C217 魚寶屋' },
+      { no: 2, cat: '🎤 演說', catClass: 'cat-speech', title: '國語演說', group: '社會組', count: 4, checkin: '09:40-09:50', draw: '10:00', time: '10:30-10:54', venue: 'C218 英語情境教室 (2F)', prep: 'C217 魚寶屋' },
+      // 場次 3
+      { no: 3, cat: '🎤 演說', catClass: 'cat-speech', title: '臺灣台語情境式演說', group: '學生組', count: 4, checkin: '08:20-08:30', draw: '08:40', time: '09:10-09:46', venue: 'C229 英語一 (2F)', prep: 'C228 英語二' },
+      // 場次 4
+      { no: 4, cat: '🎤 演說', catClass: 'cat-speech', title: '臺灣台語演說', group: '教師組', count: 4, checkin: '08:20-08:30', draw: '08:38', time: '09:10-09:42', venue: 'C227 英語三 (2F)', prep: 'C228 英語二' },
+      { no: 4, cat: '🎤 演說', catClass: 'cat-speech', title: '臺灣台語演說', group: '社會組', count: 4, checkin: '09:30-09:40', draw: '09:50', time: '10:20-10:44', venue: 'C227 英語三 (2F)', prep: 'C228 英語二' },
+      // 場次 5
+      { no: 5, cat: '🎤 演說', catClass: 'cat-speech', title: '臺灣客語情境式演說', group: '學生組', count: 6, checkin: '08:20-08:30', draw: '08:40', time: '09:10-09:46', venue: 'C234 課照班 2A (2F)', prep: 'C233 課照班 2B' },
+      // 場次 6
+      { no: 6, cat: '🎤 演說', catClass: 'cat-speech', title: '臺灣客語演說', group: '教師組', count: 3, checkin: '08:20-08:30', draw: '08:38', time: '09:10-09:42', venue: 'C232 課照班 3A (2F)', prep: 'C233 課照班 2B' },
+      { no: 6, cat: '🎤 演說', catClass: 'cat-speech', title: '臺灣客語演說', group: '社會組', count: 4, checkin: '09:30-09:40', draw: '09:50', time: '10:20-10:44', venue: 'C232 課照班 3A (2F)', prep: 'C233 課照班 2B' },
+      // 場次 7
+      { no: 7, cat: '📖 朗讀', catClass: 'cat-reading', title: '國語朗讀', group: '學生組', count: 13, checkin: '08:40-08:50', draw: '09:02', time: '09:10-10:02', venue: 'C220 五年2班 (2F)', prep: 'C221 五年3班' },
+      // 場次 8
+      { no: 8, cat: '📖 朗讀', catClass: 'cat-reading', title: '國語朗讀', group: '教師組', count: 7, checkin: '08:40-08:50', draw: '09:02', time: '09:10-09:46', venue: 'C224 五年5班 (2F)', prep: 'C225 五年6班' },
+      { no: 8, cat: '📖 朗讀', catClass: 'cat-reading', title: '國語朗讀', group: '社會組', count: 8, checkin: '09:35-09:45', draw: '09:52', time: '10:00-10:32', venue: 'C224 五年5班 (2F)', prep: 'C225 五年6班' },
+      // 場次 9
+      { no: 9, cat: '📖 朗讀', catClass: 'cat-reading', title: '臺灣台語朗讀', group: '學生組', count: 10, checkin: '08:40-08:50', draw: '09:02', time: '09:10-09:50', venue: 'C226 音樂二 (2F)', prep: 'C225 五年6班' },
+      // 場次 10
+      { no: 10, cat: '📖 朗讀', catClass: 'cat-reading', title: '臺灣台語朗讀', group: '教師組', count: 8, checkin: '08:20-08:30', draw: '08:38', time: '09:10-09:46', venue: 'C125 五年1班 (1F)', prep: 'C124 三年5班' },
+      { no: 10, cat: '📖 朗讀', catClass: 'cat-reading', title: '臺灣台語朗讀', group: '社會組', count: 5, checkin: '09:40-09:50', draw: '09:58', time: '10:30-10:50', venue: 'C125 五年1班 (1F)', prep: 'C124 三年5班' },
+      // 場次 11
+      { no: 11, cat: '📖 朗讀', catClass: 'cat-reading', title: '臺灣客語朗讀', group: '學生組', count: 11, checkin: '08:40-08:50', draw: '09:02', time: '09:10-09:54', venue: 'C120 三年1班 (1F)', prep: 'C121 三年2班' },
+      // 場次 12
+      { no: 12, cat: '📖 朗讀', catClass: 'cat-reading', title: '臺灣客語朗讀', group: '教師組', count: 6, checkin: '08:20-08:30', draw: '08:38', time: '09:10-09:34', venue: 'C123 三年4班 (1F)', prep: 'C124 三年5班' },
+      { no: 12, cat: '📖 朗讀', catClass: 'cat-reading', title: '臺灣客語朗讀', group: '社會組', count: 5, checkin: '09:30-09:40', draw: '09:48', time: '10:20-10:40', venue: 'C123 三年4班 (1F)', prep: 'C124 三年5班' },
+      // 場次 13 作文
+      { no: 13, cat: '✍️ 作文', catClass: 'cat-write', title: '作文', group: '學生組', count: 12, checkin: '08:20-08:30', draw: '', time: '08:40-10:10', venue: 'C308 六年2班 (3F)', prep: 'C309 六年3班' },
+      { no: 13, cat: '✍️ 作文', catClass: 'cat-write', title: '作文', group: '教師組', count: 10, checkin: '08:20-08:30', draw: '', time: '08:40-10:10', venue: 'C310 六年4班 (3F)', prep: 'C309 六年3班' },
+      { no: 13, cat: '✍️ 作文', catClass: 'cat-write', title: '作文', group: '社會組', count: 9, checkin: '08:20-08:30', draw: '', time: '08:40-10:10', venue: 'C310 六年4班 (3F)', prep: 'C309 六年3班' },
+      // 場次 14 國語字音字形
+      { no: 14, cat: '🔤 字音字形', catClass: 'cat-character', title: '國語字音字形', group: '學生組', count: 13, checkin: '08:20-08:30', draw: '', time: '08:40-08:50', venue: 'C135 禮堂', prep: '' },
+      { no: 14, cat: '🔤 字音字形', catClass: 'cat-character', title: '國語字音字形', group: '教師組', count: 10, checkin: '08:20-08:30', draw: '', time: '08:40-08:50', venue: 'C135 禮堂', prep: '' },
+      { no: 14, cat: '🔤 字音字形', catClass: 'cat-character', title: '國語字音字形', group: '社會組', count: 8, checkin: '08:20-08:30', draw: '', time: '08:40-08:50', venue: 'C135 禮堂', prep: '' },
+      // 場次 15 台語字音字形
+      { no: 15, cat: '🔤 字音字形', catClass: 'cat-character', title: '臺灣台語字音字形', group: '學生組', count: 4, checkin: '09:00-09:10', draw: '', time: '09:15-09:30', venue: 'C135 禮堂', prep: '' },
+      { no: 15, cat: '🔤 字音字形', catClass: 'cat-character', title: '臺灣台語字音字形', group: '教師組', count: 7, checkin: '09:00-09:10', draw: '', time: '09:15-09:30', venue: 'C135 禮堂', prep: '' },
+      { no: 15, cat: '🔤 字音字形', catClass: 'cat-character', title: '臺灣台語字音字形', group: '社會組', count: 4, checkin: '09:00-09:10', draw: '', time: '09:15-09:30', venue: 'C135 禮堂', prep: '' },
+      // 場次 16 客語字音字形
+      { no: 16, cat: '🔤 字音字形', catClass: 'cat-character', title: '臺灣客語字音字形', group: '學生組', count: 5, checkin: '09:00-09:10', draw: '', time: '09:15-09:30', venue: 'C135 禮堂', prep: '' },
+      { no: 16, cat: '🔤 字音字形', catClass: 'cat-character', title: '臺灣客語字音字形', group: '教師組', count: 5, checkin: '09:00-09:10', draw: '', time: '09:15-09:30', venue: 'C135 禮堂', prep: '' },
+      { no: 16, cat: '🔤 字音字形', catClass: 'cat-character', title: '臺灣客語字音字形', group: '社會組', count: 6, checkin: '09:00-09:10', draw: '', time: '09:15-09:30', venue: 'C135 禮堂', prep: '' },
+      // 場次 17 寫字
+      { no: 17, cat: '🖌 寫字', catClass: 'cat-callig', title: '寫字', group: '學生組', count: 10, checkin: '09:40-09:50', draw: '', time: '10:00-10:50', venue: 'C135 禮堂', prep: '' },
+      { no: 17, cat: '🖌 寫字', catClass: 'cat-callig', title: '寫字', group: '教師組', count: 8, checkin: '09:40-09:50', draw: '', time: '10:00-10:50', venue: 'C135 禮堂', prep: '' },
+      { no: 17, cat: '🖌 寫字', catClass: 'cat-callig', title: '寫字', group: '社會組', count: 7, checkin: '09:40-09:50', draw: '', time: '10:00-10:50', venue: 'C135 禮堂', prep: '' },
+    ],
+    get filteredItems() {
+      return this.items.filter(it => {
+        const matchFilter = this.filter === 'all' || it.title.includes(this.filter) || (this.filter === '演說' && it.title.includes('演說'));
+        const s = this.search.trim().toLowerCase();
+        if (!s) return matchFilter;
+        const matchSearch =
+          String(it.no).includes(s) ||
+          it.title.toLowerCase().includes(s) ||
+          it.group.toLowerCase().includes(s) ||
+          it.venue.toLowerCase().includes(s) ||
+          it.prep.toLowerCase().includes(s);
+        return matchFilter && matchSearch;
+      });
+    }
+  }
+}
+
+// Smooth scroll spy and fade-in
+document.addEventListener('DOMContentLoaded', () => {
+  const els = document.querySelectorAll('.fade-in');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15 });
+  els.forEach(el => io.observe(el));
+});
+</script>
+
+</body>
+</html>

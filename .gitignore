@@ -1,0 +1,20 @@
+# 原始公文檔(內含工作人員個資、評審名單,不公開)
+*.docx
+*.doc
+*.pdf
+~$*
+
+# OS / 編輯器
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# 工具暫存
+node_modules/
+*.log
+*.tmp
+
+# 但保留 og.png(社群分享預覽圖)
+!og.png
