@@ -263,8 +263,112 @@
         </div>
       </div>
 
+      <!-- ──────────────── 倒數計時器 ──────────────── -->
+      <div x-data="countdown()" class="mt-10 no-print">
+        <!-- 比賽日「之前」狀態 -->
+        <template x-if="phase === 'before'">
+          <div class="bg-gradient-to-r from-[var(--ink)] via-[var(--vermilion-dark)] to-[var(--ink)] text-white p-5 sm:p-6 rounded-sm shadow-lg">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div>
+                <div class="text-xs tracking-[0.3em] text-amber-300 font-bold mb-1">COUNTDOWN ・ 距離開賽</div>
+                <div class="text-xs text-white/70" x-text="`${meta.date}（${meta.dayOfWeek}）07:50 開放入校`"></div>
+              </div>
+              <div class="flex items-center gap-2 sm:gap-3">
+                <div class="text-center">
+                  <div class="font-serif-tc font-black text-3xl sm:text-5xl tabular-nums leading-none" x-text="days"></div>
+                  <div class="text-[10px] sm:text-xs text-amber-200 mt-1 tracking-widest">DAYS 天</div>
+                </div>
+                <div class="font-serif-tc text-2xl sm:text-4xl text-amber-300 self-start mt-1 sm:mt-2">:</div>
+                <div class="text-center">
+                  <div class="font-serif-tc font-black text-3xl sm:text-5xl tabular-nums leading-none" x-text="hours"></div>
+                  <div class="text-[10px] sm:text-xs text-amber-200 mt-1 tracking-widest">HOURS 時</div>
+                </div>
+                <div class="font-serif-tc text-2xl sm:text-4xl text-amber-300 self-start mt-1 sm:mt-2">:</div>
+                <div class="text-center">
+                  <div class="font-serif-tc font-black text-3xl sm:text-5xl tabular-nums leading-none" x-text="mins"></div>
+                  <div class="text-[10px] sm:text-xs text-amber-200 mt-1 tracking-widest">MINS 分</div>
+                </div>
+                <div class="font-serif-tc text-2xl sm:text-4xl text-amber-300 self-start mt-1 sm:mt-2">:</div>
+                <div class="text-center">
+                  <div class="font-serif-tc font-black text-3xl sm:text-5xl tabular-nums leading-none text-[var(--vermilion)] animate-pulse" x-text="secs"></div>
+                  <div class="text-[10px] sm:text-xs text-amber-200 mt-1 tracking-widest">SECS 秒</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+        <!-- 比賽「進行中」狀態 -->
+        <template x-if="phase === 'live'">
+          <div class="bg-gradient-to-r from-[var(--vermilion)] to-[var(--vermilion-dark)] text-white p-5 sm:p-6 rounded-sm shadow-lg">
+            <div class="flex items-center gap-4">
+              <div class="w-3 h-3 bg-amber-300 rounded-full animate-pulse"></div>
+              <div>
+                <div class="text-xs tracking-[0.3em] text-amber-300 font-bold mb-1">LIVE NOW ・ 競賽進行中</div>
+                <div class="font-serif-tc text-2xl sm:text-3xl font-bold">2026 桃園市語文競賽龍潭區複賽</div>
+                <div class="text-sm text-white/85 mt-1">17 大項 ・ 33 場細分賽事正在進行 ・ 查詢「我的比賽時間」掌握進度</div>
+              </div>
+            </div>
+          </div>
+        </template>
+        <!-- 比賽「已結束」狀態 -->
+        <template x-if="phase === 'ended'">
+          <div class="bg-gradient-to-r from-[var(--jade)] to-[#2d4a32] text-white p-5 sm:p-6 rounded-sm shadow-lg">
+            <div class="text-center">
+              <div class="text-2xl mb-2">🎉</div>
+              <div class="font-serif-tc text-xl sm:text-2xl font-bold">2026 賽事圓滿落幕 ・ 感謝參與</div>
+              <div class="text-sm text-white/85 mt-2">期待 2027 年再相見 ・ 願語文之美永續傳承</div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- ──────────────── 一鍵分享 ──────────────── -->
+      <div x-data="shareWidget()" class="mt-5 no-print">
+        <div class="bg-white/70 backdrop-blur border border-[var(--gold)]/30 p-3 sm:p-4 rounded-sm">
+          <div class="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3">
+            <div class="text-sm text-[var(--ink-soft)] font-bold flex items-center gap-2">
+              <span class="text-lg">📢</span>
+              <span>邀請朋友家長一同關注</span>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <!-- LINE -->
+              <a :href="lineShareUrl" target="_blank" rel="noopener" title="分享到 LINE"
+                 class="px-3 py-2 bg-[#06C755] hover:bg-[#05a648] text-white text-sm font-bold rounded-sm transition flex items-center gap-1.5 shadow-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.63 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+                LINE
+              </a>
+              <!-- FB -->
+              <a :href="fbShareUrl" target="_blank" rel="noopener" title="分享到 Facebook"
+                 class="px-3 py-2 bg-[#1877F2] hover:bg-[#0d65d9] text-white text-sm font-bold rounded-sm transition flex items-center gap-1.5 shadow-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                Facebook
+              </a>
+              <!-- Threads -->
+              <a :href="threadsShareUrl" target="_blank" rel="noopener" title="分享到 Threads"
+                 class="px-3 py-2 bg-black hover:bg-gray-800 text-white text-sm font-bold rounded-sm transition flex items-center gap-1.5 shadow-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.31-6.015-2.912.022-5.114.936-6.543 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.543 2.717 2.625-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.74-1.757-.514-.586-1.318-.886-2.394-.886h-.029c-.872 0-2.05.243-2.795 1.355L7.36 8.49c1-1.49 2.617-2.31 4.555-2.31h.045c3.211.024 5.193 1.997 5.388 5.428.111.046.221.094.328.143 1.515.713 2.629 1.798 3.221 3.144.832 1.879.911 4.93-1.564 7.395-1.892 1.873-4.195 2.682-7.187 2.71zm1.075-8.66c-.236 0-.477.005-.722.018-1.836.103-2.979.94-2.916 2.131.066 1.249 1.448 1.83 2.97 1.726 1.394-.073 3.04-.66 3.314-3.85a10.985 10.985 0 0 0-2.646-.025z"/></svg>
+                Threads
+              </a>
+              <!-- 複製連結 -->
+              <button @click="copyLink()" :class="copied ? 'bg-green-600' : 'bg-[var(--ink)] hover:bg-[var(--vermilion)]'"
+                      class="px-3 py-2 text-white text-sm font-bold rounded-sm transition flex items-center gap-1.5 shadow-sm">
+                <svg x-show="!copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <svg x-show="copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span x-text="copied ? '已複製!' : '複製連結'"></span>
+              </button>
+              <!-- QR Code -->
+              <a href="poster.html" target="_blank" title="下載 QR Code 海報"
+                 class="px-3 py-2 bg-white text-[var(--ink)] border border-[var(--ink)] hover:bg-[var(--ink)] hover:text-white text-sm font-bold rounded-sm transition flex items-center gap-1.5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zm0 12h2v-2h-2v2zm-6-8h2v2h-2v-2zm2 2h2v2h-2v-2zm-2 2h2v2h-2v-2zm2 2h2v2h-2v-2zm2-2h2v2h-2v-2zm0-4h2v2h-2v-2zm2 2h2v2h-2v-2z"/></svg>
+                QR 海報
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 快速導覽 -->
-      <nav class="mt-10 flex flex-wrap gap-2 sm:gap-3 no-print">
+      <nav class="mt-6 flex flex-wrap gap-2 sm:gap-3 no-print">
         <a href="#my-race" class="px-4 py-2 bg-[var(--vermilion)] text-white text-sm font-medium hover:bg-[var(--vermilion-dark)] transition shadow-md">🔍 查詢我的比賽時間</a>
         <a href="#audience" class="px-4 py-2 bg-[var(--ink)] text-[var(--paper)] text-sm font-medium hover:bg-[var(--vermilion)] transition">我是…</a>
         <a href="#schedule" class="px-4 py-2 bg-white border border-[var(--ink)] text-[var(--ink)] text-sm font-medium hover:bg-[var(--ink)] hover:text-[var(--paper)] transition">完整賽程</a>
@@ -1220,6 +1324,35 @@
   </div>
 </section>
 
+<!-- 再次邀請分享(Footer 之上) -->
+<section x-data="shareWidget()" class="py-10 bg-gradient-to-r from-[var(--paper-2)]/60 to-[var(--paper)] border-t border-[var(--gold)]/30 no-print">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <div class="text-4xl mb-3">📣</div>
+    <h3 class="font-serif-tc text-2xl sm:text-3xl font-bold mb-2">把這個網站分享給更多人</h3>
+    <p class="text-sm text-gray-600 mb-6">讓所有參賽選手、指導老師、家長都能掌握完整資訊。</p>
+    <div class="flex flex-wrap gap-2 justify-center">
+      <a :href="lineShareUrl" target="_blank" rel="noopener" class="px-5 py-2.5 bg-[#06C755] hover:bg-[#05a648] text-white font-bold rounded-sm transition shadow-md inline-flex items-center gap-2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.63 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+        分享到 LINE
+      </a>
+      <a :href="fbShareUrl" target="_blank" rel="noopener" class="px-5 py-2.5 bg-[#1877F2] hover:bg-[#0d65d9] text-white font-bold rounded-sm transition shadow-md inline-flex items-center gap-2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        分享到 Facebook
+      </a>
+      <button @click="copyLink()" :class="copied ? 'bg-green-600' : 'bg-[var(--ink)] hover:bg-[var(--vermilion)]'" class="px-5 py-2.5 text-white font-bold rounded-sm transition shadow-md inline-flex items-center gap-2">
+        <svg x-show="!copied" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <svg x-show="copied" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <span x-text="copied ? '已複製到剪貼簿!' : '複製連結'"></span>
+      </button>
+      <a href="poster.html" target="_blank" class="px-5 py-2.5 bg-white text-[var(--ink)] border-2 border-[var(--ink)] hover:bg-[var(--ink)] hover:text-white font-bold rounded-sm transition shadow-md inline-flex items-center gap-2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zm0 12h2v-2h-2v2zm-6-8h2v2h-2v-2zm2 2h2v2h-2v-2zm-2 2h2v2h-2v-2zm2 2h2v2h-2v-2zm2-2h2v2h-2v-2zm0-4h2v2h-2v-2zm2 2h2v2h-2v-2z"/></svg>
+        下載 QR Code 海報
+      </a>
+    </div>
+    <p class="text-xs text-gray-400 mt-5">分享網址：<code class="bg-white px-2 py-0.5 rounded-sm border border-gray-200 font-mono" x-text="url"></code></p>
+  </div>
+</section>
+
 <!-- Footer -->
 <footer class="bg-[var(--ink)] text-[var(--paper)]/60 py-6 border-t border-[var(--paper)]/10">
   <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
@@ -1238,6 +1371,79 @@
 </a>
 
 <script>
+// ════════════════════════════════════════════════
+// 倒數計時器(D1.1)
+//   phase: 'before' / 'live' / 'ended'
+//   每秒重新計算 days/hours/mins/secs
+// ════════════════════════════════════════════════
+function countdown() {
+  return {
+    days: '00', hours: '00', mins: '00', secs: '00',
+    phase: 'before',
+    meta: COMP_DATA.meta,
+    init() {
+      this.tick();
+      setInterval(() => this.tick(), 1000);
+    },
+    tick() {
+      const now = new Date();
+      // 開賽:競賽日 09:10(第一場開始)
+      const [Y, M, D] = COMP_DATA.meta.date.split('-').map(Number);
+      const raceStart = new Date(Y, M - 1, D, 9, 10, 0);
+      // 結束:當天 12:00
+      const raceEnd = new Date(Y, M - 1, D, 12, 0, 0);
+      const diff = raceStart - now;
+      if (now >= raceEnd) { this.phase = 'ended'; return; }
+      if (now >= raceStart) { this.phase = 'live'; return; }
+      this.phase = 'before';
+      const s = Math.floor(diff / 1000);
+      const d = Math.floor(s / 86400);
+      const h = Math.floor((s % 86400) / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const sec = s % 60;
+      const pad = n => (n < 10 ? '0' + n : '' + n);
+      this.days = pad(d); this.hours = pad(h); this.mins = pad(m); this.secs = pad(sec);
+    },
+  };
+}
+
+// ════════════════════════════════════════════════
+// 一鍵分享(D1.2)
+//   LINE / FB / Threads / 複製連結 / QR 海報
+// ════════════════════════════════════════════════
+function shareWidget() {
+  return {
+    copied: false,
+    url: 'https://cagoooo.github.io/Language-Competitions/',
+    text: '【2026 桃園市語文競賽 龍潭區複賽】 5/23(六)於石門國小舉行 ・ 完整賽程、抽題上台查詢、家長須知都在這:',
+    get lineShareUrl() {
+      // LINE 分享:文字 + 連結(換行用 %0A)
+      return 'https://line.me/R/msg/text/?' + encodeURIComponent(this.text + '\n' + this.url);
+    },
+    get fbShareUrl() {
+      return 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(this.url);
+    },
+    get threadsShareUrl() {
+      return 'https://www.threads.net/intent/post?text=' + encodeURIComponent(this.text + '\n' + this.url);
+    },
+    async copyLink() {
+      try {
+        await navigator.clipboard.writeText(this.url);
+      } catch (e) {
+        // Safari/舊瀏覽器 fallback
+        const ta = document.createElement('textarea');
+        ta.value = this.url;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (_) {}
+        document.body.removeChild(ta);
+      }
+      this.copied = true;
+      setTimeout(() => { this.copied = false; }, 2500);
+    },
+  };
+}
+
 // ════════════════════════════════════════════════
 // 全域 Live 狀態(跨 component 共享)
 //  - simulateTime: '' = 用真實時間; 'HH:MM' = 用模擬時間預覽 5/23 當天某時刻
