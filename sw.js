@@ -15,26 +15,18 @@
  *   → 跳出「網站有新版,點此重新整理」橫條(由 index.html 內 JS 監聽)。
  */
 
-const CACHE_VERSION = 'smes-langcomp-2026-05-14-011';
+const CACHE_VERSION = 'smes-langcomp-2026-05-14-012';
 const CACHE_NAME = `smes-langcomp::${CACHE_VERSION}`;
 
-// 安裝:預快取核心離線 fallback(只放最關鍵的少數檔案)
+// 安裝:**只預快取首屏關鍵 3 個檔案**,避免拖累首屏 LCP
+// 其他資源(host.html / poster.html / qrcode.min.js / icons …)走 runtime cache,
+// 真的造訪時再進快取,不會卡到首頁載入。
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) =>
       cache.addAll([
         './',
         './index.html',
-        './events.js',
-        './favicon.svg',
-        './apple-touch-icon.png',
-        './site.webmanifest',
-        './sitemap.xml',
-        './robots.txt',
-        './host.html',
-        './host-scripts.js',
-        './poster.html',
-        './qrcode.min.js',
         './tailwind.min.css',
       ]).catch(() => {/* 部分失敗不阻擋安裝 */})
     )
