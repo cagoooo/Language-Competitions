@@ -159,30 +159,140 @@
   }
   h2 .red { color: var(--vermilion); }
 
+  /* ── QR Code 區塊精緻化 ── */
   .qr-area {
     background: white;
-    border: 6px double var(--ink);
-    padding: 16px;
-    margin: 14px auto;
+    padding: 20px 20px 16px;
+    margin: 14px auto 0;
     width: 320px;
     text-align: center;
+    border: 1px solid #e8dfc8;
+    border-radius: 4px;
+    box-shadow:
+      0 2px 0 0 rgba(0,0,0,0.04),
+      0 6px 16px rgba(193,39,45,0.08);
+    position: relative;
   }
-  #qrcode { display: flex; justify-content: center; }
-  #qrcode canvas, #qrcode img { display: block; }
+
+  /* QR 框:四角對位框視覺引導 */
+  .qr-frame {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 0 auto;
+    padding: 12px;
+    background: white;
+  }
+  /* 四個角的視覺角標 — 共用 ::before/::after + 兩個子角標 */
+  .qr-frame::before,
+  .qr-frame::after,
+  .qr-frame > .qr-corner-bl,
+  .qr-frame > .qr-corner-br {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-color: var(--vermilion);
+    border-style: solid;
+    border-width: 0;
+  }
+  .qr-frame::before { top: 0; left: 0; border-top-width: 3px; border-left-width: 3px; border-top-left-radius: 4px; }
+  .qr-frame::after { top: 0; right: 0; border-top-width: 3px; border-right-width: 3px; border-top-right-radius: 4px; }
+  .qr-frame > .qr-corner-bl { bottom: 0; left: 0; border-bottom-width: 3px; border-left-width: 3px; border-bottom-left-radius: 4px; }
+  .qr-frame > .qr-corner-br { bottom: 0; right: 0; border-bottom-width: 3px; border-right-width: 3px; border-bottom-right-radius: 4px; }
+
+  /* QR Code 圖本身 */
+  #qrcode { display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; }
+  #qrcode canvas, #qrcode img { display: block; max-width: 100%; height: auto; }
+
+  /* 中央 logo 印章覆蓋(QR H 級錯誤更正可容許) */
+  .qr-frame .qr-logo {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px; height: 44px;
+    background: var(--vermilion);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 24px;
+    border: 2px solid white;
+    box-shadow: inset 0 0 0 1px var(--vermilion-dark);
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 5;
+  }
+
   .qr-label {
     margin-top: 14px;
     font-family: 'Noto Serif TC', serif;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
     color: var(--ink);
     letter-spacing: 0.05em;
   }
   .qr-url {
-    margin-top: 6px;
+    margin-top: 4px;
     font-family: ui-monospace, monospace;
-    font-size: 11px;
-    color: #888;
+    font-size: 10px;
+    color: #999;
     word-break: break-all;
+  }
+
+  /* 掃描步驟引導(QR 下方,黑底白字 chip) */
+  .qr-steps {
+    margin: 12px auto 0;
+    max-width: 380px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    text-align: center;
+  }
+  .qr-step {
+    background: white;
+    border: 1px solid #e8dfc8;
+    border-radius: 3px;
+    padding: 8px 4px;
+    font-size: 10px;
+    color: #555;
+    line-height: 1.4;
+  }
+  .qr-step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    background: var(--vermilion);
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 900;
+    margin-bottom: 4px;
+  }
+  .qr-step-text { display: block; font-weight: 700; color: var(--ink); }
+
+  /* QR 區下方提示徽章 */
+  .qr-badges {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .qr-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 8px;
+    background: rgba(193,39,45,0.08);
+    color: var(--vermilion-dark);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
   }
 
   .info-grid {
@@ -294,15 +404,48 @@
     </div>
 
     <div class="qr-area">
-      <div id="qrcode">
-        <!-- 載入中提示(QR 庫載入完成後會被取代) -->
-        <div id="qr-loading" style="padding:60px 0;color:#888;font-size:14px;">
-          <div style="font-size:32px;margin-bottom:8px;">⏳</div>
-          QR Code 載入中…
+      <!-- QR Code + 四角對位框 + 中央 logo -->
+      <div class="qr-frame">
+        <span class="qr-corner-bl"></span>
+        <span class="qr-corner-br"></span>
+        <div id="qrcode">
+          <div id="qr-loading" style="padding:40px 0;color:#888;font-size:13px;">
+            <div style="font-size:28px;margin-bottom:6px;">⏳</div>
+            QR Code 載入中…
+          </div>
         </div>
+        <!-- 中央印章 logo(QR H 級錯誤更正可承受) -->
+        <div class="qr-logo" aria-hidden="true">語</div>
       </div>
+
       <div class="qr-label">📱 掃描查看 完整賽程</div>
       <div class="qr-url" id="qrUrl">https://cagoooo.github.io/Language-Competitions/</div>
+
+      <!-- 三段提示徽章 -->
+      <div class="qr-badges">
+        <span class="qr-badge">✓ 完全免費</span>
+        <span class="qr-badge">✓ 無需註冊</span>
+        <span class="qr-badge">✓ 手機友善</span>
+      </div>
+    </div>
+
+    <!-- QR 下方:三步驟操作引導 -->
+    <div class="qr-steps">
+      <div class="qr-step">
+        <div class="qr-step-num">1</div>
+        <span class="qr-step-text">打開手機相機</span>
+        對準 QR 即可
+      </div>
+      <div class="qr-step">
+        <div class="qr-step-num">2</div>
+        <span class="qr-step-text">點選彈出連結</span>
+        進入競賽網站
+      </div>
+      <div class="qr-step">
+        <div class="qr-step-num">3</div>
+        <span class="qr-step-text">查詢我的場次</span>
+        加入手機行事曆
+      </div>
     </div>
 
     <!-- 彈性空白,把 bottom-banner 推到 A4 紙底部 -->
@@ -350,10 +493,12 @@ function genQR(url) {
   const el = document.getElementById('qrcode');
   el.innerHTML = '';
   try {
+    // 配合 qr-frame(內距 12px + 寬 260px)→ QR 實際 236px
+    // H 級錯誤更正(30% 容錯)→ 中央可安全嵌入 ~44px logo
     new QRCode(el, {
       text: url,
-      width: 320,
-      height: 320,
+      width: 236,
+      height: 236,
       colorDark: '#1a1a1a',
       colorLight: '#ffffff',
       correctLevel: QRCode.CorrectLevel.H,
