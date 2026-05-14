@@ -1,0 +1,8 @@
+# 2026 桃園市語文競賽龍潭區複賽 - robots.txt
+# 允許所有合法搜尋引擎爬取
+User-agent: *
+Allow: /
+Disallow: /events.js$
+
+# sitemap 位置
+Sitemap: https://cagoooo.github.io/Language-Competitions/sitemap.xml

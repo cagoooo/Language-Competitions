@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://cagoooo.github.io/Language-Competitions/</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://cagoooo.github.io/Language-Competitions/og.png</image:loc>
+      <image:title>2026 桃園市 115 年語文競賽龍潭區複賽</image:title>
+      <image:caption>2026/5/23（六）於石門國民小學舉行</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://cagoooo.github.io/Language-Competitions/poster.html</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>

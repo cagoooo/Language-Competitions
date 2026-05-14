@@ -218,4 +218,168 @@ window.COMP_UTILS = {
     const d = now.getFullYear() + '-' + this.pad2(now.getMonth() + 1) + '-' + this.pad2(now.getDate());
     return d === window.COMP_DATA.meta.date;
   },
+
+  // ──────────────────────────────────────────────
+  // ICS 行事曆匯出工具(D1.6)
+  // ──────────────────────────────────────────────
+
+  /** "20260523" 格式日期(從 meta.date "2026-05-23") */
+  _icsDate() {
+    return window.COMP_DATA.meta.date.replace(/-/g, '');
+  },
+
+  /** "HH:MM" → "HHMM00" ICS 時間格式 */
+  _icsTime(hhmm) {
+    return hhmm.replace(':', '') + '00';
+  },
+
+  /** ICS 文字跳脫:逗號、分號、反斜線、換行 */
+  _icsEsc(s) {
+    return String(s || '')
+      .replace(/\\/g, '\\\\')
+      .replace(/;/g, '\\;')
+      .replace(/,/g, '\\,')
+      .replace(/\n/g, '\\n')
+      .replace(/\r/g, '');
+  },
+
+  /** 折行:ICS 規範一行不超過 75 octets(中文謹慎處理,簡化為 70 chars) */
+  _icsFold(line) {
+    if (line.length <= 70) return line;
+    const out = [];
+    for (let i = 0; i < line.length; i += 70) {
+      out.push((i === 0 ? '' : ' ') + line.substring(i, i + 70));
+    }
+    return out.join('\r\n');
+  },
+
+  /** 取得單一事件的 ICS VEVENT block(含選手序號,若有 seatNo 則含個人提醒) */
+  buildVEvent(event, opts = {}) {
+    const seatNo = opts.seatNo;          // 1, 2, 3...,若指定則加上「第 N 號」資訊
+    const meta = window.COMP_DATA.meta;
+    const date = this._icsDate();
+
+    // 計算個人時段:報到開始 → 比賽結束
+    const [checkinStart] = event.checkin.split('-');
+    const [, endTime] = event.time.split('-');
+
+    // 若指定 seatNo,DTSTART 用「該選手上台前 30 分鐘」更實用
+    let dtStart, dtEnd, summary, description;
+    if (seatNo) {
+      const takeoff = event.drawStart
+        ? this.addMinutes(event.takeoffStart, (seatNo - 1) * event.takeoffStep)
+        : event.writeStart;
+      // 提早 30 分鐘到場 vs. 報到開始時間,取較早者
+      const arriveBy = Math.min(this.toMin(takeoff) - 30, this.toMin(checkinStart));
+      const arriveBymStr = this.pad2(Math.floor(arriveBy/60)) + ':' + this.pad2(arriveBy%60);
+      dtStart = `${date}T${this._icsTime(arriveBymStr)}`;
+      const myEnd = event.drawStart
+        ? this.addMinutes(takeoff, event.takeoffStep)  // 上台時間 + 該組單人時間上限
+        : endTime;
+      dtEnd = `${date}T${this._icsTime(myEnd)}`;
+      summary = `第${event.no}場 ${event.title}(${event.group})- 我是${seatNo}號`;
+      const drawInfo = event.drawStart
+        ? `\n抽題：${this.drawTimeOf(event, seatNo)}\n上台：${takeoff}`
+        : `\n開賽時間：${event.writeStart} ~ ${event.writeEnd}（全體同時）`;
+      description =
+        `2026 桃園市 115 年語文競賽龍潭區複賽\n` +
+        `\n你的序號：${seatNo}\n` +
+        `項目：${event.title} - ${event.group}\n` +
+        `地點：${event.venue}\n` +
+        (event.prep ? `預備室：${event.prep}\n` : '') +
+        `\n報到時間：${event.checkin}${drawInfo}\n` +
+        `\n時間限制：${event.timeLimit || ''}\n` +
+        (event.special ? `${event.special}\n` : '') +
+        `\n聯絡：石門國小總機 ${meta.school.phone}\n` +
+        `\n詳情：https://cagoooo.github.io/Language-Competitions/`;
+    } else {
+      // 全場:報到開始 → 比賽結束
+      dtStart = `${date}T${this._icsTime(checkinStart)}`;
+      dtEnd = `${date}T${this._icsTime(endTime)}`;
+      summary = `第${event.no}場 ${event.title}(${event.group})`;
+      description =
+        `2026 桃園市 115 年語文競賽龍潭區複賽\n` +
+        `\n項目：${event.title} - ${event.group}（${event.count} 人）\n` +
+        `地點：${event.venue}\n` +
+        (event.prep ? `預備室：${event.prep}\n` : '') +
+        `\n報到時間：${event.checkin}\n` +
+        (event.drawStart ? `第1號抽題：${event.drawStart}\n` : '') +
+        `比賽時間：${event.time}\n` +
+        (event.timeLimit ? `\n時間限制：${event.timeLimit}\n` : '') +
+        `\n詳情：https://cagoooo.github.io/Language-Competitions/`;
+    }
+
+    const uid = `smes-langcomp-${meta.yearAD}-${event.no}-${event.group}${seatNo ? '-no' + seatNo : ''}@cagoooo.github.io`;
+    const now = new Date();
+    const dtstamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+
+    const lines = [
+      'BEGIN:VEVENT',
+      `UID:${uid}`,
+      `DTSTAMP:${dtstamp}`,
+      `DTSTART;TZID=Asia/Taipei:${dtStart}`,
+      `DTEND;TZID=Asia/Taipei:${dtEnd}`,
+      this._icsFold(`SUMMARY:${this._icsEsc(summary)}`),
+      this._icsFold(`LOCATION:${this._icsEsc(`${meta.organizer} ${event.venue}`)}`),
+      this._icsFold(`DESCRIPTION:${this._icsEsc(description)}`),
+      'STATUS:CONFIRMED',
+      'TRANSP:OPAQUE',
+      // 個人版加兩個提醒:30 分鐘前、5 分鐘前
+      ...(seatNo ? [
+        'BEGIN:VALARM',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:語文競賽:30 分鐘後比賽開始',
+        'TRIGGER:-PT30M',
+        'END:VALARM',
+        'BEGIN:VALARM',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:語文競賽:5 分鐘後上台,請就位',
+        'TRIGGER:-PT5M',
+        'END:VALARM',
+      ] : []),
+      'END:VEVENT',
+    ];
+    return lines.join('\r\n');
+  },
+
+  /** 包裝完整 .ics 檔案內容 */
+  buildICS(events, opts = {}) {
+    const meta = window.COMP_DATA.meta;
+    const header = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//SMES//Language Competition 2026//ZH-Hant',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      `X-WR-CALNAME:${this._icsEsc(opts.calName || '2026 桃園市語文競賽龍潭區複賽')}`,
+      'X-WR-TIMEZONE:Asia/Taipei',
+      // Asia/Taipei VTIMEZONE 定義(全年 UTC+8 無 DST)
+      'BEGIN:VTIMEZONE',
+      'TZID:Asia/Taipei',
+      'BEGIN:STANDARD',
+      'DTSTART:19700101T000000',
+      'TZOFFSETFROM:+0800',
+      'TZOFFSETTO:+0800',
+      'TZNAME:CST',
+      'END:STANDARD',
+      'END:VTIMEZONE',
+    ].join('\r\n');
+    const body = events.map((e) => this.buildVEvent(e, opts)).join('\r\n');
+    const footer = 'END:VCALENDAR';
+    return header + '\r\n' + body + '\r\n' + footer + '\r\n';
+  },
+
+  /** 觸發 .ics 下載 */
+  downloadICS(content, filename) {
+    // 加 BOM 讓 Outlook 正確識別中文(可選,純 UTF-8 也可)
+    const blob = new Blob(['﻿' + content], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  },
 };
