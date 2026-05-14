@@ -14,7 +14,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 
-<!-- 不再直接 src CDN,改由 JS 動態載入並 fallback,避免單一 CDN 失敗導致 QR 空白 -->
+<!-- QR Code 庫:本地檔(同源,絕對可靠) -->
+<script src="qrcode.min.js"></script>
 
 <style>
   :root {
@@ -310,30 +311,7 @@
 </div>
 
 <script>
-// ─── 多 CDN fallback 動態載入 QRCode.js ───
-// 任一 CDN 失敗會自動嘗試下一個,全部失敗則顯示備援卡片
-const QR_CDN_URLS = [
-  'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js',
-  'https://unpkg.com/qrcode@1.5.3/build/qrcode.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js',
-];
-
-function loadScriptWithFallback(urls, idx = 0) {
-  return new Promise((resolve, reject) => {
-    if (idx >= urls.length) return reject(new Error('全部 CDN 都載入失敗'));
-    const s = document.createElement('script');
-    s.src = urls[idx];
-    s.async = true;
-    s.onload = () => resolve(urls[idx]);
-    s.onerror = () => {
-      console.warn('[QR] CDN failed:', urls[idx]);
-      s.remove();
-      loadScriptWithFallback(urls, idx + 1).then(resolve, reject);
-    };
-    document.head.appendChild(s);
-  });
-}
-
+// QR Code 生成(使用 davidshimjs/qrcodejs API,本地檔已同源載入)
 function showQRFallback(url, errMsg) {
   const el = document.getElementById('qrcode');
   el.innerHTML = `
@@ -341,36 +319,33 @@ function showQRFallback(url, errMsg) {
       <div style="font-size:36px;margin-bottom:10px;">⚠️</div>
       <div style="font-weight:bold;font-size:15px;margin-bottom:8px;">QR Code 載入失敗</div>
       <div style="font-size:12px;color:#888;line-height:1.6;">
-        請手動輸入網址造訪:<br>
+        請手動輸入網址造訪：<br>
         <strong style="color:#1a1a1a;word-break:break-all;font-size:13px;">${url}</strong>
       </div>
-      <button onclick="initQR()" style="margin-top:14px;padding:6px 14px;background:#c1272d;color:white;border:0;border-radius:3px;cursor:pointer;font-size:12px;">🔄 重新嘗試</button>
+      <button onclick="genQR(document.getElementById('urlInput').value)" style="margin-top:14px;padding:6px 14px;background:#c1272d;color:white;border:0;border-radius:3px;cursor:pointer;font-size:12px;">🔄 重新嘗試</button>
     </div>`;
-  console.error('[QR] All CDNs failed:', errMsg);
+  console.error('[QR] failed:', errMsg);
 }
 
 function genQR(url) {
   if (typeof QRCode === 'undefined') {
-    showQRFallback(url, 'QRCode 物件未定義');
+    showQRFallback(url, 'QRCode 庫尚未載入,請檢查 qrcode.min.js 是否存在');
     return;
   }
   const el = document.getElementById('qrcode');
   el.innerHTML = '';
   try {
-    QRCode.toCanvas(url, {
+    new QRCode(el, {
+      text: url,
       width: 320,
-      margin: 1,
-      errorCorrectionLevel: 'H',
-      color: { dark: '#1a1a1a', light: '#ffffff' }
-    }, (err, canvas) => {
-      if (err) {
-        showQRFallback(url, err.message || String(err));
-        return;
-      }
-      el.appendChild(canvas);
+      height: 320,
+      colorDark: '#1a1a1a',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H,
     });
   } catch (e) {
     showQRFallback(url, e.message || String(e));
+    return;
   }
   document.getElementById('qrUrl').textContent = url;
 }
@@ -381,18 +356,12 @@ function regenQR() {
   genQR(url);
 }
 
-function initQR() {
-  const url = document.getElementById('urlInput').value;
-  loadScriptWithFallback(QR_CDN_URLS)
-    .then((loadedFrom) => {
-      console.log('[QR] loaded from:', loadedFrom);
-      genQR(url);
-    })
-    .catch((err) => showQRFallback(url, err.message));
+// 初始載入(DOMContentLoaded 確保 #qrcode 與 QRCode 都已就位)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => genQR(document.getElementById('urlInput').value));
+} else {
+  genQR(document.getElementById('urlInput').value);
 }
-
-// 初始載入(動態取 CDN)
-initQR();
 </script>
 
 </body>
