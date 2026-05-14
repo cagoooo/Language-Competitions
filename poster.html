@@ -361,11 +361,133 @@
   }
   .poster-credits strong { color: rgba(250,246,239,0.85); }
 
+  /* ─────────────── RWD:手機 / 平板自適應 ─────────────── */
+  /* 平板/小螢幕(< 900px):縮小 padding,讓海報能 fit */
+  @media (max-width: 900px) {
+    body { padding: 16px; gap: 16px; }
+    .controls {
+      padding: 12px 16px;
+      gap: 8px;
+    }
+    .controls input[type=url] { min-width: 0; font-size: 12px; }
+    .controls button { padding: 8px 12px; font-size: 13px; }
+  }
+
+  /* 手機(< 640px):海報完全重排為流動版型,不再固定 A4 寬度 */
+  @media (max-width: 640px) {
+    body { padding: 8px; gap: 8px; }
+    .controls {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 10px 12px;
+    }
+    .controls label { font-size: 12px; }
+    .controls input[type=url] { width: 100%; font-size: 12px; }
+    .controls > div, .controls > button { width: 100%; }
+    .controls button { width: 100%; min-height: 40px; }
+
+    /* 海報:取消固定 A4 尺寸,改為全寬自適應 */
+    .poster {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      min-height: auto;
+      padding: 24px 18px 18px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.10);
+    }
+    .poster::before { font-size: 200px; right: -30px; bottom: -50px; }
+    .poster::after { width: 8px; box-shadow: 6px 0 0 0 var(--gold); }
+
+    /* 印章 + 副標 */
+    .seal { padding: 5px 12px; font-size: 14px; letter-spacing: 0.15em; }
+    .english-sub { font-size: 9px; margin: 4px 0 10px; }
+
+    /* 主標題大字 */
+    h1 { font-size: 36px; margin: 8px 0 4px; }
+    h2 { font-size: 26px; margin: 0 0 16px; }
+
+    /* 日期 / 場地兩欄改為單欄堆疊 */
+    .info-grid {
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .info-box { padding: 10px 14px; }
+    .info-box .label { font-size: 10px; margin-bottom: 2px; }
+    .info-box .value { font-size: 18px; }
+    .info-box .sub { font-size: 10px; }
+
+    /* QR 區塊縮小但仍可掃 */
+    .qr-area {
+      width: 100%;
+      max-width: 300px;
+      padding: 16px 14px 12px;
+      margin: 12px auto 0;
+    }
+    .qr-frame { width: 220px; height: 220px; padding: 10px; }
+    .qr-frame::before, .qr-frame::after,
+    .qr-frame > .qr-corner-bl, .qr-frame > .qr-corner-br {
+      width: 16px; height: 16px; border-width: 2.5px;
+    }
+    .qr-frame .qr-logo { width: 32px; height: 32px; font-size: 16px; }
+    .qr-label { font-size: 14px; margin-top: 10px; }
+    .qr-url { font-size: 9px; }
+    .qr-badges { margin-top: 8px; gap: 4px; }
+    .qr-badge { padding: 1.5px 6px; font-size: 9px; }
+
+    /* 三步驟卡:手機改三欄 grid 但字級縮小 */
+    .qr-steps {
+      max-width: 100%;
+      gap: 4px;
+      margin-top: 10px;
+    }
+    .qr-step {
+      padding: 6px 3px;
+      font-size: 9px;
+      line-height: 1.35;
+    }
+    .qr-step-num { width: 16px; height: 16px; font-size: 9px; margin-bottom: 2px; }
+
+    /* 彈性空白縮小 */
+    .spacer { min-height: 6px; }
+
+    /* 底部 banner */
+    .bottom-banner { margin-top: 12px; }
+    .features { padding: 12px 14px 10px; }
+    .features-title { font-size: 10.5px; letter-spacing: 0.2em; margin-bottom: 4px; }
+    .features-list { font-size: 11px; line-height: 1.65; }
+    .poster-credits {
+      padding: 8px 14px 10px;
+      font-size: 9.5px;
+      flex-direction: column;
+      gap: 2px;
+      align-items: flex-start;
+    }
+  }
+
+  /* 極小螢幕(< 380px):再進一步縮 */
+  @media (max-width: 380px) {
+    h1 { font-size: 30px; }
+    h2 { font-size: 22px; }
+    .qr-frame { width: 200px; height: 200px; }
+    .qr-step { font-size: 8.5px; }
+    .features-list { font-size: 10.5px; }
+  }
+
+  /* ─────────────── 列印:強制 A4 1:1 ─────────────── */
   @media print {
     @page { size: A4; margin: 0; }
     body { background: white; padding: 0; gap: 0; }
     .controls { display: none !important; }
-    .poster { box-shadow: none; margin: 0; width: 210mm; height: 297mm; }
+    .poster {
+      box-shadow: none;
+      margin: 0;
+      width: 210mm !important;
+      height: 297mm !important;
+      max-width: none !important;
+      padding: 18mm !important;
+    }
+    /* 列印時所有 @media (max-width) 規則不會影響,因為列印不算 viewport 寬 */
   }
 </style>
 </head>
@@ -485,6 +607,15 @@ function showQRFallback(url, errMsg) {
   console.error('[QR] failed:', errMsg);
 }
 
+function getQRSize() {
+  // 依 .qr-frame 實際寬度決定 QR Code 渲染尺寸
+  // 預設 236;手機(<640px)→ 200;極小(<380)→ 180
+  const w = window.innerWidth;
+  if (w < 380) return 180;
+  if (w < 640) return 200;
+  return 236;
+}
+
 function genQR(url) {
   if (typeof QRCode === 'undefined') {
     showQRFallback(url, 'QRCode 庫尚未載入,請檢查 qrcode.min.js 是否存在');
@@ -492,13 +623,12 @@ function genQR(url) {
   }
   const el = document.getElementById('qrcode');
   el.innerHTML = '';
+  const size = getQRSize();
   try {
-    // 配合 qr-frame(內距 12px + 寬 260px)→ QR 實際 236px
-    // H 級錯誤更正(30% 容錯)→ 中央可安全嵌入 ~44px logo
     new QRCode(el, {
       text: url,
-      width: 236,
-      height: 236,
+      width: size,
+      height: size,
       colorDark: '#1a1a1a',
       colorLight: '#ffffff',
       correctLevel: QRCode.CorrectLevel.H,
@@ -509,6 +639,16 @@ function genQR(url) {
   }
   document.getElementById('qrUrl').textContent = url;
 }
+
+// 視窗 resize / 旋轉時重繪 QR(debounced)
+let _qrResizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(_qrResizeTimer);
+  _qrResizeTimer = setTimeout(() => {
+    const url = document.getElementById('urlInput').value;
+    if (url && typeof QRCode !== 'undefined') genQR(url);
+  }, 200);
+});
 
 function regenQR() {
   const url = document.getElementById('urlInput').value.trim();
