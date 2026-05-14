@@ -211,29 +211,41 @@
 </head>
 <body class="paper-texture">
 
-<!-- 頂部公告條 -->
-<div class="bg-[var(--ink)] text-[var(--paper)] py-2 text-center text-xs sm:text-sm tracking-wider no-print">
-  <span class="inline-block animate-pulse text-[var(--vermilion)] mr-1">●</span>
-  競賽日期：<strong class="text-amber-200">2026 年 5 月 23 日（星期六）</strong>
-  ｜ 校園開放時間：07:50
-  ｜ 承辦：石門國小
+<!-- 頂部公告條(RWD:手機隱藏次要資訊) -->
+<div class="bg-[var(--ink)] text-[var(--paper)] py-2 px-3 text-xs sm:text-sm no-print">
+  <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-1 tracking-wider">
+    <span class="inline-flex items-center gap-1.5 whitespace-nowrap">
+      <span class="inline-block w-2 h-2 bg-[var(--vermilion)] rounded-full animate-pulse"></span>
+      <strong class="text-amber-200">2026 / 5 / 23（六）</strong>
+    </span>
+    <span class="hidden sm:inline text-[var(--paper)]/30">｜</span>
+    <span class="whitespace-nowrap">校園開放 <strong class="text-amber-200">07:50</strong></span>
+    <span class="hidden sm:inline text-[var(--paper)]/30">｜</span>
+    <span class="whitespace-nowrap hidden sm:inline">承辦：石門國小</span>
+  </div>
 </div>
 
 <!-- Hero 區 -->
 <header class="watermark-bg relative">
-  <div class="max-w-6xl mx-auto px-6 py-12 sm:py-20 relative z-10">
+  <div class="max-w-6xl mx-auto px-5 sm:px-6 py-10 sm:py-16 md:py-20 relative z-10">
     <div class="flex flex-col items-start">
-      <div class="flex items-center gap-3 mb-6">
+      <!-- 印章 + 英文副標(手機改 stack) -->
+      <div class="flex flex-wrap items-center gap-3 mb-5 sm:mb-6">
         <span class="seal text-sm sm:text-base">語文競賽</span>
-        <span class="text-xs sm:text-sm text-[var(--ink-soft)] tracking-widest uppercase">Longtan District · Linguistic Competition</span>
+        <span class="text-[10px] sm:text-xs md:text-sm text-[var(--ink-soft)] tracking-[0.15em] sm:tracking-widest uppercase leading-tight">
+          Longtan District<br class="sm:hidden">
+          <span class="hidden sm:inline"> · </span>Linguistic Competition
+        </span>
       </div>
 
-      <h1 class="font-serif-tc text-4xl sm:text-6xl md:text-7xl font-black text-[var(--ink)] leading-tight tracking-wide">
+      <!-- 主標題(響應式字級) -->
+      <h1 class="font-serif-tc text-[2.5rem] leading-[1.15] sm:text-6xl md:text-7xl font-black text-[var(--ink)] tracking-wide">
         桃園市 <span class="text-[var(--vermilion)]">115</span> 年<br>
         語文競賽<span class="text-[var(--vermilion)]">龍潭區</span>複賽
       </h1>
 
-      <p class="mt-6 text-lg sm:text-xl text-[var(--ink-soft)] font-light leading-relaxed max-w-3xl">
+      <!-- 副標(手機行間距更舒適) -->
+      <p class="mt-5 sm:mt-6 text-base sm:text-xl text-[var(--ink-soft)] font-light leading-relaxed max-w-3xl">
         承文化薪火，傳語文之美。<br class="hidden sm:block">
         三十三場細分賽事、三組對象、一日匯聚於石門國小，<br class="hidden sm:block">
         歡迎參賽選手、指導老師與家長共同見證。
@@ -265,33 +277,33 @@
 
       <!-- ──────────────── 倒數計時器 ──────────────── -->
       <div x-data="countdown()" class="mt-10 no-print">
-        <!-- 比賽日「之前」狀態 -->
+        <!-- 比賽日「之前」狀態(RWD:手機標題置上、數字置下) -->
         <template x-if="phase === 'before'">
-          <div class="bg-gradient-to-r from-[var(--ink)] via-[var(--vermilion-dark)] to-[var(--ink)] text-white p-5 sm:p-6 rounded-sm shadow-lg">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
-                <div class="text-xs tracking-[0.3em] text-amber-300 font-bold mb-1">COUNTDOWN ・ 距離開賽</div>
-                <div class="text-xs text-white/70" x-text="`${meta.date}（${meta.dayOfWeek}）07:50 開放入校`"></div>
+          <div class="bg-gradient-to-r from-[var(--ink)] via-[var(--vermilion-dark)] to-[var(--ink)] text-white p-4 sm:p-6 rounded-sm shadow-lg">
+            <div class="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3 sm:gap-4">
+              <div class="text-center sm:text-left">
+                <div class="text-[10px] sm:text-xs tracking-[0.25em] sm:tracking-[0.3em] text-amber-300 font-bold mb-0.5">COUNTDOWN ・ 距離開賽</div>
+                <div class="text-[11px] sm:text-xs text-white/70" x-text="`${meta.date}（${meta.dayOfWeek}）07:50 開放入校`"></div>
               </div>
-              <div class="flex items-center gap-2 sm:gap-3">
-                <div class="text-center">
-                  <div class="font-serif-tc font-black text-3xl sm:text-5xl tabular-nums leading-none" x-text="days"></div>
-                  <div class="text-[10px] sm:text-xs text-amber-200 mt-1 tracking-widest">DAYS 天</div>
+              <div class="grid grid-cols-4 gap-1.5 sm:flex sm:items-center sm:gap-3 w-full sm:w-auto">
+                <div class="text-center bg-white/5 rounded-sm py-1.5 sm:bg-transparent sm:py-0">
+                  <div class="font-serif-tc font-black text-2xl sm:text-5xl tabular-nums leading-none" x-text="days"></div>
+                  <div class="text-[9px] sm:text-xs text-amber-200 mt-0.5 sm:mt-1 tracking-widest">DAYS 天</div>
                 </div>
-                <div class="font-serif-tc text-2xl sm:text-4xl text-amber-300 self-start mt-1 sm:mt-2">:</div>
-                <div class="text-center">
-                  <div class="font-serif-tc font-black text-3xl sm:text-5xl tabular-nums leading-none" x-text="hours"></div>
-                  <div class="text-[10px] sm:text-xs text-amber-200 mt-1 tracking-widest">HOURS 時</div>
+                <div class="hidden sm:block font-serif-tc text-4xl text-amber-300 self-start mt-2">:</div>
+                <div class="text-center bg-white/5 rounded-sm py-1.5 sm:bg-transparent sm:py-0">
+                  <div class="font-serif-tc font-black text-2xl sm:text-5xl tabular-nums leading-none" x-text="hours"></div>
+                  <div class="text-[9px] sm:text-xs text-amber-200 mt-0.5 sm:mt-1 tracking-widest">HOURS 時</div>
                 </div>
-                <div class="font-serif-tc text-2xl sm:text-4xl text-amber-300 self-start mt-1 sm:mt-2">:</div>
-                <div class="text-center">
-                  <div class="font-serif-tc font-black text-3xl sm:text-5xl tabular-nums leading-none" x-text="mins"></div>
-                  <div class="text-[10px] sm:text-xs text-amber-200 mt-1 tracking-widest">MINS 分</div>
+                <div class="hidden sm:block font-serif-tc text-4xl text-amber-300 self-start mt-2">:</div>
+                <div class="text-center bg-white/5 rounded-sm py-1.5 sm:bg-transparent sm:py-0">
+                  <div class="font-serif-tc font-black text-2xl sm:text-5xl tabular-nums leading-none" x-text="mins"></div>
+                  <div class="text-[9px] sm:text-xs text-amber-200 mt-0.5 sm:mt-1 tracking-widest">MINS 分</div>
                 </div>
-                <div class="font-serif-tc text-2xl sm:text-4xl text-amber-300 self-start mt-1 sm:mt-2">:</div>
-                <div class="text-center">
-                  <div class="font-serif-tc font-black text-3xl sm:text-5xl tabular-nums leading-none text-[var(--vermilion)] animate-pulse" x-text="secs"></div>
-                  <div class="text-[10px] sm:text-xs text-amber-200 mt-1 tracking-widest">SECS 秒</div>
+                <div class="hidden sm:block font-serif-tc text-4xl text-amber-300 self-start mt-2">:</div>
+                <div class="text-center bg-white/5 rounded-sm py-1.5 sm:bg-transparent sm:py-0">
+                  <div class="font-serif-tc font-black text-2xl sm:text-5xl tabular-nums leading-none text-amber-300 sm:text-[var(--vermilion)] animate-pulse" x-text="secs"></div>
+                  <div class="text-[9px] sm:text-xs text-amber-200 mt-0.5 sm:mt-1 tracking-widest">SECS 秒</div>
                 </div>
               </div>
             </div>
@@ -322,44 +334,44 @@
         </template>
       </div>
 
-      <!-- ──────────────── 一鍵分享 ──────────────── -->
+      <!-- ──────────────── 一鍵分享(RWD:手機 grid 整齊) ──────────────── -->
       <div x-data="shareWidget()" class="mt-5 no-print">
         <div class="bg-white/70 backdrop-blur border border-[var(--gold)]/30 p-3 sm:p-4 rounded-sm">
-          <div class="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3">
-            <div class="text-sm text-[var(--ink-soft)] font-bold flex items-center gap-2">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="text-sm text-[var(--ink-soft)] font-bold flex items-center gap-2 justify-center sm:justify-start">
               <span class="text-lg">📢</span>
               <span>邀請朋友家長一同關注</span>
             </div>
-            <div class="flex flex-wrap gap-2">
+            <div class="grid grid-cols-3 sm:flex sm:flex-wrap gap-2 min-h-[44px]">
               <!-- LINE -->
               <a :href="lineShareUrl" target="_blank" rel="noopener" title="分享到 LINE"
-                 class="px-3 py-2 bg-[#06C755] hover:bg-[#05a648] text-white text-sm font-bold rounded-sm transition flex items-center gap-1.5 shadow-sm">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.63 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+                 class="min-h-[44px] px-3 py-2 bg-[#06C755] hover:bg-[#05a648] active:bg-[#048038] text-white text-xs sm:text-sm font-bold rounded-sm transition flex items-center justify-center gap-1.5 shadow-sm">
+                <svg class="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.63 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
                 LINE
               </a>
               <!-- FB -->
               <a :href="fbShareUrl" target="_blank" rel="noopener" title="分享到 Facebook"
-                 class="px-3 py-2 bg-[#1877F2] hover:bg-[#0d65d9] text-white text-sm font-bold rounded-sm transition flex items-center gap-1.5 shadow-sm">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                Facebook
+                 class="min-h-[44px] px-3 py-2 bg-[#1877F2] hover:bg-[#0d65d9] active:bg-[#0954b5] text-white text-xs sm:text-sm font-bold rounded-sm transition flex items-center justify-center gap-1.5 shadow-sm">
+                <svg class="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                <span class="hidden xs:inline sm:inline">Facebook</span><span class="xs:hidden sm:hidden">FB</span>
               </a>
               <!-- Threads -->
               <a :href="threadsShareUrl" target="_blank" rel="noopener" title="分享到 Threads"
-                 class="px-3 py-2 bg-black hover:bg-gray-800 text-white text-sm font-bold rounded-sm transition flex items-center gap-1.5 shadow-sm">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.31-6.015-2.912.022-5.114.936-6.543 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.543 2.717 2.625-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.74-1.757-.514-.586-1.318-.886-2.394-.886h-.029c-.872 0-2.05.243-2.795 1.355L7.36 8.49c1-1.49 2.617-2.31 4.555-2.31h.045c3.211.024 5.193 1.997 5.388 5.428.111.046.221.094.328.143 1.515.713 2.629 1.798 3.221 3.144.832 1.879.911 4.93-1.564 7.395-1.892 1.873-4.195 2.682-7.187 2.71zm1.075-8.66c-.236 0-.477.005-.722.018-1.836.103-2.979.94-2.916 2.131.066 1.249 1.448 1.83 2.97 1.726 1.394-.073 3.04-.66 3.314-3.85a10.985 10.985 0 0 0-2.646-.025z"/></svg>
+                 class="min-h-[44px] px-3 py-2 bg-black hover:bg-gray-800 active:bg-gray-900 text-white text-xs sm:text-sm font-bold rounded-sm transition flex items-center justify-center gap-1.5 shadow-sm">
+                <svg class="shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.31-6.015-2.912.022-5.114.936-6.543 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.543 2.717 2.625-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.74-1.757-.514-.586-1.318-.886-2.394-.886h-.029c-.872 0-2.05.243-2.795 1.355L7.36 8.49c1-1.49 2.617-2.31 4.555-2.31h.045c3.211.024 5.193 1.997 5.388 5.428.111.046.221.094.328.143 1.515.713 2.629 1.798 3.221 3.144.832 1.879.911 4.93-1.564 7.395-1.892 1.873-4.195 2.682-7.187 2.71zm1.075-8.66c-.236 0-.477.005-.722.018-1.836.103-2.979.94-2.916 2.131.066 1.249 1.448 1.83 2.97 1.726 1.394-.073 3.04-.66 3.314-3.85a10.985 10.985 0 0 0-2.646-.025z"/></svg>
                 Threads
               </a>
               <!-- 複製連結 -->
               <button @click="copyLink()" :class="copied ? 'bg-green-600' : 'bg-[var(--ink)] hover:bg-[var(--vermilion)]'"
-                      class="px-3 py-2 text-white text-sm font-bold rounded-sm transition flex items-center gap-1.5 shadow-sm">
-                <svg x-show="!copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                <svg x-show="copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      class="min-h-[44px] col-span-2 sm:col-span-1 px-3 py-2 text-white text-xs sm:text-sm font-bold rounded-sm transition flex items-center justify-center gap-1.5 shadow-sm">
+                <svg x-show="!copied" class="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <svg x-show="copied" class="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 <span x-text="copied ? '已複製!' : '複製連結'"></span>
               </button>
               <!-- QR Code -->
               <a href="poster.html" target="_blank" title="下載 QR Code 海報"
-                 class="px-3 py-2 bg-white text-[var(--ink)] border border-[var(--ink)] hover:bg-[var(--ink)] hover:text-white text-sm font-bold rounded-sm transition flex items-center gap-1.5">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zm0 12h2v-2h-2v2zm-6-8h2v2h-2v-2zm2 2h2v2h-2v-2zm-2 2h2v2h-2v-2zm2 2h2v2h-2v-2zm2-2h2v2h-2v-2zm0-4h2v2h-2v-2zm2 2h2v2h-2v-2z"/></svg>
+                 class="min-h-[44px] px-3 py-2 bg-white text-[var(--ink)] border border-[var(--ink)] hover:bg-[var(--ink)] hover:text-white text-xs sm:text-sm font-bold rounded-sm transition flex items-center justify-center gap-1.5">
+                <svg class="shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zm0 12h2v-2h-2v2zm-6-8h2v2h-2v-2zm2 2h2v2h-2v-2zm-2 2h2v2h-2v-2zm2 2h2v2h-2v-2zm2-2h2v2h-2v-2zm0-4h2v2h-2v-2zm2 2h2v2h-2v-2z"/></svg>
                 QR 海報
               </a>
             </div>
@@ -423,19 +435,19 @@
   </div>
 </section>
 
-<!-- Live 狀態橫條(競賽當天自動顯示;平日可手動啟用模擬) -->
+<!-- Live 狀態橫條(競賽當天自動顯示;平日可手動啟用模擬,RWD 友善) -->
 <section x-data="liveBar()" class="border-y border-[var(--gold)]/30 no-print">
-  <div class="max-w-6xl mx-auto px-6 py-4">
-    <div class="flex items-center justify-between flex-wrap gap-3">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+    <div class="flex items-center justify-between flex-wrap gap-2 sm:gap-3">
       <!-- 左側:目前狀態 -->
-      <div class="flex items-center gap-3 flex-wrap">
-        <span class="flex items-center gap-2">
-          <span x-show="isRaceDay" class="inline-block w-2.5 h-2.5 bg-[var(--vermilion)] rounded-full animate-pulse"></span>
-          <span x-show="!isRaceDay" class="inline-block w-2.5 h-2.5 bg-gray-400 rounded-full"></span>
-          <strong class="text-sm" x-text="isRaceDay ? '🔴 競賽進行中模式' : '⏳ 尚未到比賽日'"></strong>
+      <div class="flex items-center gap-2 sm:gap-3 flex-wrap text-xs sm:text-sm">
+        <span class="flex items-center gap-1.5 sm:gap-2">
+          <span x-show="isRaceDay" class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 bg-[var(--vermilion)] rounded-full animate-pulse"></span>
+          <span x-show="!isRaceDay" class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 bg-gray-400 rounded-full"></span>
+          <strong x-text="isRaceDay ? '🔴 競賽進行中' : '⏳ 尚未到比賽日'"></strong>
         </span>
-        <span class="text-sm text-gray-600">
-          現在時間：<strong class="font-mono" x-text="nowDisplay"></strong>
+        <span class="text-gray-600 whitespace-nowrap">
+          現在 <strong class="font-mono" x-text="nowDisplay"></strong>
         </span>
         <template x-if="isRaceDay && liveEvents.length > 0">
           <span class="text-sm">
@@ -483,12 +495,12 @@
     <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold section-title mb-2">🔍 查詢我的比賽時間</h2>
     <p class="text-gray-600 mb-8 ml-5">選擇你的場次與序號，自動計算抽題、上台、報到時間 ─ 不必再翻紙本表。</p>
 
-    <div class="bg-white shadow-lg rounded-sm p-6 sm:p-8 border-t-4 border-[var(--vermilion)]">
-      <div class="grid sm:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white shadow-lg rounded-sm p-5 sm:p-8 border-t-4 border-[var(--vermilion)]">
+      <div class="grid sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
         <!-- 場次選擇 -->
         <div class="sm:col-span-2">
           <label class="block text-sm font-bold text-gray-700 mb-2">① 選擇你的場次</label>
-          <select x-model="selectedKey" @change="seatNo=''; calcResult()" class="w-full px-4 py-3 border-2 border-gray-300 rounded-sm focus:border-[var(--vermilion)] focus:outline-none text-base">
+          <select x-model="selectedKey" @change="seatNo=''; calcResult()" class="w-full min-h-[44px] px-3 sm:px-4 py-3 border-2 border-gray-300 rounded-sm focus:border-[var(--vermilion)] focus:outline-none text-sm sm:text-base bg-white">
             <option value="">─ 請選擇 ─</option>
             <template x-for="opt in options" :key="opt.key">
               <option :value="opt.key" x-text="opt.label"></option>
@@ -498,10 +510,10 @@
         <!-- 序號 -->
         <div>
           <label class="block text-sm font-bold text-gray-700 mb-2">② 你的序號</label>
-          <input type="number" min="1" :max="currentMax" x-model.number="seatNo" @input="calcResult()"
+          <input type="number" inputmode="numeric" min="1" :max="currentMax" x-model.number="seatNo" @input="calcResult()"
                  :placeholder="currentMax ? '1 ~ ' + currentMax : '請先選場次'"
                  :disabled="!selectedKey"
-                 class="w-full px-4 py-3 border-2 border-gray-300 rounded-sm focus:border-[var(--vermilion)] focus:outline-none text-base disabled:bg-gray-50">
+                 class="w-full min-h-[44px] px-3 sm:px-4 py-3 border-2 border-gray-300 rounded-sm focus:border-[var(--vermilion)] focus:outline-none text-base disabled:bg-gray-50">
         </div>
       </div>
 
@@ -509,15 +521,15 @@
       <template x-if="result && result.ok">
         <div>
           <!-- 標題列 -->
-          <div class="bg-gradient-to-r from-[var(--vermilion)] to-[var(--vermilion-dark)] text-white p-5 rounded-sm mb-4">
-            <div class="flex items-center justify-between flex-wrap gap-2">
-              <div>
-                <div class="text-xs opacity-80">查詢結果</div>
-                <div class="font-serif-tc text-xl sm:text-2xl font-bold" x-text="result.title"></div>
-                <div class="text-sm opacity-90" x-text="'第 ' + result.seatNo + ' 號選手 ・ ' + result.group"></div>
+          <div class="bg-gradient-to-r from-[var(--vermilion)] to-[var(--vermilion-dark)] text-white p-4 sm:p-5 rounded-sm mb-4">
+            <div class="flex items-start sm:items-center justify-between gap-3 flex-wrap">
+              <div class="min-w-0 flex-1">
+                <div class="text-[10px] sm:text-xs opacity-80">查詢結果</div>
+                <div class="font-serif-tc text-lg sm:text-2xl font-bold leading-tight" x-text="result.title"></div>
+                <div class="text-xs sm:text-sm opacity-90 mt-0.5" x-text="'第 ' + result.seatNo + ' 號選手 ・ ' + result.group"></div>
               </div>
-              <button @click="printCard()" class="no-print bg-white/20 hover:bg-white/30 px-4 py-2 rounded-sm text-sm font-bold border border-white/30">
-                🖨 列印我的指引卡
+              <button @click="printCard()" class="no-print min-h-[40px] bg-white/20 hover:bg-white/30 active:bg-white/40 px-3 sm:px-4 py-2 rounded-sm text-xs sm:text-sm font-bold border border-white/30 whitespace-nowrap shrink-0">
+                🖨 列印指引卡
               </button>
             </div>
           </div>
@@ -766,27 +778,75 @@
     <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold section-title mb-2">完整賽程表</h2>
     <p class="text-gray-600 mb-8 ml-5">共 <strong>17 大項 ・ 33 場細分賽事</strong>（學生／教師／社會三組分計）。點選分類可篩選；可關鍵字搜尋。</p>
 
-    <!-- 篩選列 -->
-    <div class="flex flex-wrap gap-2 mb-6 no-print">
-      <button @click="filter='all'" :class="filter==='all' ? 'active' : ''" class="filter-btn px-4 py-2 text-sm border border-[var(--ink)] rounded-sm">全部 (33)</button>
-      <button @click="filter='演說'" :class="filter==='演說' ? 'active' : ''" class="filter-btn px-4 py-2 text-sm border border-[var(--vermilion)] text-[var(--vermilion-dark)] rounded-sm">🎤 演說 (9)</button>
-      <button @click="filter='朗讀'" :class="filter==='朗讀' ? 'active' : ''" class="filter-btn px-4 py-2 text-sm border border-[var(--jade)] text-[var(--jade)] rounded-sm">📖 朗讀 (9)</button>
-      <button @click="filter='作文'" :class="filter==='作文' ? 'active' : ''" class="filter-btn px-4 py-2 text-sm border border-[var(--gold)] text-[var(--gold)] rounded-sm">✍️ 作文 (3)</button>
-      <button @click="filter='字音字形'" :class="filter==='字音字形' ? 'active' : ''" class="filter-btn px-4 py-2 text-sm border border-[#4a6685] text-[#4a6685] rounded-sm">🔤 字音字形 (9)</button>
-      <button @click="filter='寫字'" :class="filter==='寫字' ? 'active' : ''" class="filter-btn px-4 py-2 text-sm border border-[#6b3d7f] text-[#6b3d7f] rounded-sm">🖌 寫字 (3)</button>
-
-      <input x-model="search" type="search" placeholder="🔍 搜尋場次、地點、組別…" class="ml-auto px-3 py-2 border border-gray-300 rounded-sm text-sm w-full sm:w-64">
+    <!-- 篩選列(RWD:手機橫向滾動 + 搜尋框全寬) -->
+    <div class="mb-6 no-print">
+      <div class="flex gap-2 mb-3 overflow-x-auto pb-1 -mx-1 px-1 sm:flex-wrap">
+        <button @click="filter='all'" :class="filter==='all' ? 'active' : ''" class="filter-btn shrink-0 min-h-[40px] px-3 sm:px-4 py-2 text-xs sm:text-sm border border-[var(--ink)] rounded-sm whitespace-nowrap">全部 (33)</button>
+        <button @click="filter='演說'" :class="filter==='演說' ? 'active' : ''" class="filter-btn shrink-0 min-h-[40px] px-3 sm:px-4 py-2 text-xs sm:text-sm border border-[var(--vermilion)] text-[var(--vermilion-dark)] rounded-sm whitespace-nowrap">🎤 演說 (9)</button>
+        <button @click="filter='朗讀'" :class="filter==='朗讀' ? 'active' : ''" class="filter-btn shrink-0 min-h-[40px] px-3 sm:px-4 py-2 text-xs sm:text-sm border border-[var(--jade)] text-[var(--jade)] rounded-sm whitespace-nowrap">📖 朗讀 (9)</button>
+        <button @click="filter='作文'" :class="filter==='作文' ? 'active' : ''" class="filter-btn shrink-0 min-h-[40px] px-3 sm:px-4 py-2 text-xs sm:text-sm border border-[var(--gold)] text-[var(--gold)] rounded-sm whitespace-nowrap">✍️ 作文 (3)</button>
+        <button @click="filter='字音字形'" :class="filter==='字音字形' ? 'active' : ''" class="filter-btn shrink-0 min-h-[40px] px-3 sm:px-4 py-2 text-xs sm:text-sm border border-[#4a6685] text-[#4a6685] rounded-sm whitespace-nowrap">🔤 字音字形 (9)</button>
+        <button @click="filter='寫字'" :class="filter==='寫字' ? 'active' : ''" class="filter-btn shrink-0 min-h-[40px] px-3 sm:px-4 py-2 text-xs sm:text-sm border border-[#6b3d7f] text-[#6b3d7f] rounded-sm whitespace-nowrap">🖌 寫字 (3)</button>
+      </div>
+      <input x-model="search" type="search" placeholder="🔍 搜尋場次、地點、組別…" class="min-h-[44px] px-3 py-2 border border-gray-300 rounded-sm text-sm w-full sm:w-64 sm:float-right">
+      <div class="clear-both"></div>
     </div>
 
     <!-- 賽程卡片 -->
     <div class="space-y-3 schedule-table">
       <template x-for="item in filteredItems" :key="item.no + item.group">
         <div class="schedule-card bg-[var(--paper)] p-4 sm:p-5 rounded-sm shadow-sm" :class="statusOf(item) === 'live' && 'ring-2 ring-[var(--vermilion)] ring-offset-1'">
-          <div class="grid grid-cols-12 gap-3 items-center">
-            <!-- 場次號 + Live badge -->
-            <div class="col-span-2 sm:col-span-1 text-center">
+          <!-- 手機版:標題列 + 時間 grid -->
+          <div class="sm:hidden">
+            <!-- 第 1 列:場次號 + 項目資訊 + Live badge -->
+            <div class="flex items-start gap-3 mb-3">
+              <div class="shrink-0 text-center bg-[var(--ink)] text-white rounded-sm w-12 py-1">
+                <div class="text-[10px] text-amber-300 leading-tight">場次</div>
+                <div class="font-serif-tc text-2xl font-black leading-none" x-text="item.no"></div>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-wrap items-center gap-1.5 mb-1">
+                  <span class="inline-block text-[10px] px-1.5 py-0.5 border rounded-sm" :class="item.catClass" x-text="item.catLabel"></span>
+                  <span x-show="statusOf(item) !== 'before-day'"
+                        :style="`background:${statusMeta(item).bg};color:${statusMeta(item).color}`"
+                        :class="statusMeta(item).pulse ? 'animate-pulse' : ''"
+                        class="inline-block text-[10px] px-1.5 py-0.5 rounded-sm font-bold whitespace-nowrap"
+                        x-text="statusMeta(item).text"></span>
+                </div>
+                <div class="font-serif-tc font-bold text-base leading-tight" x-text="item.title"></div>
+                <div class="text-xs text-gray-600 mt-0.5">
+                  <span class="font-bold" x-text="item.group"></span>
+                  ・<span x-text="item.count + ' 人'"></span>
+                </div>
+              </div>
+            </div>
+            <!-- 第 2 列:四個時間/地點欄,2x2 grid -->
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div class="bg-white/70 rounded-sm px-2 py-1.5">
+                <div class="text-[10px] text-gray-500">📍 報到</div>
+                <div class="font-mono font-bold" x-text="item.checkin"></div>
+              </div>
+              <div class="bg-white/70 rounded-sm px-2 py-1.5">
+                <div class="text-[10px] text-gray-500">🎲 抽題</div>
+                <div class="font-mono font-bold" x-text="item.draw || '—'"></div>
+              </div>
+              <div class="bg-white/70 rounded-sm px-2 py-1.5">
+                <div class="text-[10px] text-gray-500">⏱ 比賽時間</div>
+                <div class="font-mono font-bold text-[var(--vermilion)]" x-text="item.time"></div>
+              </div>
+              <div class="bg-white/70 rounded-sm px-2 py-1.5">
+                <div class="text-[10px] text-gray-500">📌 地點</div>
+                <div class="font-bold leading-tight" x-text="item.venue"></div>
+                <div class="text-[10px] text-gray-500 truncate" x-text="'預備:' + item.prep" x-show="item.prep"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 桌機版:單列 12-col grid -->
+          <div class="hidden sm:grid grid-cols-12 gap-3 items-center">
+            <div class="col-span-1 text-center">
               <div class="text-xs text-gray-500">場次</div>
-              <div class="font-serif-tc text-2xl sm:text-3xl font-black text-[var(--ink)]" x-text="item.no"></div>
+              <div class="font-serif-tc text-3xl font-black text-[var(--ink)]" x-text="item.no"></div>
               <div x-show="statusOf(item) !== 'before-day'" class="mt-1">
                 <span :style="`background:${statusMeta(item).bg};color:${statusMeta(item).color}`"
                       :class="statusMeta(item).pulse ? 'animate-pulse' : ''"
@@ -794,8 +854,7 @@
                       x-text="statusMeta(item).text"></span>
               </div>
             </div>
-            <!-- 項目 -->
-            <div class="col-span-10 sm:col-span-3">
+            <div class="col-span-3">
               <div class="inline-block text-xs px-2 py-0.5 border rounded-sm mb-1" :class="item.catClass" x-text="item.catLabel"></div>
               <div class="font-serif-tc font-bold text-lg" x-text="item.title"></div>
               <div class="text-sm text-gray-600">
@@ -803,23 +862,19 @@
                 ・<span x-text="item.count + ' 人'"></span>
               </div>
             </div>
-            <!-- 報到 -->
-            <div class="col-span-6 sm:col-span-2 text-sm">
+            <div class="col-span-2 text-sm">
               <div class="text-xs text-gray-500 mb-0.5">📍 報到</div>
               <div class="font-mono font-bold" x-text="item.checkin"></div>
             </div>
-            <!-- 抽題 -->
-            <div class="col-span-6 sm:col-span-2 text-sm">
+            <div class="col-span-2 text-sm">
               <div class="text-xs text-gray-500 mb-0.5">🎲 抽題</div>
               <div class="font-mono font-bold" x-text="item.draw || '—'"></div>
             </div>
-            <!-- 比賽時間 -->
-            <div class="col-span-6 sm:col-span-2 text-sm">
+            <div class="col-span-2 text-sm">
               <div class="text-xs text-gray-500 mb-0.5">⏱ 比賽時間</div>
               <div class="font-mono font-bold text-[var(--vermilion)]" x-text="item.time"></div>
             </div>
-            <!-- 地點 -->
-            <div class="col-span-6 sm:col-span-2 text-sm">
+            <div class="col-span-2 text-sm">
               <div class="text-xs text-gray-500 mb-0.5">📌 比賽地點</div>
               <div class="font-bold" x-text="item.venue"></div>
               <div class="text-xs text-gray-500" x-text="'預備室：' + item.prep" x-show="item.prep"></div>
@@ -849,26 +904,27 @@
     <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold section-title mb-2">互動式校園地圖</h2>
     <p class="text-gray-600 mb-6 ml-5">點選教室查看詳細資訊；比賽當天會自動顯示進行中狀態。</p>
 
-    <!-- 樓層切換 + 圖例 -->
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-      <div class="flex gap-2">
+    <!-- 樓層切換 + 圖例(RWD) -->
+    <div class="space-y-4 mb-6">
+      <!-- 樓層 tab(手機 grid 三等分) -->
+      <div class="grid grid-cols-3 sm:flex sm:flex-wrap gap-2">
         <template x-for="floor in floors" :key="floor">
           <button @click="activeFloor = floor"
                   :class="activeFloor === floor ? 'bg-[var(--ink)] text-white shadow-md' : 'bg-white text-[var(--ink)] hover:bg-gray-100'"
-                  class="px-5 py-2.5 border border-[var(--ink)] rounded-sm font-bold transition">
-            <span class="floor-badge mr-2" :class="activeFloor === floor ? '!bg-white !text-[var(--ink)]' : ''" x-text="floor"></span>
-            <span x-text="COMP_DATA.campus[floor].label"></span>
+                  class="min-h-[48px] px-3 sm:px-5 py-2 sm:py-2.5 border border-[var(--ink)] rounded-sm font-bold transition flex items-center justify-center gap-1 sm:gap-2">
+            <span class="floor-badge" :class="activeFloor === floor ? '!bg-white !text-[var(--ink)]' : ''" x-text="floor"></span>
+            <span class="text-xs sm:text-base" x-text="COMP_DATA.campus[floor].label"></span>
           </button>
         </template>
       </div>
 
-      <!-- 圖例 -->
-      <div class="flex flex-wrap gap-3 text-xs">
+      <!-- 圖例(手機 wrap 並排) -->
+      <div class="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] sm:text-xs">
         <span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#c1272d]/80 inline-block rounded-sm"></span>演說</span>
         <span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#4a6c52]/80 inline-block rounded-sm"></span>朗讀</span>
         <span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#b8945f]/80 inline-block rounded-sm"></span>作文</span>
-        <span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#6b3d7f]/80 inline-block rounded-sm"></span>字音字形/寫字</span>
-        <span class="flex items-center gap-1"><span class="w-3 h-3 bg-gray-400/60 inline-block rounded-sm"></span>預備室/其他</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-3 bg-[#6b3d7f]/80 inline-block rounded-sm"></span>字音字形 / 寫字</span>
+        <span class="flex items-center gap-1"><span class="w-3 h-3 bg-gray-400/60 inline-block rounded-sm"></span>預備室 / 其他</span>
       </div>
     </div>
 
@@ -1459,10 +1515,23 @@
   </div>
 </footer>
 
-<!-- 浮動回頂部 -->
-<a href="#top" class="no-print fixed bottom-6 right-6 w-12 h-12 bg-[var(--vermilion)] text-white rounded-full shadow-lg hover:bg-[var(--vermilion-dark)] transition flex items-center justify-center" title="回頂部">
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+<!-- 浮動回頂部(RWD:手機更小、捲動到底後隱藏) -->
+<a href="#top" id="back-to-top"
+   class="no-print fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-11 h-11 sm:w-12 sm:h-12 bg-[var(--vermilion)] text-white rounded-full shadow-xl hover:bg-[var(--vermilion-dark)] active:scale-95 transition flex items-center justify-center z-40 opacity-0 pointer-events-none data-[show=true]:opacity-100 data-[show=true]:pointer-events-auto"
+   data-show="false" aria-label="回到頁面頂部" title="回頂部">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"></polyline></svg>
 </a>
+<script>
+(function () {
+  const btn = document.getElementById('back-to-top');
+  if (!btn) return;
+  const onScroll = () => {
+    btn.dataset.show = window.scrollY > 400 ? 'true' : 'false';
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
 
 <script>
 // ════════════════════════════════════════════════
