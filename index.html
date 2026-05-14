@@ -211,6 +211,27 @@
 </head>
 <body class="paper-texture">
 
+<!-- ─── Service Worker 更新通知橫條(偵測到新版時自動浮現) ─── -->
+<div id="sw-update-banner"
+     class="no-print fixed inset-x-0 top-0 z-50 bg-gradient-to-r from-[var(--vermilion)] to-[var(--vermilion-dark)] text-white shadow-xl translate-y-[-100%] transition-transform duration-300 data-[show=true]:translate-y-0"
+     data-show="false" role="alert" aria-live="polite">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3 flex-wrap">
+    <div class="flex items-center gap-3 flex-1 min-w-0">
+      <svg class="w-5 h-5 shrink-0 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><polyline points="21 4 21 12 13 12"/></svg>
+      <div class="text-sm sm:text-base font-bold leading-tight">
+        🎉 網站已更新到新版本
+        <span class="text-amber-200 hidden sm:inline">(點右側按鈕載入最新賽程資訊)</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 shrink-0">
+      <button id="sw-update-reload" class="min-h-[40px] px-4 py-1.5 bg-white text-[var(--vermilion)] font-bold rounded-sm hover:bg-amber-100 active:scale-95 transition text-sm whitespace-nowrap">
+        立即更新
+      </button>
+      <button id="sw-update-dismiss" class="min-h-[40px] w-9 text-white/80 hover:text-white text-2xl leading-none" aria-label="稍後再說">×</button>
+    </div>
+  </div>
+</div>
+
 <!-- 頂部公告條(RWD:手機隱藏次要資訊) -->
 <div class="bg-[var(--ink)] text-[var(--paper)] py-2 px-3 text-xs sm:text-sm no-print">
   <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-1 tracking-wider">
@@ -1530,6 +1551,80 @@
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+})();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════
+     Service Worker 註冊 + 新版偵測 + 更新通知
+     設計:network-first for HTML/JS,使用者下次連線即收到新版
+     更新流程:
+       1. SW 偵測 sw.js 變更(版本號 bump 或內容變更)
+       2. 新版 SW 安裝完成、進入 waiting 狀態
+       3. 此時前端跳出「網站有新版,點此重新整理」橫條
+       4. 使用者按下「立即更新」→ postMessage SKIP_WAITING → 新版 SW 接管 → reload
+     ═══════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  if (!('serviceWorker' in navigator)) return;
+
+  const banner = document.getElementById('sw-update-banner');
+  const reloadBtn = document.getElementById('sw-update-reload');
+  const dismissBtn = document.getElementById('sw-update-dismiss');
+
+  let waitingWorker = null;
+  let reloading = false;
+
+  function showBanner(worker) {
+    waitingWorker = worker;
+    if (banner) banner.dataset.show = 'true';
+  }
+  function hideBanner() {
+    if (banner) banner.dataset.show = 'false';
+  }
+
+  if (reloadBtn) {
+    reloadBtn.addEventListener('click', () => {
+      if (!waitingWorker) return location.reload();
+      // 通知 waiting SW 立即激活
+      waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+    });
+  }
+  if (dismissBtn) dismissBtn.addEventListener('click', hideBanner);
+
+  // 新版 SW 接管後自動 reload(只 reload 一次,避免無限迴圈)
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (reloading) return;
+    reloading = true;
+    window.location.reload();
+  });
+
+  // 註冊 SW
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then((reg) => {
+      // 已經有 waiting worker(可能是上次沒按更新),立刻提示
+      if (reg.waiting && navigator.serviceWorker.controller) {
+        showBanner(reg.waiting);
+      }
+
+      // 偵測新版安裝中
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // 安裝完成 + 已有 controller(=非首次安裝)→ 是更新,跳通知
+            showBanner(newWorker);
+          }
+          // 若 controller 尚未建立,是首次安裝,不跳通知(避免初次訪問就打擾)
+        });
+      });
+
+      // 每 30 分鐘檢查一次新版(使用者掛網時自動偵測)
+      setInterval(() => reg.update().catch(() => {}), 30 * 60 * 1000);
+    }).catch((err) => {
+      console.warn('[SW] 註冊失敗:', err);
+    });
+  });
 })();
 </script>
 
