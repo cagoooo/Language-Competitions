@@ -10,9 +10,7 @@
 <link rel="alternate icon" href="favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" media="print" onload="this.media='all';this.onload=null"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap"></noscript>
+<!-- 字型:系統中文字型,零外部請求 -->
 
 <!-- QR Code 庫:本地檔(同源,絕對可靠) -->
 <script src="qrcode.min.js"></script>
@@ -28,7 +26,7 @@
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    font-family: 'Noto Sans TC', 'Noto Serif TC', system-ui, sans-serif;
+    font-family: 'PingFang TC', 'Microsoft JhengHei', 'Heiti TC', 'Noto Sans CJK TC', system-ui, sans-serif;
     background: #ddd;
     color: var(--ink);
     padding: 30px;
@@ -37,7 +35,7 @@
     align-items: center;
     gap: 20px;
   }
-  .font-serif { font-family: 'Noto Serif TC', serif; }
+  .font-serif { font-family: 'PingFang TC', 'Songti TC', 'STSong', 'BiauKai', '標楷體', 'Microsoft JhengHei', serif; }
 
   /* 控制列 */
   .controls {
@@ -93,7 +91,7 @@
     background: var(--vermilion);
     color: var(--paper);
     padding: 8px 16px;
-    font-family: 'Noto Serif TC', serif;
+    font-family: 'PingFang TC', 'Songti TC', 'STSong', 'BiauKai', '標楷體', 'Microsoft JhengHei', serif;
     font-weight: 900;
     font-size: 18px;
     letter-spacing: 0.2em;
@@ -104,7 +102,7 @@
   .poster::before {
     content: "語";
     position: absolute;
-    font-family: 'Noto Serif TC', serif;
+    font-family: 'PingFang TC', 'Songti TC', 'STSong', 'BiauKai', '標楷體', 'Microsoft JhengHei', serif;
     font-weight: 900;
     font-size: 380px;
     color: rgba(193,39,45,0.05);
@@ -142,7 +140,7 @@
   }
 
   h1 {
-    font-family: 'Noto Serif TC', serif;
+    font-family: 'PingFang TC', 'Songti TC', 'STSong', 'BiauKai', '標楷體', 'Microsoft JhengHei', serif;
     font-size: 52px;
     font-weight: 900;
     margin: 12px 0 4px;
@@ -151,7 +149,7 @@
   }
   h1 .num { color: var(--vermilion); }
   h2 {
-    font-family: 'Noto Serif TC', serif;
+    font-family: 'PingFang TC', 'Songti TC', 'STSong', 'BiauKai', '標楷體', 'Microsoft JhengHei', serif;
     font-size: 38px;
     font-weight: 900;
     margin: 0 0 24px;
@@ -216,7 +214,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Noto Serif TC', serif;
+    font-family: 'PingFang TC', 'Songti TC', 'STSong', 'BiauKai', '標楷體', 'Microsoft JhengHei', serif;
     font-weight: 900;
     font-size: 24px;
     border: 2px solid white;
@@ -228,7 +226,7 @@
 
   .qr-label {
     margin-top: 14px;
-    font-family: 'Noto Serif TC', serif;
+    font-family: 'PingFang TC', 'Songti TC', 'STSong', 'BiauKai', '標楷體', 'Microsoft JhengHei', serif;
     font-size: 17px;
     font-weight: 700;
     color: var(--ink);
@@ -314,7 +312,7 @@
     margin-bottom: 4px;
   }
   .info-box .value {
-    font-family: 'Noto Serif TC', serif;
+    font-family: 'PingFang TC', 'Songti TC', 'STSong', 'BiauKai', '標楷體', 'Microsoft JhengHei', serif;
     font-size: 22px;
     font-weight: 900;
     color: var(--ink);

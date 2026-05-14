@@ -44,11 +44,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
 
-<!-- 字型:async load 避免阻塞首屏(會 fallback 到系統 serif 直到字型載入) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" media="print" onload="this.media='all';this.onload=null"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap"></noscript>
+<!-- 字型策略:完全使用系統中文字型,不再載 Google Fonts(節省 ~408KB 傳輸)
+     iOS/Mac: PingFang TC ・ Windows: Microsoft JhengHei ・ Android: Noto Sans CJK TC(內建) -->
 
 <!-- ─── Schema.org JSON-LD 結構化資料(Google 搜尋結果顯示賽事卡片) ─── -->
 <script type="application/ld+json">
@@ -155,15 +152,17 @@
   }
   html { scroll-behavior: smooth; }
   body {
-    /* 加入 size-adjust + ascent-override 風格的 fallback 系統字型,
-       讓 Noto 還沒載入時用本機字型呈現,且字寬接近 Noto 避免 CLS 跳動 */
-    font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', 'Heiti TC', sans-serif;
+    /* 系統中文字型 stack(零外部請求):iOS/Mac → PingFang;Windows → 微軟正黑;Android → Noto */
+    font-family: 'PingFang TC', 'Microsoft JhengHei', 'Heiti TC', 'Noto Sans CJK TC', 'Noto Sans TC', system-ui, sans-serif;
     background: var(--paper);
     color: var(--ink);
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
+  /* 「serif」用系統明體/宋體;Windows 上以微軟正黑加粗替代,視覺接近毛筆題字 */
   .font-serif-tc {
-    font-family: 'Noto Serif TC', 'PingFang TC', 'Microsoft JhengHei', 'Heiti TC', serif;
+    font-family: 'PingFang TC', 'Songti TC', 'STSong', 'BiauKai', 'DFKai-SB', '標楷體', 'Microsoft JhengHei', serif;
+    font-weight: 700;
   }
 
   /* Hero 區保留最小高度,避免字型/JS 載入前的版面塌陷 (CLS 0) */
