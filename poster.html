@@ -124,7 +124,13 @@
     box-shadow: 10px 0 0 0 var(--gold);
   }
 
-  .poster-inner { position: relative; z-index: 1; }
+  .poster-inner {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
 
   .header { margin-bottom: 24px; }
   .english-sub {
@@ -156,9 +162,9 @@
   .qr-area {
     background: white;
     border: 6px double var(--ink);
-    padding: 24px;
-    margin: 18px auto 24px;
-    width: 380px;
+    padding: 16px;
+    margin: 14px auto;
+    width: 320px;
     text-align: center;
   }
   #qrcode { display: flex; justify-content: center; }
@@ -210,34 +216,34 @@
   }
 
   .features {
-    margin-top: 18px;
+    margin-top: auto;
     background: var(--ink);
     color: var(--paper);
-    padding: 16px 20px;
+    padding: 14px 20px;
     text-align: center;
   }
   .features-title {
     font-size: 12px;
     letter-spacing: 0.3em;
     color: var(--gold);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   .features-list {
-    font-size: 13px;
-    line-height: 1.8;
+    font-size: 12.5px;
+    line-height: 1.75;
     color: rgba(250,246,239,0.9);
   }
 
   .poster-footer {
-    position: absolute;
-    bottom: 18mm;
-    left: 18mm;
-    right: 18mm;
-    border-top: 2px solid var(--ink);
+    margin-top: 12px;
     padding-top: 10px;
+    border-top: 2px solid var(--ink);
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    font-size: 10.5px;
     color: #555;
   }
 
