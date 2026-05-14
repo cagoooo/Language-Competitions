@@ -13,11 +13,14 @@ desktop.ini
 
 # 工具暫存
 node_modules/
+package-lock.json
 *.log
 *.tmp
 lh-*.json
 host-script-raw.txt
 host-scripts.json
+.idx/
+.vscode/
 
 # 但保留 og.png(社群分享預覽圖)
 !og.png

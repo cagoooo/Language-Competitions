@@ -37,11 +37,24 @@
 
 ## 🛠 維護
 
-賽程資料寫死在 `index.html` 的 `RACE_DATA` 與 `scheduleTable.items` 內,如需修改:
+### 改賽程資料
+所有賽事資料集中在 `events.js`(single source of truth):
+- `meta.*`(年份、日期、學校、校長、聯絡)
+- `events[]`(33 場細分賽事,含報到/抽題/上台時間)
+- `campus.*`(校園地圖資料)
 
-1. 開啟 `index.html`,搜尋 `RACE_DATA`(抽題上台查詢資料)
-2. 搜尋 `items: [`(賽程表完整資料)
-3. 修改後 commit + push,GitHub Pages 自動部署(約 1-2 分鐘生效)
+修改後 commit + push,GitHub Pages 自動部署(約 1-2 分鐘生效)。
+
+### 重新編譯 Tailwind CSS(若新增 utility class)
+```bash
+npm install            # 第一次安裝
+npm run build:css      # 編譯成 tailwind.min.css (~152KB)
+# 或開發時自動 watch:
+npm run watch:css
+```
+
+### bump Service Worker 版本(讓使用者收到更新通知)
+修改 `sw.js` 內 `CACHE_VERSION`,從 `2026-05-14-010` 改為下一個序號。
 
 ## 📞 聯絡
 

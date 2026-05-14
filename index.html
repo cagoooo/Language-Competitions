@@ -44,9 +44,11 @@
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
 
+<!-- 字型:async load 避免阻塞首屏(會 fallback 到系統 serif 直到字型載入) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" media="print" onload="this.media='all';this.onload=null"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap"></noscript>
 
 <!-- ─── Schema.org JSON-LD 結構化資料(Google 搜尋結果顯示賽事卡片) ─── -->
 <script type="application/ld+json">
@@ -134,7 +136,8 @@
 }
 </script>
 
-<script src="https://cdn.tailwindcss.com"></script>
+<!-- Tailwind:本地預編譯版(取代 CDN runtime,大幅提升 Performance 分數) -->
+<link rel="stylesheet" href="tailwind.min.css">
 <!-- 賽事資料 single source of truth -->
 <script src="events.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>

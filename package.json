@@ -1,0 +1,19 @@
+{
+  "name": "2026-language-competitions-longtan",
+  "version": "1.0.0",
+  "description": "2026 桃園市語文競賽龍潭區複賽 - 對外宣傳網站",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i input.css -o tailwind.min.css --minify",
+    "watch:css": "tailwindcss -i input.css -o tailwind.min.css --watch",
+    "build": "npm run build:css"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cagoooo/Language-Competitions"
+  },
+  "license": "MIT"
+}

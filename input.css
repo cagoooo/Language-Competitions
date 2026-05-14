@@ -1,0 +1,5 @@
+/* 給 Tailwind CLI 編譯用的 source CSS。
+   PostCSS 會處理 @tailwind 指令,只輸出 *.html / *.js 內實際用到的 utilities。 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
