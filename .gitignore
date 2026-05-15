@@ -19,6 +19,7 @@ package-lock.json
 lh-*.json
 host-script-raw.txt
 host-scripts.json
+_parse_host.py
 .idx/
 .vscode/
 
