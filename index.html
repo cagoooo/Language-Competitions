@@ -308,10 +308,20 @@
     .seal { transform: none; }
     a { color: black !important; text-decoration: none !important; }
     .bg-\[var\(--ink\)\] { background: white !important; color: black !important; }
-    /* 列印個人指引卡時隱藏其餘 */
-    body.print-card-only > *:not(#my-race) { display: none !important; }
-    body.print-card-only #my-race > .max-w-5xl > *:not(#print-card) { display: none !important; }
-    body.print-card-only #print-card { display: block !important; }
+    /* 列印個人指引卡時:用 visibility 隱藏其他元素(display:none 會切斷祖先鏈,
+       讓 #print-card 因為 main 被隱藏而完全消失) */
+    body.print-card-only * { visibility: hidden !important; }
+    body.print-card-only #print-card,
+    body.print-card-only #print-card * { visibility: visible !important; }
+    body.print-card-only #print-card {
+      display: block !important;
+      position: fixed !important;
+      inset: 0 !important;
+      background: white !important;
+      padding: 1.5cm !important;
+      z-index: 9999 !important;
+      overflow: visible !important;
+    }
   }
   [x-cloak] { display: none !important; }
 </style>
@@ -753,7 +763,7 @@
     </div>
 
     <!-- 個人指引卡(列印用，平時隱藏) -->
-    <div id="print-card" class="hidden print:!block print:!fixed print:!inset-0 print:!bg-white print:!p-10 print:!z-50" x-show="result && result.ok && printMode" x-cloak>
+    <div id="print-card" class="hidden" x-show="result && result.ok && printMode" x-cloak>
       <template x-if="result && result.ok">
         <div class="border-4 border-[var(--ink)] p-8 max-w-3xl mx-auto">
           <div class="text-center mb-6 pb-4 border-b-2 border-[var(--ink)]">
