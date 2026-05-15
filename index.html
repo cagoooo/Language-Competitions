@@ -1987,13 +1987,13 @@ function myRace() {
     printCard() {
       this.printMode = true;
       document.body.classList.add('print-card-only');
-      this.$nextTick(() => {
-        window.print();
-        setTimeout(() => {
-          this.printMode = false;
-          document.body.classList.remove('print-card-only');
-        }, 500);
-      });
+      const cleanup = () => {
+        this.printMode = false;
+        document.body.classList.remove('print-card-only');
+        window.removeEventListener('afterprint', cleanup);
+      };
+      window.addEventListener('afterprint', cleanup);
+      this.$nextTick(() => window.print());
     },
     /** D1.6:下載個人化 .ics 行事曆 */
     downloadMyICS() {
