@@ -2198,13 +2198,22 @@
 </script>
 
 <!-- ═══════════════════════════════════════════════════════
-     Service Worker 註冊 + 新版偵測 + 更新通知
+     Service Worker 註冊 + 新版偵測 + 更新通知(強化版 2026-05-21)
      設計:network-first for HTML/JS,使用者下次連線即收到新版
      更新流程:
        1. SW 偵測 sw.js 變更(版本號 bump 或內容變更)
        2. 新版 SW 安裝完成、進入 waiting 狀態
        3. 此時前端跳出「網站有新版,點此重新整理」橫條
        4. 使用者按下「立即更新」→ postMessage SKIP_WAITING → 新版 SW 接管 → reload
+
+     強化重點(賽前期間用)
+       - updateViaCache:'none':避免瀏覽器 cache sw.js 本身
+         (預設 GitHub Pages cache sw.js 10 分鐘,加這個就能立即拿到新版)
+       - load 時主動 reg.update() 一次:加速首次偵測
+       - 5 分鐘 setInterval 自動檢查(原本 30 分鐘太慢)
+       - visibilitychange 切回頁籤時立即檢查
+       - 全程 console.log debug 訊息,可看出 SW 狀態
+       - 暴露 window.__forceCheckUpdate() 給使用者手動觸發
      ═══════════════════════════════════════════════════════ -->
 <script>
 (function () {
@@ -2216,10 +2225,12 @@
 
   let waitingWorker = null;
   let reloading = false;
+  let _reg = null;
 
   function showBanner(worker) {
     waitingWorker = worker;
     if (banner) banner.dataset.show = 'true';
+    console.log('[SW] ✨ 新版可用!橫條已顯示,等使用者按「立即更新」');
   }
   function hideBanner() {
     if (banner) banner.dataset.show = 'false';
@@ -2228,7 +2239,7 @@
   if (reloadBtn) {
     reloadBtn.addEventListener('click', () => {
       if (!waitingWorker) return location.reload();
-      // 通知 waiting SW 立即激活
+      console.log('[SW] 🔄 使用者按下「立即更新」,通知新版 SW 接管...');
       waitingWorker.postMessage({ type: 'SKIP_WAITING' });
     });
   }
@@ -2238,14 +2249,19 @@
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (reloading) return;
     reloading = true;
+    console.log('[SW] 🚀 新版 SW 已接管,正在重新整理頁面...');
     window.location.reload();
   });
 
-  // 註冊 SW
+  // 註冊 SW(關鍵:updateViaCache:'none' 避免瀏覽器 cache sw.js)
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').then((reg) => {
-      // 已經有 waiting worker(可能是上次沒按更新),立刻提示
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((reg) => {
+      _reg = reg;
+      console.log('[SW] ✅ 註冊成功,scope:', reg.scope);
+
+      // 已經有 waiting worker(上次沒按更新),立刻提示
       if (reg.waiting && navigator.serviceWorker.controller) {
+        console.log('[SW] 發現之前 waiting 的新版本');
         showBanner(reg.waiting);
       }
 
@@ -2253,7 +2269,9 @@
       reg.addEventListener('updatefound', () => {
         const newWorker = reg.installing;
         if (!newWorker) return;
+        console.log('[SW] 🔍 偵測到新版,正在安裝...');
         newWorker.addEventListener('statechange', () => {
+          console.log('[SW]   狀態變更:', newWorker.state);
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
             // 安裝完成 + 已有 controller(=非首次安裝)→ 是更新,跳通知
             showBanner(newWorker);
@@ -2262,10 +2280,32 @@
         });
       });
 
-      // 每 30 分鐘檢查一次新版(使用者掛網時自動偵測)
-      setInterval(() => reg.update().catch(() => {}), 30 * 60 * 1000);
+      // 立即主動檢查一次(加速首次偵測)
+      reg.update().catch((e) => console.log('[SW] update() 失敗:', e));
+
+      // 每 5 分鐘自動檢查(賽前期間加快;原 30 分鐘)
+      setInterval(() => {
+        console.log('[SW] ⏰ 定時檢查新版...');
+        reg.update().catch(() => {});
+      }, 5 * 60 * 1000);
+
+      // 切回頁籤時立即檢查(使用者體感最即時)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          console.log('[SW] 👁 頁面切回前景,立即檢查新版...');
+          reg.update().catch(() => {});
+        }
+      });
+
+      // 暴露給 Console / 主持稿橫條手動觸發
+      window.__forceCheckUpdate = () => {
+        console.log('[SW] 🔧 手動觸發檢查...');
+        return reg.update().then(() => {
+          console.log('[SW] 檢查完成,若有新版會在數秒內跳橫條');
+        }).catch((e) => console.log('[SW] 失敗:', e));
+      };
     }).catch((err) => {
-      console.warn('[SW] 註冊失敗:', err);
+      console.warn('[SW] ❌ 註冊失敗:', err);
     });
   });
 })();
