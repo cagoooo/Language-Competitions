@@ -58,10 +58,14 @@ npm run watch:css
 
 ## 📞 聯絡
 
-- 承辦學校：桃園市石門國民小學 ☎ 03-4711752
+- 承辦學校：桃園市龍潭區石門國民小學 ☎ 03-4711752
 - 競賽承辦：魏博彥主任(請洽學校總機轉接)
 - 健康中心：李佩佩護理師(C134)
 
+## 📊 進度與未來規劃
+
+詳見 [PROGRESS.md](./PROGRESS.md) — 含本次更新紀錄、過往里程碑、P0-P3 分級的未來優化建議。
+
 ---
 
-Made with ❤️ by **阿凱老師** · 石門國小資訊組
+Made with ❤️ by **[阿凱老師](https://www.smes.tyc.edu.tw/modules/tadnews/page.php?ncsn=11&nsn=16#a5)** · 桃園市龍潭區石門國民小學 資訊組
