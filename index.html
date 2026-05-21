@@ -584,9 +584,10 @@
         </div>
       </div>
 
-      <!-- 快速導覽 -->
+      <!-- 快速導覽(主要動作:查詢比賽時間 + 查詢成績,並列顯眼置頂) -->
       <nav class="mt-6 flex flex-wrap gap-2 sm:gap-3 no-print">
-        <a href="#my-race" class="px-4 py-2 bg-[var(--vermilion)] text-white text-sm font-medium hover:bg-[var(--vermilion-dark)] transition shadow-md">🔍 查詢我的比賽時間</a>
+        <a href="#my-race" class="px-4 py-2 bg-[var(--vermilion)] text-white text-sm font-bold hover:bg-[var(--vermilion-dark)] transition shadow-md">🔍 查詢我的比賽時間</a>
+        <a href="#results" class="px-4 py-2 bg-[var(--jade)] text-white text-sm font-bold hover:bg-[var(--jade-dark)] transition shadow-md">🏆 賽後成績查詢</a>
         <a href="#audience" class="px-4 py-2 bg-[var(--ink)] text-[var(--paper)] text-sm font-medium hover:bg-[var(--vermilion)] transition">我是…</a>
         <a href="#schedule" class="px-4 py-2 bg-white border border-[var(--ink)] text-[var(--ink)] text-sm font-medium hover:bg-[var(--ink)] hover:text-[var(--paper)] transition">完整賽程</a>
         <a href="#venue" class="px-4 py-2 bg-white border border-[var(--ink)] text-[var(--ink)] text-sm font-medium hover:bg-[var(--ink)] hover:text-[var(--paper)] transition">場地配置</a>
@@ -594,7 +595,6 @@
         <a href="host.html" class="px-4 py-2 bg-white border border-[var(--ink)] text-[var(--ink)] text-sm font-medium hover:bg-[var(--ink)] hover:text-[var(--paper)] transition">🎤 主持人提詞</a>
         <a href="appeal.html" class="px-4 py-2 bg-white border border-[var(--ink)] text-[var(--ink)] text-sm font-medium hover:bg-[var(--ink)] hover:text-[var(--paper)] transition">📝 線上申訴</a>
         <a href="notice.html" class="px-4 py-2 bg-[var(--gold)]/15 border border-[var(--gold)] text-[var(--gold)] text-sm font-bold hover:bg-[var(--gold)] hover:text-white transition">⚠️ 規定速報</a>
-        <a href="https://lang.twnpo.com/score-0.aspx?openExternalBrowser=1#b1" target="_blank" rel="noopener" class="px-4 py-2 bg-[var(--jade)]/15 border border-[var(--jade)] text-[var(--jade)] text-sm font-bold hover:bg-[var(--jade)] hover:text-white transition inline-flex items-center gap-1">🏆 成績查詢<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg></a>
         <a href="#contact" class="px-4 py-2 bg-white border border-[var(--ink)] text-[var(--ink)] text-sm font-medium hover:bg-[var(--ink)] hover:text-[var(--paper)] transition">聯絡資訊</a>
       </nav>
     </div>
@@ -1010,6 +1010,60 @@
 
       </div>
     </div>
+  </div>
+</section>
+
+<!-- 🏆 成績查詢區塊(導向桃園市自建公告系統) -->
+<section id="results" class="py-12 bg-gradient-to-br from-[var(--jade)]/15 via-white to-[var(--jade)]/10 border-y-2 border-[var(--jade)]">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center gap-2 bg-[var(--jade)] text-white px-4 py-1.5 rounded-full text-xs font-bold tracking-widest mb-3 shadow">
+        🏆 OFFICIAL RESULTS · 官方公告系統
+      </div>
+      <h2 class="font-serif-tc text-2xl sm:text-3xl font-bold mb-2">
+        賽後成績查詢
+      </h2>
+      <p class="text-gray-600 text-sm leading-relaxed">
+        成績一律使用<strong class="text-[var(--jade-dark)]">桃園市語文競賽公告系統</strong>公布
+      </p>
+    </div>
+
+    <!-- 大型主按鈕(手機優先) -->
+    <div class="mb-4">
+      <a href="https://lang.twnpo.com/score-0.aspx?openExternalBrowser=1#b1"
+         target="_blank" rel="noopener"
+         class="block w-full bg-[var(--jade)] hover:bg-[var(--jade-dark)] text-white text-center py-5 sm:py-6 rounded-sm shadow-xl hover:shadow-2xl active:scale-[0.98] transition group">
+        <div class="font-serif-tc text-xl sm:text-2xl font-black flex items-center justify-center gap-3">
+          🏆 前往查詢成績
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+        </div>
+        <div class="text-xs text-white/80 mt-1 tracking-wider">lang.twnpo.com/score-0.aspx</div>
+      </a>
+    </div>
+
+    <!-- 補充說明(縮成 1 行 grid) -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-center">
+      <div class="bg-white border border-gray-200 rounded-sm p-2">
+        <div class="text-[var(--jade-dark)] font-bold">📊 全市集中</div>
+        <div class="text-gray-500 mt-0.5">各區複賽成績</div>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-sm p-2">
+        <div class="text-[var(--jade-dark)] font-bold">🔍 多維篩選</div>
+        <div class="text-gray-500 mt-0.5">組別/項目/學校</div>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-sm p-2">
+        <div class="text-[var(--jade-dark)] font-bold">⏰ 賽後陸續</div>
+        <div class="text-gray-500 mt-0.5">評審講評後公布</div>
+      </div>
+      <div class="bg-white border border-gray-200 rounded-sm p-2">
+        <div class="text-[var(--jade-dark)] font-bold">🏅 晉級名單</div>
+        <div class="text-gray-500 mt-0.5">同步顯示市賽</div>
+      </div>
+    </div>
+
+    <p class="text-center text-[11px] text-gray-500 mt-3">
+      💡 在 LINE 內點按鈕會自動跳到外部瀏覽器
+    </p>
   </div>
 </section>
 
@@ -1629,78 +1683,6 @@
       </div>
     </div>
 
-  </div>
-</section>
-
-<!-- 🏆 成績查詢區塊(導向桃園市自建公告系統) -->
-<section id="results" class="py-16 bg-gradient-to-br from-[var(--jade)]/10 via-[var(--paper)] to-[var(--gold)]/10 border-y border-[var(--jade)]/20">
-  <div class="max-w-5xl mx-auto px-6">
-    <div class="text-center mb-8">
-      <div class="inline-flex items-center gap-2 bg-[var(--jade)]/15 text-[var(--jade-dark)] px-4 py-1.5 rounded-full text-xs font-bold tracking-widest mb-3">
-        OFFICIAL RESULTS · 官方系統
-      </div>
-      <h2 class="font-serif-tc text-3xl sm:text-4xl font-bold mb-3">
-        <span class="text-4xl mr-2">🏆</span>成績查詢
-      </h2>
-      <p class="text-gray-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-        本競賽成績一律使用<strong class="text-[var(--jade-dark)]">桃園市語文競賽公告系統</strong>公布，<br class="hidden sm:block">
-        各組各項成績於評審講評後陸續上傳，請選手、領隊、家長密切關注。
-      </p>
-    </div>
-
-    <div class="bg-white border-2 border-[var(--jade)] rounded-sm shadow-lg p-6 sm:p-10">
-      <div class="grid sm:grid-cols-3 gap-6 items-center">
-        <!-- 左:Logo / 圖示 -->
-        <div class="text-center sm:text-left">
-          <div class="inline-block">
-            <div class="w-20 h-20 mx-auto sm:mx-0 bg-[var(--jade)] text-white rounded-sm flex items-center justify-center shadow-md">
-              <span class="font-serif-tc font-black text-4xl leading-none">績</span>
-            </div>
-          </div>
-          <div class="mt-3 text-xs text-gray-500 tracking-widest">TAOYUAN CITY</div>
-          <div class="text-sm font-bold">桃園市語文競賽網</div>
-        </div>
-
-        <!-- 中:說明 -->
-        <div class="sm:col-span-1 text-sm leading-relaxed text-gray-700">
-          <ul class="space-y-1.5">
-            <li>📊 全市各區複賽成績集中查詢</li>
-            <li>🔍 可依組別、項目、學校篩選</li>
-            <li>📱 手機 / 平板皆可瀏覽</li>
-            <li>🏅 同步顯示晉級市賽名單</li>
-          </ul>
-        </div>
-
-        <!-- 右:主按鈕 -->
-        <div class="text-center sm:text-right">
-          <a href="https://lang.twnpo.com/score-0.aspx?openExternalBrowser=1#b1"
-             target="_blank" rel="noopener"
-             class="inline-flex items-center justify-center gap-2 px-6 py-4 bg-[var(--jade)] hover:bg-[var(--jade-dark)] text-white font-bold text-base rounded-sm shadow-lg hover:shadow-xl active:scale-95 transition">
-            <span>🏆 前往查詢成績</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7v9"/></svg>
-          </a>
-          <div class="text-xs text-gray-500 mt-2 break-all">
-            lang.twnpo.com/score-0.aspx
-          </div>
-        </div>
-      </div>
-
-      <!-- 補充資訊 -->
-      <div class="mt-6 pt-5 border-t border-gray-200 grid sm:grid-cols-2 gap-4 text-xs text-gray-600">
-        <div>
-          ⏰ <strong>預計公告時間</strong>：各項評審講評結束後陸續公布<br>
-          📅 <strong>賽事日期</strong>：2026/5/23（六）
-        </div>
-        <div>
-          📞 <strong>承辦：</strong>石門國民小學 03-4711752<br>
-          📧 <strong>承辦人：</strong>魏博彥主任（請洽學校總機轉接）
-        </div>
-      </div>
-    </div>
-
-    <p class="text-center text-xs text-gray-500 mt-5">
-      💡 在 LINE 內點按鈕會自動跳到外部瀏覽器（避免 LINE WebView 限制）
-    </p>
   </div>
 </section>
 
