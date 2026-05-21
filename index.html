@@ -349,19 +349,89 @@
   </div>
 </div>
 
-<!-- 頂部公告條(RWD:手機隱藏次要資訊) -->
-<div class="bg-[var(--ink)] text-[var(--paper)] py-2 px-3 text-xs sm:text-sm no-print">
+<!-- 頂部公告條 + 倒數 + 賽前 ticker(RWD) -->
+<div class="bg-[var(--ink)] text-[var(--paper)] py-2 px-3 text-xs sm:text-sm no-print"
+     x-data="topBannerTicker()" x-init="init()">
   <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-1 tracking-wider">
     <span class="inline-flex items-center gap-1.5 whitespace-nowrap">
       <span class="inline-block w-2 h-2 bg-[var(--vermilion)] rounded-full animate-pulse"></span>
       <strong class="text-amber-200">2026 / 5 / 23（六）</strong>
     </span>
     <span class="hidden sm:inline text-[var(--paper)]/30">｜</span>
-    <span class="whitespace-nowrap">校園開放 <strong class="text-amber-200">07:50</strong></span>
+    <!-- 倒數 -->
+    <span class="whitespace-nowrap" x-show="countdownText">
+      <span class="text-[var(--paper)]/70">倒數</span> <strong class="text-amber-200" x-text="countdownText"></strong>
+    </span>
     <span class="hidden sm:inline text-[var(--paper)]/30">｜</span>
-    <span class="whitespace-nowrap hidden sm:inline">承辦：石門國小</span>
+    <!-- 輪播提醒 -->
+    <span class="whitespace-nowrap inline-flex items-center gap-1.5 transition-opacity duration-500"
+          :class="fading ? 'opacity-0' : 'opacity-100'">
+      <span class="text-amber-200" x-text="currentTick?.emoji"></span>
+      <span x-text="currentTick?.text"></span>
+    </span>
   </div>
 </div>
+
+<script>
+  function topBannerTicker() {
+    return {
+      ticks: [],
+      idx: 0,
+      currentTick: null,
+      countdownText: '',
+      fading: false,
+      init() {
+        // 賽前 ticker 訊息(賽前一週開始顯示)
+        const all = [
+          { emoji: '📌', text: '5/22(五) 14:00 台語情境演說演練 @ C218', until: '2026-05-22T17:00:00+08:00' },
+          { emoji: '❄️', text: '5/22 場地布置請確認各場地冷氣運作正常', until: '2026-05-22T20:00:00+08:00' },
+          { emoji: '👕', text: '5/23 工作人員請穿教職員工運動會工作服', until: '2026-05-23T09:00:00+08:00' },
+          { emoji: '🆔', text: '比賽當日請攜帶身分證明 + 參賽證', until: '2026-05-23T12:00:00+08:00' },
+          { emoji: '🎤', text: '情境式演說(台/客語)不可攜帶任何參考資料', until: '2026-05-23T12:00:00+08:00' },
+          { emoji: '📋', text: '一般演說題目紙(不得做記號)須交給第 3 位評判', until: '2026-05-23T12:00:00+08:00' },
+          { emoji: '🅿️', text: '家長停車請至石中停車場,校內僅供領隊', until: '2026-05-23T09:00:00+08:00' },
+          { emoji: '🏫', text: '承辦：桃園市龍潭區石門國小', until: '2030-01-01T00:00:00+08:00' },
+        ];
+        const now = Date.now();
+        this.ticks = all.filter(t => new Date(t.until).getTime() > now);
+        if (this.ticks.length === 0) this.ticks = [{ emoji: '🏫', text: '承辦：桃園市龍潭區石門國小' }];
+        this.currentTick = this.ticks[0];
+        // 每 4 秒切換一則
+        setInterval(() => {
+          this.fading = true;
+          setTimeout(() => {
+            this.idx = (this.idx + 1) % this.ticks.length;
+            this.currentTick = this.ticks[this.idx];
+            this.fading = false;
+          }, 400);
+        }, 4000);
+        // 倒數更新(每分鐘)
+        this.updateCountdown();
+        setInterval(() => this.updateCountdown(), 60000);
+      },
+      updateCountdown() {
+        const target = new Date('2026-05-23T08:30:00+08:00').getTime();
+        const diff = target - Date.now();
+        if (diff <= 0) {
+          // 賽事進行中或結束:不顯示倒數
+          const dayEnd = new Date('2026-05-23T17:00:00+08:00').getTime();
+          this.countdownText = diff > -dayEnd ? '進行中' : '';
+          return;
+        }
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const mins = Math.floor((diff % 3600000) / 60000);
+        if (days >= 1) {
+          this.countdownText = `${days} 天 ${hours} 小時`;
+        } else if (hours >= 1) {
+          this.countdownText = `${hours} 小時 ${mins} 分`;
+        } else {
+          this.countdownText = `${mins} 分鐘`;
+        }
+      },
+    };
+  }
+</script>
 
 <!-- Hero 區 -->
 <header class="watermark-bg relative">

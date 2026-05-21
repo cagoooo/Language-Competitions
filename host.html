@@ -246,6 +246,53 @@
   </template>
 </main>
 
+<!-- 浮動計時 + 鈴聲面板(給計時組使用) -->
+<div class="no-print fixed z-40" style="bottom: calc(80px + env(safe-area-inset-bottom)); right: 12px;"
+     x-data="bellTimer()" x-init="init()">
+  <!-- 收起時:圓形按鈕 -->
+  <button x-show="!expanded" @click="expanded = true"
+          class="w-14 h-14 bg-amber-500 hover:bg-amber-400 text-black rounded-full shadow-2xl flex items-center justify-center text-2xl active:scale-95"
+          title="開啟計時 + 鈴聲" aria-label="開啟計時與鈴聲面板">
+    🔔
+  </button>
+  <!-- 展開時:面板 -->
+  <div x-show="expanded" x-transition
+       class="bg-gray-900/95 border border-amber-500/40 rounded-lg p-4 shadow-2xl w-72 text-white"
+       :class="theme==='light' && '!bg-white !border-amber-600/40 !text-black'">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-bold text-amber-400">⏱ 計時 + 🔔 鈴聲</h3>
+      <button @click="expanded = false" class="text-lg opacity-60 hover:opacity-100 px-2" aria-label="收起">✕</button>
+    </div>
+    <!-- 碼錶 -->
+    <div class="bg-black/80 rounded-md py-3 text-center font-mono text-3xl text-amber-300 tabular-nums mb-3">
+      <span x-text="timeFormat"></span>
+    </div>
+    <!-- 控制 -->
+    <div class="flex gap-2 mb-3">
+      <button @click="toggleTimer()"
+              class="flex-1 py-2.5 rounded text-sm font-bold active:scale-95"
+              :class="running ? 'bg-orange-500 text-black' : 'bg-amber-500 text-black hover:bg-amber-400'">
+        <span x-text="running ? '⏸ 暫停' : '▶ 開始'"></span>
+      </button>
+      <button @click="resetTimer()"
+              class="flex-1 py-2.5 rounded text-sm font-bold bg-white/15 hover:bg-white/25 active:scale-95"
+              :class="theme==='light' && '!bg-black/10 hover:!bg-black/20'">
+        🔄 重設
+      </button>
+    </div>
+    <!-- 鈴聲 -->
+    <div class="border-t border-white/10 pt-3" :class="theme==='light' && '!border-black/10'">
+      <div class="text-xs opacity-60 mb-2">手動鈴聲（依附件二/三規範）</div>
+      <div class="grid grid-cols-3 gap-2">
+        <button @click="bellShort()" class="py-2.5 px-1 text-xs font-bold rounded bg-green-700/70 hover:bg-green-600 text-white active:scale-95" title="下限時間到">🔔<br>短音</button>
+        <button @click="bellLongShort()" class="py-2.5 px-1 text-xs font-bold rounded bg-red-700/70 hover:bg-red-600 text-white active:scale-95" title="上限時間到">🔔🔔<br>一短一長</button>
+        <button @click="bellWarn()" class="py-2.5 px-1 text-xs font-bold rounded bg-yellow-600/80 hover:bg-yellow-500 text-black active:scale-95" title="30 秒警告">⏰<br>30 秒</button>
+      </div>
+      <p class="text-[10px] opacity-50 mt-2 leading-tight">演說 / 朗讀 / 情境式皆可用<br>單音 880Hz · 一短一長 880Hz</p>
+    </div>
+  </div>
+</div>
+
 <!-- 底部分段快速跳轉(手機加大按鈕 + safe-area) -->
 <nav class="no-print fixed bottom-0 inset-x-0 z-20 bg-black/90 backdrop-blur border-t border-white/10 no-print-fullscreen" :class="theme==='light' && '!bg-white/95 !border-black/10'">
   <div class="bottom-nav max-w-5xl mx-auto px-3 py-2 flex items-center gap-2 justify-between">
@@ -393,6 +440,99 @@ window.addEventListener('keydown', (e) => {
     else document.exitFullscreen();
   }
 });
+
+// 浮動計時 + 鈴聲面板(給計時組使用)
+// 鈴聲規格依《附件二·演說》《附件三·情境式演說》:
+//   下限到 → 短音(一聲)
+//   上限到 → 一短一長
+//   30 秒警告 → 短短音(自訂,給準備上臺者)
+function bellTimer() {
+  return {
+    expanded: false,
+    running: false,
+    elapsed: 0, // 秒(小數)
+    _interval: null,
+    _audioCtx: null,
+    _startAt: 0,
+    theme: 'dark',
+    init() {
+      // 同步主題(讀 body class)
+      const sync = () => { this.theme = document.body.classList.contains('theme-light') ? 'light' : 'dark'; };
+      sync();
+      const obs = new MutationObserver(sync);
+      obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    },
+    get timeFormat() {
+      const totalMs = Math.floor(this.elapsed * 1000);
+      const m = Math.floor(totalMs / 60000).toString().padStart(2, '0');
+      const s = Math.floor((totalMs % 60000) / 1000).toString().padStart(2, '0');
+      const cs = Math.floor((totalMs % 1000) / 10).toString().padStart(2, '0');
+      return `${m}:${s}.${cs}`;
+    },
+    toggleTimer() {
+      this.running = !this.running;
+      if (this.running) {
+        this._startAt = Date.now() - this.elapsed * 1000;
+        this._interval = setInterval(() => {
+          this.elapsed = (Date.now() - this._startAt) / 1000;
+        }, 50);
+        // 第一次按播放時,順便 unlock AudioContext(iOS Safari 必要)
+        this._ensureCtx();
+      } else {
+        clearInterval(this._interval);
+        this._interval = null;
+      }
+    },
+    resetTimer() {
+      this.running = false;
+      this.elapsed = 0;
+      if (this._interval) {
+        clearInterval(this._interval);
+        this._interval = null;
+      }
+    },
+    _ensureCtx() {
+      if (!this._audioCtx) {
+        try {
+          this._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) { return null; }
+      }
+      if (this._audioCtx.state === 'suspended') this._audioCtx.resume();
+      return this._audioCtx;
+    },
+    _beep(freq, duration, volume) {
+      const ctx = this._ensureCtx();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const now = ctx.currentTime;
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(volume || 0.4, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+      osc.start(now);
+      osc.stop(now + duration + 0.05);
+    },
+    bellShort() {
+      // 下限時間到:短音
+      this._beep(880, 0.35);
+    },
+    async bellLongShort() {
+      // 上限時間到:一短一長
+      this._beep(880, 0.3);
+      await new Promise(r => setTimeout(r, 450));
+      this._beep(880, 1.0);
+    },
+    bellWarn() {
+      // 30 秒提醒:兩聲短促警告
+      this._beep(660, 0.12);
+      setTimeout(() => this._beep(660, 0.12), 180);
+    },
+  };
+}
 </script>
 
 </body>
