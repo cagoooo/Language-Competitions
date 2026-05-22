@@ -2354,14 +2354,29 @@ function countdown() {
     init() {
       this.tick();
       setInterval(() => this.tick(), 1000);
+      // 模擬時間切換時立即重算,不必等 1 秒 tick
+      if (window.Alpine && window.Alpine.effect) {
+        window.Alpine.effect(() => {
+          void window.LIVE_STATE.simulateTime;
+          this.tick();
+        });
+      }
     },
     tick() {
-      const now = new Date();
       // 開賽:競賽日 09:10(第一場開始)
       const [Y, M, D] = COMP_DATA.meta.date.split('-').map(Number);
       const raceStart = new Date(Y, M - 1, D, 9, 10, 0);
       // 結束:當天 12:00
       const raceEnd = new Date(Y, M - 1, D, 12, 0, 0);
+      // 若啟用模擬模式,把「現在」當成競賽日 + 模擬時間;否則用真實時間
+      const sim = window.LIVE_STATE && window.LIVE_STATE.simulateTime;
+      let now;
+      if (sim) {
+        const [hh, mm] = sim.split(':').map(Number);
+        now = new Date(Y, M - 1, D, hh || 0, mm || 0, 0);
+      } else {
+        now = new Date();
+      }
       const diff = raceStart - now;
       if (now >= raceEnd) { this.phase = 'ended'; return; }
       if (now >= raceStart) { this.phase = 'live'; return; }
