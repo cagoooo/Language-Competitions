@@ -2427,6 +2427,12 @@ function Alpine_initState() {
     tickKey: 0,
   };
 }
+// Alpine 載入後把 LIVE_STATE 換成 reactive proxy,
+// 否則跨 component 共享的 plain object mutation 不會觸發 re-render
+// (預覽模式按鈕按下後畫面沒變化的根因)
+document.addEventListener('alpine:init', () => {
+  window.LIVE_STATE = Alpine.reactive(window.LIVE_STATE);
+});
 // 每 30 秒推進 tickKey 觸發 Alpine 重新計算
 setInterval(() => { if (window.Alpine) { window.LIVE_STATE.tickKey++; } }, 30000);
 
