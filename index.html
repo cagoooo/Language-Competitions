@@ -696,8 +696,14 @@
             <button @click="setSimulate('11:00')" class="px-2 py-1 text-xs bg-gray-100 hover:bg-[var(--vermilion)] hover:text-white rounded-sm">11:00 結束</button>
             <button @click="clearSimulate()" class="px-2 py-1 text-xs bg-gray-700 text-white hover:bg-black rounded-sm">⏹ 關閉</button>
           </div>
-          <input type="time" @change="setSimulate($event.target.value)" class="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm" placeholder="自訂時間">
+          <!-- 自動演進(每 2 秒 +5 分鐘,08:00 → 12:30 完整 dry-run) -->
+          <button @click="toggleAutoPlay()"
+                  :class="autoPlaying ? 'bg-amber-500 text-white hover:bg-amber-600 animate-pulse' : 'bg-blue-50 hover:bg-blue-500 hover:text-white border border-blue-300'"
+                  class="w-full px-2 py-1.5 text-xs rounded-sm mb-2 font-bold transition-colors"
+                  x-text="autoPlaying ? '⏸ 停止自動演進' : '▶ 自動演進(08:00→12:30)'"></button>
+          <input type="time" @change="setSimulate($event.target.value)" :value="state.simulateTime" class="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm" placeholder="自訂時間">
           <p class="text-[10px] text-gray-400 mt-2">真實比賽日(2026/5/23)會自動啟用 Live 模式,無需此切換。</p>
+          <p class="text-[10px] text-gray-400 mt-1">💡 網址加 <code class="bg-gray-100 px-1">?sim=08:25</code> 可直接帶入時段(可分享)。</p>
         </div>
       </details>
     </div>
@@ -2540,9 +2546,81 @@ function liveBar() {
       if (!this.isRaceDay) return [];
       return COMP_DATA.events.filter(e => calcEventStatus(e) === 'soon');
     },
-    setSimulate(t) { this.state.simulateTime = t; this.state.tickKey++; },
-    clearSimulate() { this.state.simulateTime = ''; this.state.forceRaceDay = false; this.state.tickKey++; },
-    enableForceMode() { this.state.forceRaceDay = true; this.state.tickKey++; },
+    setSimulate(t) {
+      this.state.simulateTime = t;
+      this.state.tickKey++;
+      // URL 同步,讓網址可分享:?sim=HH:MM
+      this._syncUrlParam('sim', t || null);
+    },
+    clearSimulate() {
+      this.state.simulateTime = '';
+      this.state.forceRaceDay = false;
+      this.state.tickKey++;
+      this.stopAutoPlay();
+      this._syncUrlParam('sim', null);
+      this._syncUrlParam('force', null);
+    },
+    enableForceMode() {
+      this.state.forceRaceDay = true;
+      this.state.tickKey++;
+      this._syncUrlParam('force', '1');
+    },
+    // ── 自動演進(P1.5-1):每 2 秒推進 +5 分鐘,從目前(或 08:00)跑到 12:30
+    autoPlaying: false,
+    _autoPlayHandle: null,
+    toggleAutoPlay() {
+      if (this.autoPlaying) { this.stopAutoPlay(); } else { this.startAutoPlay(); }
+    },
+    startAutoPlay() {
+      // 從目前 simulateTime 開始(若無則 08:00);若已到 12:30 後則重置回 08:00
+      let curMin = this.state.simulateTime
+        ? COMP_UTILS.toMin(this.state.simulateTime)
+        : 8 * 60;
+      const endMin = 12 * 60 + 30;  // 12:30
+      if (curMin >= endMin) curMin = 8 * 60;
+      this.autoPlaying = true;
+      this.setSimulate(this._minToHHMM(curMin));
+      this._autoPlayHandle = setInterval(() => {
+        curMin += 5;
+        if (curMin > endMin) { this.stopAutoPlay(); return; }
+        this.setSimulate(this._minToHHMM(curMin));
+      }, 2000);
+    },
+    stopAutoPlay() {
+      this.autoPlaying = false;
+      if (this._autoPlayHandle) {
+        clearInterval(this._autoPlayHandle);
+        this._autoPlayHandle = null;
+      }
+    },
+    _minToHHMM(min) {
+      const h = Math.floor(min / 60);
+      const m = min % 60;
+      return COMP_UTILS.pad2(h) + ':' + COMP_UTILS.pad2(m);
+    },
+    _syncUrlParam(key, val) {
+      try {
+        const url = new URL(window.location.href);
+        if (val == null || val === '') url.searchParams.delete(key);
+        else url.searchParams.set(key, val);
+        history.replaceState(null, '', url.toString());
+      } catch (_) { /* 舊瀏覽器忽略 */ }
+    },
+    // ── deep-link 初始化(P1.5-2):從 URL 讀 ?sim=HH:MM 與 ?force=1
+    init() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const sim = params.get('sim');
+        if (sim && /^\d{1,2}:\d{2}$/.test(sim)) {
+          this.state.simulateTime = sim;
+          this.state.tickKey++;
+        }
+        if (params.get('force') === '1') {
+          this.state.forceRaceDay = true;
+          this.state.tickKey++;
+        }
+      } catch (_) {}
+    },
   };
 }
 
