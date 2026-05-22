@@ -1303,6 +1303,24 @@
         </div>
         <!-- Body -->
         <div class="p-6">
+          <!-- 工作人員卡片 -->
+          <template x-if="selectedRoom.staff">
+            <div class="mb-4 p-3 rounded-sm bg-[var(--paper-2)]/60 border-l-4" :style="`border-color:${selectedRoom.catColor}`">
+              <div class="text-xs text-gray-600 font-bold mb-2 flex items-center gap-1">
+                <span>👥</span><span>本場地工作人員</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="px-2 py-1 text-white text-xs rounded-sm font-bold" :style="`background:${selectedRoom.catColor}`">
+                  ★ 組長 <span x-text="selectedRoom.staff.lead"></span>
+                </span>
+                <template x-for="m in selectedRoom.staff.members" :key="m">
+                  <span class="px-2 py-1 bg-white text-[var(--ink)] text-xs rounded-sm border border-gray-300" x-text="m"></span>
+                </template>
+              </div>
+              <div x-show="selectedRoom.staff.note" class="text-xs text-gray-500 mt-2" x-text="selectedRoom.staff.note"></div>
+            </div>
+          </template>
+
           <template x-if="eventsInRoom(selectedRoom.code).length > 0">
             <div>
               <h4 class="font-bold text-sm text-gray-600 mb-3">本教室排定場次：</h4>
@@ -1337,8 +1355,7 @@
               <p class="text-sm font-bold" :class="selectedRoom.host ? 'text-[var(--vermilion)]' : 'text-[#5b8aa8]'" x-text="selectedRoom.label"></p>
               <p class="text-xs text-gray-500 mt-3 leading-relaxed">
                 本教室為各校選手 / 領隊休息區<br>
-                請依參賽證上之校名前往使用<br>
-                <span x-show="selectedRoom.host" class="text-[var(--vermilion)] font-bold">本校選手由林佳靜老師統一帶領</span>
+                請依參賽證上之校名前往使用
               </p>
             </div>
           </template>
