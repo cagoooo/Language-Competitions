@@ -658,9 +658,8 @@
       <!-- 左側:目前狀態 -->
       <div class="flex items-center gap-2 sm:gap-3 flex-wrap text-xs sm:text-sm">
         <span class="flex items-center gap-1.5 sm:gap-2">
-          <span x-show="isRaceDay" class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 bg-[var(--vermilion)] rounded-full animate-pulse"></span>
-          <span x-show="!isRaceDay" class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 bg-gray-400 rounded-full"></span>
-          <strong x-text="isRaceDay ? '🔴 競賽進行中' : '⏳ 尚未到比賽日'"></strong>
+          <span class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full" :class="statusDotClass"></span>
+          <strong x-text="statusText"></strong>
         </span>
         <span class="text-gray-600 whitespace-nowrap">
           現在 <strong class="font-mono" x-text="nowDisplay"></strong>
@@ -2496,6 +2495,30 @@ function liveBar() {
     get state() { return window.LIVE_STATE; },
     get tick() { return window.LIVE_STATE.tickKey; },
     get isRaceDay() { return isActiveRaceDay(); },
+    // 比賽日內的階段:before(尚未開賽) / live(09:10~12:00) / ended(12:00後)
+    get racePhase() {
+      void this.tick;
+      if (!this.isRaceDay) return 'off';
+      const nowMin = getEffectiveNowMin();
+      if (nowMin < 9 * 60 + 10) return 'before';   // < 09:10 → 報到前 / 報到時段
+      if (nowMin < 12 * 60) return 'live';         // 09:10 ~ 12:00 → 進行中
+      return 'ended';
+    },
+    get statusText() {
+      const p = this.racePhase;
+      if (p === 'off')    return '⏳ 尚未到比賽日';
+      if (p === 'before') return '🟡 賽事日 ・ 報到時段';
+      if (p === 'live')   return '🔴 競賽進行中';
+      if (p === 'ended')  return '✅ 賽事已結束';
+      return '';
+    },
+    get statusDotClass() {
+      const p = this.racePhase;
+      if (p === 'live')   return 'bg-[var(--vermilion)] animate-pulse';
+      if (p === 'before') return 'bg-amber-400 animate-pulse';
+      if (p === 'ended')  return 'bg-[var(--jade)]';
+      return 'bg-gray-400';
+    },
     get nowDisplay() {
       void this.tick;
       if (this.state.simulateTime) return this.state.simulateTime + ' (模擬)';
