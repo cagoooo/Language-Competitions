@@ -1982,7 +1982,7 @@
     return {
       expanded: false,
       visible: true,
-      tab: 'search',
+      tab: 'live',  // 預設打開即顯示「即時」tab(賽前看倒數,賽事日看進行中場次)
       query: '',
       exactMatch: null,
       fuzzyHits: [],
@@ -2036,6 +2036,13 @@
       },
 
       updatePhase() {
+        // 與預覽模式同步:有 simulateTime 時當作賽事日 during
+        const sim = window.LIVE_STATE && window.LIVE_STATE.simulateTime;
+        if (sim) {
+          this.phase = 'during';
+          this.isLive = true;
+          return;
+        }
         const now = Date.now();
         const dayStart = new Date('2026-05-23T07:50:00+08:00').getTime();
         const dayEnd = new Date('2026-05-23T13:00:00+08:00').getTime();
@@ -2257,9 +2264,10 @@
   </div>
 </footer>
 
-<!-- 浮動回頂部(位於即時速查 widget 圓鈕上方,避免重疊;RWD:手機更小、捲動到底後隱藏) -->
+<!-- 浮動回頂部(位於即時速查 widget 圓鈕上方,避免重疊;用 inline style 避開 Tailwind 預編譯 class 缺失) -->
 <a href="#top" id="back-to-top"
-   class="no-print fixed bottom-20 right-4 sm:bottom-24 sm:right-6 w-11 h-11 sm:w-12 sm:h-12 bg-[var(--vermilion)] text-white rounded-full shadow-xl hover:bg-[var(--vermilion-dark)] active:scale-95 transition flex items-center justify-center z-40 opacity-0 pointer-events-none data-[show=true]:opacity-100 data-[show=true]:pointer-events-auto"
+   class="no-print fixed w-11 h-11 sm:w-12 sm:h-12 bg-[var(--vermilion)] text-white rounded-full shadow-xl hover:bg-[var(--vermilion-dark)] active:scale-95 transition flex items-center justify-center z-40 opacity-0 pointer-events-none data-[show=true]:opacity-100 data-[show=true]:pointer-events-auto"
+   style="bottom: 5rem; right: 1rem;"
    data-show="false" aria-label="回到頁面頂部" title="回頂部">
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"></polyline></svg>
 </a>
