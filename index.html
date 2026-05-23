@@ -2204,10 +2204,13 @@
         <span class="inline-block w-2 h-2 bg-[var(--vermilion)] rounded-full"></span>
         <span>桃園市 115 年語文競賽龍潭區複賽 ・ 2026 / 5 / 23（六）</span>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-wrap justify-center">
         <span>© 2026 桃園市石門國民小學</span>
         <span class="text-[var(--paper)]/30">·</span>
-        <span>All rights reserved</span>
+        <span id="footer-sw-version" class="font-mono text-[var(--paper)]/40" title="當前 Service Worker 版本">v—</span>
+        <button id="footer-check-update" type="button"
+                class="px-2 py-0.5 bg-[var(--paper)]/10 hover:bg-[var(--paper)]/20 active:bg-[var(--paper)]/30 rounded text-[var(--paper)]/70 hover:text-[var(--paper)] transition text-[10px] font-bold whitespace-nowrap"
+                title="向伺服器確認是否有新版">🔄 檢查更新</button>
       </div>
     </div>
   </div>
@@ -2338,6 +2341,57 @@
           console.log('[SW] 檢查完成,若有新版會在數秒內跳橫條');
         }).catch((e) => console.log('[SW] 失敗:', e));
       };
+
+      // ── footer 版本徽章:從 controller / active SW 拿 CACHE_VERSION 顯示出來
+      const versionEl = document.getElementById('footer-sw-version');
+      function askVersion(worker) {
+        if (!worker || !versionEl) return;
+        try {
+          const ch = new MessageChannel();
+          ch.port1.onmessage = (e) => {
+            if (typeof e.data === 'string') {
+              // 把 'smes-langcomp-2026-05-22-026' → 'v026' 顯示(完整版作為 title)
+              versionEl.textContent = 'v' + e.data.replace(/^.*-(\d+)$/, '$1');
+              versionEl.title = e.data;
+            }
+          };
+          worker.postMessage({ type: 'GET_VERSION' }, [ch.port2]);
+        } catch (_) {}
+      }
+      askVersion(navigator.serviceWorker.controller || reg.active);
+      // controllerchange 後再問一次(取到新版號)
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        askVersion(navigator.serviceWorker.controller);
+      });
+
+      // ── footer「🔄 檢查更新」手動按鈕
+      const checkBtn = document.getElementById('footer-check-update');
+      if (checkBtn) {
+        checkBtn.addEventListener('click', async () => {
+          const original = checkBtn.textContent;
+          checkBtn.textContent = '⏳ 檢查中…';
+          checkBtn.disabled = true;
+          try {
+            await reg.update();
+            // 等 1.5 秒讓 install 流程跑完
+            await new Promise((r) => setTimeout(r, 1500));
+            if (reg.waiting) {
+              checkBtn.textContent = '🎉 有新版!請看上方';
+              showBanner(reg.waiting);
+            } else if (reg.installing) {
+              checkBtn.textContent = '⏬ 下載新版中…';
+              setTimeout(() => { checkBtn.textContent = original; checkBtn.disabled = false; }, 3000);
+              return;
+            } else {
+              checkBtn.textContent = '✅ 已是最新版';
+            }
+          } catch (e) {
+            checkBtn.textContent = '❌ 檢查失敗';
+            console.warn('[SW] 手動檢查失敗:', e);
+          }
+          setTimeout(() => { checkBtn.textContent = original; checkBtn.disabled = false; }, 2500);
+        });
+      }
     }).catch((err) => {
       console.warn('[SW] ❌ 註冊失敗:', err);
     });

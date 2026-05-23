@@ -15,7 +15,7 @@
  *   → 跳出「網站有新版,點此重新整理」橫條(由 index.html 內 JS 監聽)。
  */
 
-const CACHE_VERSION = 'smes-langcomp-2026-05-22-026';
+const CACHE_VERSION = 'smes-langcomp-2026-05-22-027';
 const CACHE_NAME = `smes-langcomp::${CACHE_VERSION}`;
 
 // 安裝:**只預快取首屏關鍵 3 個檔案**,避免拖累首屏 LCP
@@ -91,8 +91,15 @@ self.addEventListener('fetch', (event) => {
 });
 
 // 訊息:前端按下「重新整理」按鈕後,SKIP_WAITING 讓新版 SW 立即接管
+//       前端可透過 GET_VERSION 查詢當前 SW 跑的快取版本(顯示在 footer)
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+  if (!event.data) return;
+  if (event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  if (event.data.type === 'GET_VERSION') {
+    if (event.ports && event.ports[0]) {
+      event.ports[0].postMessage(CACHE_VERSION);
+    }
   }
 });
