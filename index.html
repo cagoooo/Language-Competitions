@@ -2368,9 +2368,17 @@ function countdown() {
       }
     },
     tick() {
-      // 開賽:競賽日 09:10(第一場開始)
+      // 開賽:取所有場次中「最早」的開始時間(作文/國語字音字形 08:40 比第一場演說 09:10 還早)
       const [Y, M, D] = COMP_DATA.meta.date.split('-').map(Number);
-      const raceStart = new Date(Y, M - 1, D, 9, 10, 0);
+      let earliestMin = 24 * 60;
+      for (const ev of COMP_DATA.events) {
+        const t = (ev.time || '').split('-')[0];
+        if (!t) continue;
+        const m = COMP_UTILS.toMin(t);
+        if (m < earliestMin) earliestMin = m;
+      }
+      if (earliestMin >= 24 * 60) earliestMin = 9 * 60 + 10;  // fallback
+      const raceStart = new Date(Y, M - 1, D, Math.floor(earliestMin / 60), earliestMin % 60, 0);
       // 結束:當天 12:00
       const raceEnd = new Date(Y, M - 1, D, 12, 0, 0);
       // 若啟用模擬模式,把「現在」當成競賽日 + 模擬時間;否則用真實時間
@@ -2501,13 +2509,22 @@ function liveBar() {
     get state() { return window.LIVE_STATE; },
     get tick() { return window.LIVE_STATE.tickKey; },
     get isRaceDay() { return isActiveRaceDay(); },
-    // 比賽日內的階段:before(尚未開賽) / live(09:10~12:00) / ended(12:00後)
+    // 比賽日內的階段:before(尚未開賽) / live(任一場進行中~12:00) / ended(12:00後)
     get racePhase() {
       void this.tick;
       if (!this.isRaceDay) return 'off';
       const nowMin = getEffectiveNowMin();
-      if (nowMin < 9 * 60 + 10) return 'before';   // < 09:10 → 報到前 / 報到時段
-      if (nowMin < 12 * 60) return 'live';         // 09:10 ~ 12:00 → 進行中
+      // 取最早開賽時間(作文/國語字音字形 08:40 比演說 09:10 早)
+      let earliestMin = 24 * 60;
+      for (const ev of COMP_DATA.events) {
+        const t = (ev.time || '').split('-')[0];
+        if (!t) continue;
+        const m = COMP_UTILS.toMin(t);
+        if (m < earliestMin) earliestMin = m;
+      }
+      if (earliestMin >= 24 * 60) earliestMin = 9 * 60 + 10;
+      if (nowMin < earliestMin) return 'before';   // 報到時段
+      if (nowMin < 12 * 60) return 'live';         // 進行中
       return 'ended';
     },
     get statusText() {
