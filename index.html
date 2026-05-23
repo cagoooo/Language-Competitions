@@ -2013,9 +2013,9 @@
             </div>
           </div>
 
-          <!-- A 功能:沒場次的有溫度空狀態(依時段切換) -->
+          <!-- A 功能:沒場次的有溫度空狀態(依「進度」切換,不再硬寫 12:00) -->
           <div x-show="liveNow.length === 0 && upcoming.length === 0 && later.length === 0" class="text-center py-6">
-            <template x-if="progress.nowMin < 12 * 60">
+            <template x-if="!allEnded">
               <div>
                 <div class="text-4xl mb-2" x-text="emptyMessage.icon"></div>
                 <div class="font-bold text-gray-700 text-sm" x-text="emptyMessage.text"></div>
@@ -2023,7 +2023,7 @@
                 <a href="#schedule" @click="expanded=false" class="inline-block mt-3 text-xs text-[var(--vermilion)] underline">查看完整賽程</a>
               </div>
             </template>
-            <template x-if="progress.nowMin >= 12 * 60">
+            <template x-if="allEnded">
               <div>
                 <div class="text-5xl mb-2 animate-bounce">🎉</div>
                 <div class="font-bold text-lg bg-gradient-to-r from-[var(--vermilion)] via-amber-500 to-[var(--jade)] bg-clip-text text-transparent">
@@ -2223,18 +2223,23 @@
         })();
       },
 
-      // A 功能:沒場次時依時段給有溫度的訊息
+      // A 功能:沒場次時依「進度」而非硬寫時間給有溫度的訊息
+      get allEnded() {
+        return this.progress.total > 0 && this.progress.ended === this.progress.total;
+      },
       get emptyMessage() {
         const m = this.progress.nowMin || 0;
+        // 所有場次都結束 → 圓滿落幕(不需要等到 12:00,實際多在 11:00 後就全結束)
+        if (this.allEnded) {
+          return {
+            icon: '🎉',
+            text: '賽事圓滿落幕!',
+            sub: '感謝所有選手、家長與工作人員',
+            link: { url: 'https://lang.twnpo.com/score-0.aspx?openExternalBrowser=1#b1', label: '🏆 查詢成績(桃園市公告系統)' },
+          };
+        }
         if (m < 9 * 60) return { icon: '⏰', text: '賽事即將開始', sub: '請耐心等候第一場開賽' };
-        if (m < 12 * 60) return { icon: '⏸', text: '場次間休息中', sub: '下一場準備中,稍候即可看到進度' };
-        // ≥ 12:00
-        return {
-          icon: '🎉',
-          text: '賽事圓滿落幕!',
-          sub: '感謝所有選手、家長與工作人員',
-          link: { url: 'https://lang.twnpo.com/score-0.aspx?openExternalBrowser=1#b1', label: '🏆 查詢成績(桃園市公告系統)' },
-        };
+        return { icon: '⏸', text: '場次間休息中', sub: '下一場準備中,稍候即可看到進度' };
       },
 
       doSearch() {
@@ -2599,18 +2604,24 @@ function countdown() {
     },
     tick() {
       // 開賽:取所有場次中「最早」的開始時間(作文/國語字音字形 08:40 比第一場演說 09:10 還早)
+      // 結束:取所有場次中「最晚」的結束時間(實際多在 10:54,不再寫死 12:00)
       const [Y, M, D] = COMP_DATA.meta.date.split('-').map(Number);
-      let earliestMin = 24 * 60;
+      let earliestMin = 24 * 60, latestMin = 0;
       for (const ev of COMP_DATA.events) {
-        const t = (ev.time || '').split('-')[0];
-        if (!t) continue;
-        const m = COMP_UTILS.toMin(t);
-        if (m < earliestMin) earliestMin = m;
+        const parts = (ev.time || '').split('-');
+        if (parts[0]) {
+          const m = COMP_UTILS.toMin(parts[0]);
+          if (m < earliestMin) earliestMin = m;
+        }
+        if (parts[1]) {
+          const m = COMP_UTILS.toMin(parts[1]);
+          if (m > latestMin) latestMin = m;
+        }
       }
       if (earliestMin >= 24 * 60) earliestMin = 9 * 60 + 10;  // fallback
+      if (latestMin <= 0) latestMin = 12 * 60;                // fallback
       const raceStart = new Date(Y, M - 1, D, Math.floor(earliestMin / 60), earliestMin % 60, 0);
-      // 結束:當天 12:00
-      const raceEnd = new Date(Y, M - 1, D, 12, 0, 0);
+      const raceEnd   = new Date(Y, M - 1, D, Math.floor(latestMin / 60),   latestMin % 60,   0);
       // 若啟用模擬模式,把「現在」當成競賽日 + 模擬時間;否則用真實時間
       const sim = window.LIVE_STATE && window.LIVE_STATE.simulateTime;
       let now;
@@ -2739,22 +2750,28 @@ function liveBar() {
     get state() { return window.LIVE_STATE; },
     get tick() { return window.LIVE_STATE.tickKey; },
     get isRaceDay() { return isActiveRaceDay(); },
-    // 比賽日內的階段:before(尚未開賽) / live(任一場進行中~12:00) / ended(12:00後)
+    // 比賽日內的階段:before(尚未開賽) / live(任一場進行中) / ended(所有場次都結束)
     get racePhase() {
       void this.tick;
       if (!this.isRaceDay) return 'off';
       const nowMin = getEffectiveNowMin();
-      // 取最早開賽時間(作文/國語字音字形 08:40 比演說 09:10 早)
-      let earliestMin = 24 * 60;
+      // 動態算 earliestMin(最早開賽) + latestMin(最晚結束)
+      let earliestMin = 24 * 60, latestMin = 0;
       for (const ev of COMP_DATA.events) {
-        const t = (ev.time || '').split('-')[0];
-        if (!t) continue;
-        const m = COMP_UTILS.toMin(t);
-        if (m < earliestMin) earliestMin = m;
+        const parts = (ev.time || '').split('-');
+        if (parts[0]) {
+          const m = COMP_UTILS.toMin(parts[0]);
+          if (m < earliestMin) earliestMin = m;
+        }
+        if (parts[1]) {
+          const m = COMP_UTILS.toMin(parts[1]);
+          if (m > latestMin) latestMin = m;
+        }
       }
       if (earliestMin >= 24 * 60) earliestMin = 9 * 60 + 10;
+      if (latestMin <= 0) latestMin = 12 * 60;
       if (nowMin < earliestMin) return 'before';   // 報到時段
-      if (nowMin < 12 * 60) return 'live';         // 進行中
+      if (nowMin < latestMin) return 'live';        // 進行中
       return 'ended';
     },
     get statusText() {

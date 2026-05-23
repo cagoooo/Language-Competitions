@@ -15,7 +15,7 @@
  *   → 跳出「網站有新版,點此重新整理」橫條(由 index.html 內 JS 監聽)。
  */
 
-const CACHE_VERSION = 'smes-langcomp-2026-05-23-034';
+const CACHE_VERSION = 'smes-langcomp-2026-05-23-035';
 const CACHE_NAME = `smes-langcomp::${CACHE_VERSION}`;
 
 // 安裝:**只預快取首屏關鍵 3 個檔案**,避免拖累首屏 LCP
