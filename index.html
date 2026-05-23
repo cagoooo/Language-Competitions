@@ -1875,7 +1875,7 @@
     </div>
 
     <!-- Tab: 即時狀態 (Live Status) -->
-    <div x-show="tab==='live'" class="p-4">
+    <div x-show="tab==='live'" class="p-4 max-h-[65vh] overflow-y-auto overscroll-contain">
       <!-- 賽前 -->
       <template x-if="phase === 'before'">
         <div class="text-center py-2">
@@ -1894,14 +1894,17 @@
       <!-- 賽事當日 -->
       <template x-if="phase === 'during'">
         <div>
-          <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
+          <div class="flex items-center gap-2 text-xs text-gray-500 mb-2 sticky top-0 bg-white py-1 -mt-1 z-10">
             <span class="inline-block w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
             <strong class="text-red-600">LIVE</strong> · <span x-text="nowStr"></span>
+            <span class="ml-auto text-[10px] text-gray-400" x-show="liveNow.length + upcoming.length + later.length > 0">
+              共 <span x-text="liveNow.length + upcoming.length + later.length"></span> 場
+            </span>
           </div>
 
           <!-- 進行中 -->
           <div x-show="liveNow.length > 0">
-            <div class="text-xs font-bold text-gray-500 mb-1">🔴 進行中</div>
+            <div class="text-xs font-bold text-gray-500 mb-1">🔴 進行中 (<span x-text="liveNow.length"></span>)</div>
             <template x-for="ev in liveNow" :key="ev._key">
               <div class="bg-red-50 border-l-4 border-red-500 p-2 mb-1.5 rounded-sm text-xs">
                 <div class="font-bold" x-text="'第 ' + ev.no + ' 場 · ' + ev.title"></div>
@@ -1915,9 +1918,9 @@
             </template>
           </div>
 
-          <!-- 即將開始 -->
+          <!-- 即將開始(30 分內) -->
           <div x-show="upcoming.length > 0" class="mt-3">
-            <div class="text-xs font-bold text-gray-500 mb-1">⏭ 即將開始 (30 分內)</div>
+            <div class="text-xs font-bold text-gray-500 mb-1">⏭ 即將開始 / 報到中 (<span x-text="upcoming.length"></span>)</div>
             <template x-for="ev in upcoming" :key="ev._key">
               <div class="bg-yellow-50 border-l-4 border-yellow-500 p-2 mb-1.5 rounded-sm text-xs">
                 <div class="font-bold" x-text="'第 ' + ev.no + ' 場 · ' + ev.title"></div>
@@ -1928,7 +1931,20 @@
             </template>
           </div>
 
-          <div x-show="liveNow.length === 0 && upcoming.length === 0" class="text-center py-4 text-sm text-gray-400">
+          <!-- 稍後場次(30 分後到賽末) -->
+          <div x-show="later.length > 0" class="mt-3">
+            <div class="text-xs font-bold text-gray-500 mb-1">📅 稍後場次 (<span x-text="later.length"></span>)</div>
+            <template x-for="ev in later" :key="ev._key">
+              <div class="bg-gray-50 border-l-4 border-gray-300 p-2 mb-1.5 rounded-sm text-xs">
+                <div class="font-bold text-gray-700" x-text="'第 ' + ev.no + ' 場 · ' + ev.title"></div>
+                <div class="text-gray-500 mt-0.5">
+                  <span x-text="ev.group"></span> ・ <span x-text="ev.venue.split(' ')[0]"></span> ・ <span x-text="ev.time"></span>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <div x-show="liveNow.length === 0 && upcoming.length === 0 && later.length === 0" class="text-center py-4 text-sm text-gray-400">
             目前無進行中或即將開始的場次<br><a href="#schedule" @click="expanded=false" class="text-[var(--vermilion)] underline">查看完整賽程</a>
           </div>
         </div>
@@ -1967,6 +1983,7 @@
       countdownSub: '',
       liveNow: [],
       upcoming: [],
+      later: [],
       isLive: false,
       meta: window.COMP_DATA?.meta || {},
       _lastTick: 0,
@@ -2038,11 +2055,20 @@
       updateLive() {
         if (this.phase !== 'during') return;
         const now = new Date();
-        this.nowStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-        const nowMin = now.getHours() * 60 + now.getMinutes();
+        // 與預覽模式同步:有 simulateTime 時用模擬時間
+        const sim = window.LIVE_STATE && window.LIVE_STATE.simulateTime;
+        let nowMin;
+        if (sim) {
+          const [hh, mm] = sim.split(':').map(Number);
+          nowMin = (hh || 0) * 60 + (mm || 0);
+          this.nowStr = sim + ' (模擬)';
+        } else {
+          nowMin = now.getHours() * 60 + now.getMinutes();
+          this.nowStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        }
         const U = window.COMP_UTILS;
         const evs = window.COMP_DATA?.events || [];
-        const live = [], soon = [];
+        const live = [], soon = [], later = [];
         evs.forEach((ev, i) => {
           const status = U.getStatus(ev, nowMin);
           const augmented = { ...ev, _key: ev.no + '_' + ev.group + '_' + i };
@@ -2056,10 +2082,15 @@
             live.push(augmented);
           } else if (status === 'soon' || status === 'checkin') {
             soon.push(augmented);
+          } else if (status === 'upcoming') {
+            later.push(augmented);
           }
         });
-        this.liveNow = live.slice(0, 4);
-        this.upcoming = soon.slice(0, 3);
+        // 依開始時間排序
+        const byStart = (a, b) => U.toMin(a.time.split('-')[0]) - U.toMin(b.time.split('-')[0]);
+        this.liveNow = live.sort(byStart);
+        this.upcoming = soon.sort(byStart);
+        this.later = later.sort(byStart);
       },
 
       doSearch() {
