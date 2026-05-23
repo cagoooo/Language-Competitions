@@ -1245,27 +1245,48 @@
       <template x-for="room in currentFloor.rooms" :key="room.code">
         <button @click="selectRoom(room)"
                 :style="`
-                  border-color:${roomStatus(room) === 'ended' ? '#cbd5e1' : room.catColor};
-                  ${roomStatus(room) === 'live' ? 'background:' + room.catColor + '15;' : ''}
-                  ${roomStatus(room) === 'ended' ? 'background:#f8fafc; filter:grayscale(70%) opacity(0.75);' : ''}
+                  border-color:${room.code === 'C208' ? '#7c3aed' : (roomStatus(room) === 'ended' ? '#cbd5e1' : room.catColor)};
+                  ${room.code === 'C208' ? 'background:linear-gradient(135deg,#faf5ff 0%,#ede9fe 50%,#fef3c7 100%); border-width:3px;' : ''}
+                  ${roomStatus(room) === 'live' && room.code !== 'C208' ? 'background:' + room.catColor + '15;' : ''}
+                  ${roomStatus(room) === 'ended' && room.code !== 'C208' ? 'background:#f8fafc; filter:grayscale(70%) opacity(0.75);' : ''}
                 `"
                 :class="{
-                  'ring-2 ring-[var(--vermilion)] ring-offset-2 animate-pulse': roomStatus(room) === 'live',
+                  'ring-2 ring-[var(--vermilion)] ring-offset-2 animate-pulse': roomStatus(room) === 'live' && room.code !== 'C208',
+                  'ring-2 ring-purple-500 ring-offset-2 shadow-lg shadow-purple-200': room.code === 'C208',
                 }"
                 class="relative bg-white border-2 p-4 rounded-sm text-left hover:shadow-xl hover:scale-105 transition-all group">
-          <!-- 狀態角標 -->
-          <span x-show="roomStatus(room) === 'live'" class="absolute top-1 right-1 bg-[var(--vermilion)] text-white text-[10px] px-1.5 py-0.5 rounded-sm font-bold">LIVE</span>
-          <span x-show="roomStatus(room) === 'checkin'" class="absolute top-1 right-1 bg-[#4a6685] text-white text-[10px] px-1.5 py-0.5 rounded-sm font-bold">報到</span>
-          <span x-show="roomStatus(room) === 'soon'" class="absolute top-1 right-1 bg-[#b8945f] text-white text-[10px] px-1.5 py-0.5 rounded-sm font-bold">即將</span>
-          <span x-show="roomStatus(room) === 'ended'" class="absolute top-1 right-1 bg-gray-500 text-white text-[10px] px-1.5 py-0.5 rounded-sm font-bold">✓ 完成</span>
+          <!-- 教務處(成績組)特殊角標:阿凱老師全天忙碌中 -->
+          <span x-show="room.code === 'C208'"
+                class="absolute top-1 right-1 bg-gradient-to-r from-purple-600 via-pink-500 to-amber-400 text-white text-[10px] px-1.5 py-0.5 rounded-sm font-bold shadow animate-pulse">
+            ⭐ 阿凱在這
+          </span>
+          <!-- 一般狀態角標(教務處不顯示,避免疊加) -->
+          <template x-if="room.code !== 'C208'">
+            <div>
+              <span x-show="roomStatus(room) === 'live'" class="absolute top-1 right-1 bg-[var(--vermilion)] text-white text-[10px] px-1.5 py-0.5 rounded-sm font-bold">LIVE</span>
+              <span x-show="roomStatus(room) === 'checkin'" class="absolute top-1 right-1 bg-[#4a6685] text-white text-[10px] px-1.5 py-0.5 rounded-sm font-bold">報到</span>
+              <span x-show="roomStatus(room) === 'soon'" class="absolute top-1 right-1 bg-[#b8945f] text-white text-[10px] px-1.5 py-0.5 rounded-sm font-bold">即將</span>
+              <span x-show="roomStatus(room) === 'ended'" class="absolute top-1 right-1 bg-gray-500 text-white text-[10px] px-1.5 py-0.5 rounded-sm font-bold">✓ 完成</span>
+            </div>
+          </template>
 
-          <div class="text-xs text-gray-500 font-mono" x-text="room.code"></div>
+          <div class="text-xs font-mono"
+               :style="room.code === 'C208' ? 'color:#7c3aed; font-weight:bold;' : 'color:#6b7280'"
+               x-text="room.code"></div>
           <div class="font-serif-tc font-bold text-base mt-1"
-               :style="roomStatus(room) === 'ended' ? 'text-decoration:line-through; text-decoration-color:#94a3b8;' : ''"
+               :style="roomStatus(room) === 'ended' && room.code !== 'C208' ? 'text-decoration:line-through; text-decoration-color:#94a3b8;' : (room.code === 'C208' ? 'color:#581c87;' : '')"
                x-text="room.name"></div>
           <div class="text-xs mt-1"
-               :style="roomStatus(room) === 'ended' ? 'color:#94a3b8;' : 'color:' + room.catColor"
+               :style="room.code === 'C208' ? 'color:#6d28d9; font-weight:bold;' : (roomStatus(room) === 'ended' ? 'color:#94a3b8;' : 'color:' + room.catColor)"
                x-text="room.label"></div>
+          <!-- 教務處專屬:超忙進度條 + 鼓勵語 -->
+          <div x-show="room.code === 'C208'" class="mt-1.5 pt-1.5 border-t border-purple-200">
+            <div class="text-[10px] text-purple-700 font-bold flex items-center gap-1">
+              <span class="inline-block w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse"></span>
+              💼 全天忙碌中(08:00-16:00)
+            </div>
+            <div class="text-[10px] text-amber-700 mt-0.5">⚡ 賽事神經中樞</div>
+          </div>
         </button>
       </template>
     </div>
@@ -1305,13 +1326,20 @@
     <template x-if="selectedRoom">
       <div @click.stop class="bg-white rounded-sm shadow-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto" x-transition.scale>
         <!-- Header -->
-        <div class="p-6 text-white relative" :style="`background:linear-gradient(135deg, ${selectedRoom.catColor} 0%, ${selectedRoom.catColor}cc 100%)`">
+        <div class="p-6 text-white relative"
+             :style="selectedRoom.code === 'C208' ? 'background:linear-gradient(135deg, #7c3aed 0%, #ec4899 50%, #f59e0b 100%);' : `background:linear-gradient(135deg, ${selectedRoom.catColor} 0%, ${selectedRoom.catColor}cc 100%)`">
           <button @click="closeModal()" class="absolute top-3 right-3 text-white/80 hover:text-white text-2xl">×</button>
+          <!-- 教務處特殊頭標 -->
+          <div x-show="selectedRoom.code === 'C208'" class="inline-block bg-white/25 backdrop-blur px-2 py-0.5 rounded text-[10px] font-bold tracking-wider mb-1">⭐ 賽事神經中樞</div>
           <div class="text-xs opacity-80 tracking-widest" x-text="activeFloor"></div>
           <div class="font-serif-tc text-3xl font-bold mt-1">
             <span x-text="selectedRoom.code"></span>　<span x-text="selectedRoom.name"></span>
           </div>
           <div class="text-sm mt-1 opacity-95" x-text="selectedRoom.label"></div>
+          <!-- 教務處專屬鼓勵語 -->
+          <div x-show="selectedRoom.code === 'C208'" class="mt-3 p-2 bg-white/15 backdrop-blur rounded text-xs font-bold leading-relaxed">
+            💪 阿凱老師,你正在處理 33 場成績資料 — 全校的選手家長都在等你!辛苦了 ❤️
+          </div>
         </div>
         <!-- Body -->
         <div class="p-6">
