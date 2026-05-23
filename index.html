@@ -138,6 +138,8 @@
 <!-- 賽事資料 single source of truth -->
 <script src="events.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.5/dist/cdn.min.js"></script>
+<!-- canvas-confetti:賽事圓滿落幕時撒花(輕量 ~10KB,只在賽事結束首次觸發) -->
+<script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
 <style>
   :root {
@@ -1932,12 +1934,19 @@
       <!-- 賽事當日 -->
       <template x-if="phase === 'during'">
         <div>
-          <div class="flex items-center gap-2 text-xs text-gray-500 mb-2 sticky top-0 bg-white py-1 -mt-1 z-10">
-            <span class="inline-block w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-            <strong class="text-red-600">LIVE</strong> · <span x-text="nowStr"></span>
-            <span class="ml-auto text-[10px] text-gray-400" x-show="liveNow.length + upcoming.length + later.length > 0">
-              共 <span x-text="liveNow.length + upcoming.length + later.length"></span> 場
-            </span>
+          <div class="sticky top-0 bg-white py-1 -mt-1 z-10">
+            <div class="flex items-center gap-2 text-xs text-gray-500 mb-1">
+              <span class="inline-block w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+              <strong class="text-red-600">LIVE</strong> · <span x-text="nowStr"></span>
+              <span class="ml-auto text-[10px] text-gray-400" x-show="progress.total > 0">
+                ✅ <span x-text="progress.ended"></span> / <span x-text="progress.total"></span> 場 (<span x-text="progress.percent"></span>%)
+              </span>
+            </div>
+            <!-- B 功能:賽事完成進度條 -->
+            <div x-show="progress.total > 0" class="h-1.5 bg-gray-100 rounded overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-[var(--vermilion)] via-amber-400 to-[var(--jade)]"
+                   :style="'width:' + progress.percent + '%; transition: width .8s ease'"></div>
+            </div>
           </div>
 
           <!-- 進行中 -->
@@ -2004,8 +2013,29 @@
             </div>
           </div>
 
-          <div x-show="liveNow.length === 0 && upcoming.length === 0 && later.length === 0" class="text-center py-4 text-sm text-gray-400">
-            目前無進行中或即將開始的場次<br><a href="#schedule" @click="expanded=false" class="text-[var(--vermilion)] underline">查看完整賽程</a>
+          <!-- A 功能:沒場次的有溫度空狀態(依時段切換) -->
+          <div x-show="liveNow.length === 0 && upcoming.length === 0 && later.length === 0" class="text-center py-6">
+            <template x-if="progress.nowMin < 12 * 60">
+              <div>
+                <div class="text-4xl mb-2" x-text="emptyMessage.icon"></div>
+                <div class="font-bold text-gray-700 text-sm" x-text="emptyMessage.text"></div>
+                <div class="text-xs text-gray-500 mt-1" x-text="emptyMessage.sub"></div>
+                <a href="#schedule" @click="expanded=false" class="inline-block mt-3 text-xs text-[var(--vermilion)] underline">查看完整賽程</a>
+              </div>
+            </template>
+            <template x-if="progress.nowMin >= 12 * 60">
+              <div>
+                <div class="text-5xl mb-2 animate-bounce">🎉</div>
+                <div class="font-bold text-lg bg-gradient-to-r from-[var(--vermilion)] via-amber-500 to-[var(--jade)] bg-clip-text text-transparent">
+                  賽事圓滿落幕!
+                </div>
+                <div class="text-xs text-gray-600 mt-1">感謝所有選手、家長與工作人員</div>
+                <a :href="emptyMessage.link.url" target="_blank" rel="noopener"
+                   class="inline-flex items-center justify-center gap-2 mt-4 px-4 py-2.5 bg-[var(--jade)] hover:bg-[var(--jade-dark)] text-white font-bold text-sm rounded shadow active:scale-95 transition w-full"
+                   x-text="emptyMessage.link.label"></a>
+                <div class="text-[10px] text-gray-400 mt-2">lang.twnpo.com</div>
+              </div>
+            </template>
           </div>
         </div>
       </template>
@@ -2046,6 +2076,8 @@
       later: [],
       laterExpanded: false,  // 稍後場次預設摺疊,避免清單過長
       isLive: false,
+      // 賽事進度統計(B 功能):total / ended / liveCount / pendingCount
+      progress: { total: 0, ended: 0, percent: 0, nowMin: 0 },
       meta: window.COMP_DATA?.meta || {},
       _lastTick: 0,
 
@@ -2137,6 +2169,7 @@
         const U = window.COMP_UTILS;
         const evs = window.COMP_DATA?.events || [];
         const live = [], soon = [], later = [];
+        let endedCount = 0;
         evs.forEach((ev, i) => {
           const status = U.getStatus(ev, nowMin);
           const augmented = { ...ev, _key: ev.no + '_' + ev.group + '_' + i };
@@ -2152,6 +2185,8 @@
             soon.push(augmented);
           } else if (status === 'upcoming') {
             later.push(augmented);
+          } else if (status === 'ended') {
+            endedCount++;
           }
         });
         // 依開始時間排序
@@ -2159,6 +2194,47 @@
         this.liveNow = live.sort(byStart);
         this.upcoming = soon.sort(byStart);
         this.later = later.sort(byStart);
+        // B 功能:賽事進度
+        this.progress = {
+          total: evs.length,
+          ended: endedCount,
+          percent: evs.length ? Math.round(endedCount / evs.length * 100) : 0,
+          nowMin: nowMin,
+        };
+        // C 功能:全部結束首次觸發 → 撒花
+        if (evs.length > 0 && endedCount === evs.length && !this._confettiFired) {
+          this._confettiFired = true;
+          this._fireConfetti();
+        }
+      },
+
+      // C 功能:賽事圓滿落幕撒花效果(只跑一次,sessionStorage 紀錄)
+      _fireConfetti() {
+        if (typeof window.confetti !== 'function') return;
+        // 同一個 session 內已撒過就不再撒(避免每次切回頁籤都撒)
+        if (sessionStorage.getItem('confetti-fired') === '1') return;
+        sessionStorage.setItem('confetti-fired', '1');
+        const duration = 4000, end = Date.now() + duration;
+        const colors = ['#c1272d', '#b8945f', '#3a5a40', '#7c3aed', '#f59e0b'];
+        (function frame() {
+          window.confetti({ particleCount: 4, angle: 60,  spread: 55, origin: { x: 0, y: 0.7 }, colors });
+          window.confetti({ particleCount: 4, angle: 120, spread: 55, origin: { x: 1, y: 0.7 }, colors });
+          if (Date.now() < end) requestAnimationFrame(frame);
+        })();
+      },
+
+      // A 功能:沒場次時依時段給有溫度的訊息
+      get emptyMessage() {
+        const m = this.progress.nowMin || 0;
+        if (m < 9 * 60) return { icon: '⏰', text: '賽事即將開始', sub: '請耐心等候第一場開賽' };
+        if (m < 12 * 60) return { icon: '⏸', text: '場次間休息中', sub: '下一場準備中,稍候即可看到進度' };
+        // ≥ 12:00
+        return {
+          icon: '🎉',
+          text: '賽事圓滿落幕!',
+          sub: '感謝所有選手、家長與工作人員',
+          link: { url: 'https://lang.twnpo.com/score-0.aspx?openExternalBrowser=1#b1', label: '🏆 查詢成績(桃園市公告系統)' },
+        };
       },
 
       doSearch() {
