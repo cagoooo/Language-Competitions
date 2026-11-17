@@ -466,4 +466,4 @@ push 後使用者下次連線會跳「網站有新版」橫條。
 
 ---
 
-_最後更新：2026-05-22 · Made with ❤️ by **[阿凱老師](https://www.smes.tyc.edu.tw/modules/tadnews/page.php?ncsn=11&nsn=16#a5)** · 桃園市龍潭區石門國民小學_
+_最後更新：2026-05-22 · Made with ❤️ by **[阿凱老師](https://cagoooo.github.io/Akai/)** · 桃園市龍潭區石門國民小學_

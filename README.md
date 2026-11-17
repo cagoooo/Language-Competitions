@@ -70,7 +70,7 @@ npm run watch:css
 
 ---
 
-Made with ❤️ by **[阿凱老師](https://www.smes.tyc.edu.tw/modules/tadnews/page.php?ncsn=11&nsn=16#a5)** · 桃園市龍潭區石門國民小學 資訊組
+Made with ❤️ by **[阿凱老師](https://cagoooo.github.io/Akai/)** · 桃園市龍潭區石門國民小學 資訊組
 
 ---
 
