@@ -153,6 +153,24 @@
     --jade: #4a6c52;
   }
   html { scroll-behavior: smooth; }
+
+  /* 頁尾署名列(2026-11-17 新增;Tailwind 為預編譯,這裡用自訂樣式) */
+  .lc-credit {
+    margin: 18px 0 0; padding-top: 14px;
+    border-top: 1px dashed rgba(250, 246, 239, 0.15);
+    text-align: center; font-size: 0.875rem; line-height: 1.8;
+    color: rgba(250, 246, 239, 0.7);
+  }
+  .lc-credit__heart { display: inline-block; margin: 0 2px; }
+  .lc-credit__author {
+    color: #fde68a; font-weight: 700; text-decoration: none;
+    border-bottom: 1px dotted currentColor; padding: 2px 0;
+  }
+  .lc-credit__author:hover { color: #fef3c7; }
+  @media (max-width: 480px) {
+    .lc-credit__school { display: block; }
+    .lc-credit__dot { display: none; }
+  }
   body {
     /* 系統中文字型 stack(零外部請求):iOS/Mac → PingFang;Windows → 微軟正黑;Android → Noto */
     font-family: 'PingFang TC', 'Microsoft JhengHei', 'Heiti TC', 'Noto Sans CJK TC', 'Noto Sans TC', system-ui, sans-serif;
@@ -2368,7 +2386,7 @@
           <svg class="w-5 h-5 text-[var(--vermilion)] shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
           <div class="text-sm leading-tight">
             <div class="text-[var(--paper)]/60 text-xs">Designed &amp; built by</div>
-            <a href="https://www.smes.tyc.edu.tw/page/teacher" target="_blank" rel="noopener" class="font-serif-tc font-bold text-amber-200 hover:text-amber-100 transition">
+            <a href="https://cagoooo.github.io/Akai/" target="_blank" rel="noopener noreferrer" title="阿凱老師教育科技創新專區" class="font-serif-tc font-bold text-amber-200 hover:text-amber-100 transition">
               阿凱老師
             </a>
             <span class="text-[var(--paper)]/50 text-xs">・石門國小資訊組</span>
@@ -2393,6 +2411,10 @@
                 title="向伺服器確認是否有新版">🔄 檢查更新</button>
       </div>
     </div>
+
+    <!-- 署名列(2026-11-17 新增) -->
+    <p class="lc-credit">Made with <span class="lc-credit__heart" aria-label="愛心">❤️</span> by
+      <a href="https://cagoooo.github.io/Akai/" target="_blank" rel="noopener noreferrer" title="阿凱老師教育科技創新專區" class="lc-credit__author">阿凱老師</a><span class="lc-credit__school"><span class="lc-credit__dot" aria-hidden="true">・</span>桃園市龍潭區石門國民小學</span></p>
   </div>
 </footer>
 
